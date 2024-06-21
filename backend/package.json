@@ -1,0 +1,28 @@
+{
+  "name": "green_verse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "build": "npm i"
+  },
+  "author": "Raj",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "",
+    "bcryptjs": "",
+    "body-parser": "",
+    "cors": "",
+    "dotenv": "",
+    "express": "",
+    "jsonwebtoken": "",
+    "mongoose": "",
+    "morgan": "",
+    "nodemon": "",
+    "passport": "",
+    "passport-local": "",
+    "path": ""
+  }
+}
