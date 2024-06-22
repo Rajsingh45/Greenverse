@@ -2,16 +2,21 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
 import Dashboard from './Dashboard'
+import UserContextProvider from './UserContext';
+import Admin from './Admin'
 
 function App() {
   return (
     <div className="App">
       <Router>
+      <UserContextProvider>
         <Routes>
           <Route path="/" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
+        </UserContextProvider>
       </Router>
     </div>
   );

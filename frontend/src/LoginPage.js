@@ -1,40 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
+import { UserContext } from "./UserContext"; // Ensure this path is correct
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [userDetails, setUserDetails] = useState({
+        email: "",
+        password: ""
+    });
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const loggedData = useContext(UserContext); // Ensure UserContext is properly imported and used
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
+    const handleInput = (e) => {
+        const { name, value } = e.target;
+        setUserDetails((prevState) => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(userDetails.email)) {
             setError('Invalid email format');
             return;
         }
+         if (userDetails.password.length < 8) {
+             setError('Password must be at least 8 characters long');
+             return;
+         }
 
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters long');
-            return;
-        }
+        fetch("http://localhost:5000/auth/login", {
+            method: "POST",
+            body: JSON.stringify(userDetails),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+            .then((response) => {
+                if (response.status === 404) {
+                    setError("Email doesn't exist");
+                } else if (response.status === 400) {
+                    setError("Incorrect Password");
+                }
 
-        console.log('Logging in with:', email, password);
+                setTimeout(() => {
+                    setError("");
+                }, 5000);
 
-        // Simulate login success
-        setError('');
-        navigate('/dashboard'); // Navigate to the dashboard on successful login
+                return response.json();
+            })
+            .then((data) => {
+                if (data.token !== undefined) {
+                     localStorage.setItem("nutrify-user", JSON.stringify(data));
+                    loggedData.setLoggedUser(data);
+                    
+                    if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
+                        navigate("/admin");
+                    } else {
+                        navigate("/dashboard");
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                setError("An error occurred. Please try again.");
+            });
     };
 
     return (
@@ -44,11 +77,23 @@ const LoginPage = () => {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Email:</label>
-                    <input type="email" value={email} onChange={handleEmailChange} required />
+                    <input
+                        type="email"
+                        name="email"
+                        value={userDetails.email}
+                        onChange={handleInput}
+                        required
+                    />
                 </div>
                 <div>
                     <label>Password:</label>
-                    <input type="password" value={password} onChange={handlePasswordChange} required />
+                    <input
+                        type="password"
+                        name="password"
+                        value={userDetails.password}
+                        onChange={handleInput}
+                        required
+                    />
                 </div>
                 <button type="submit">Login</button>
             </form>
