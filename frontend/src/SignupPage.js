@@ -3,48 +3,69 @@ import { Link, useNavigate } from 'react-router-dom';
 import './signup.css'
 
 const SignupPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate = useNavigate(); 
+
+    const [userDetails, setUserDetails] = useState({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        age: ""
+    });
+
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // use useNavigate hook
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserDetails(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
     };
 
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    };
-
-    const handleConfirmPasswordChange = (e) => {
-        setConfirmPassword(e.target.value);
-    };
+    const [message, setMessage] = useState({
+        type: "invisible-msg",
+        text: "Dummy Msg"
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log(userDetails);
 
-        // Basic email format validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError('Invalid email format');
+        if (userDetails.password !== userDetails.confirmPassword) {
+            setError("Passwords do not match");
             return;
         }
 
-        // Basic password format validation
-        if (password.length < 8) {
-            setError('Password must be at least 8 characters long');
-            return;
-        }
+        setError('');
 
-        // Password match validation
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
+        fetch("http://localhost:5000/auth/register", {
+            method: "POST",
+            body: JSON.stringify(userDetails),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            setMessage({ type: "success", text: data.message });
 
-        // Navigate to login page
-        navigate('/login');
+            setUserDetails({
+                email: "",
+                password: "",
+                confirmPassword: "",
+                age: ""
+            });
+
+            setTimeout(() => {
+                setMessage({ type: "invisible-msg", text: "Dummy Msg" });
+            }, 5000);
+
+            navigate('/login');
+
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     };
 
     return (
@@ -55,19 +76,20 @@ const SignupPage = () => {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Email:</label>
-                    <input type="email" value={email} onChange={handleEmailChange} required />
+                    <input type="email" name="email" value={userDetails.email} onChange={handleInputChange} required />
                 </div>
                 <div>
                     <label>Password:</label>
-                    <input type="password" value={password} onChange={handlePasswordChange} required />
+                    <input type="password" name="password" value={userDetails.password} onChange={handleInputChange} required />
                 </div>
                 <div>
                     <label>Confirm Password:</label>
-                    <input type="password" value={confirmPassword} onChange={handleConfirmPasswordChange} required />
+                    <input type="password" name="confirmPassword" value={userDetails.confirmPassword} onChange={handleInputChange} required />
                 </div>
                 <button type="submit">Sign Up</button>
             </form>
             <p className="switch-link">Already have an account? <Link to="/login">Sign In</Link></p> 
+            {message.type !== "invisible-msg" && <p className={message.type}>{message.text}</p>}
         </div>
         </>
     );
