@@ -1,98 +1,110 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; 
-import './signup.css'
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './login.css';
+import { UserContext } from "./UserContext"; // Ensure this path is correct
+// import SignupPage from './LoginPage';
+import { FaUserCircle } from "react-icons/fa";
 
 const SignupPage = () => {
-    const navigate = useNavigate(); 
-
     const [userDetails, setUserDetails] = useState({
         email: "",
-        password: "",
-        confirmPassword: "",
-        age: ""
+        password: ""
     });
-
     const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const loggedData = useContext(UserContext); // Ensure UserContext is properly imported and used
 
-    const handleInputChange = (e) => {
+    const handleInput = (e) => {
         const { name, value } = e.target;
-        setUserDetails(prevState => ({
+        setUserDetails((prevState) => ({
             ...prevState,
             [name]: value
         }));
     };
 
-    const [message, setMessage] = useState({
-        type: "invisible-msg",
-        text: "Dummy Msg"
-    });
+    const handleSign=()=>{
+        navigate("/signup")
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(userDetails);
-
-        if (userDetails.password !== userDetails.confirmPassword) {
-            setError("Passwords do not match");
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(userDetails.email)) {
+            setError('Invalid email format');
             return;
         }
+         if (userDetails.password.length < 8) {
+             setError('Password must be at least 8 characters long');
+             return;
+         }
 
-        setError('');
-
-        fetch("http://localhost:5000/auth/register", {
+        fetch("http://localhost:5000/auth/login", {
             method: "POST",
             body: JSON.stringify(userDetails),
             headers: {
                 "Content-Type": "application/json"
             }
         })
-        .then((response) => response.json())
-        .then((data) => {
-            setMessage({ type: "success", text: data.message });
+            .then((response) => {
+                if (response.status === 404) {
+                    setError("Email doesn't exist");
+                } else if (response.status === 400) {
+                    setError("Incorrect Password");
+                }
 
-            setUserDetails({
-                email: "",
-                password: "",
-                confirmPassword: "",
-                age: ""
+                setTimeout(() => {
+                    setError("");
+                }, 5000);
+
+                return response.json();
+            })
+            .then((data) => {
+                if (data.token !== undefined) {
+                     localStorage.setItem("nutrify-user", JSON.stringify(data));
+                    loggedData.setLoggedUser(data);
+                    
+                    if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
+                        navigate("/admin");
+                    } else {
+                        navigate("/dashboard");
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                setError("An error occurred. Please try again.");
             });
-
-            setTimeout(() => {
-                setMessage({ type: "invisible-msg", text: "Dummy Msg" });
-            }, 5000);
-
-            navigate('/login');
-
-        })
-        .catch((err) => {
-            console.log(err);
-        });
     };
 
     return (
-        <>
-        <div className="signup-page">
-            <h2>Sign Up</h2>
-            {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
-                    <input type="email" name="email" value={userDetails.email} onChange={handleInputChange} required />
+        <div className="container">
+            <div className="left-panel">
+                <div className="logo">
+                    <img src="/path/to/logo.png" alt="GreenVerse Logo" />
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input type="password" name="password" value={userDetails.password} onChange={handleInputChange} required />
+                <h1 className='title'>GreenVerse</h1>
+                <p className='personal-details'>Enter your personal details to start the journey with us</p>
+                <button className="signup-btn" onClick={handleSign}>SIGN UP</button>
+            </div>
+            <div className="right-panel">
+                <div className="help-link">Need Help?</div>
+                <div className="form-container">
+                    <div className="avatar">
+                        <FaUserCircle className="avatar-icon" />
+                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <input type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
+                        </div>
+                        <div className="input-group">
+                            <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
+                        <button type="submit" className="signin-btn">SIGN IN</button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label>Confirm Password:</label>
-                    <input type="password" name="confirmPassword" value={userDetails.confirmPassword} onChange={handleInputChange} required />
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            <p className="switch-link">Already have an account? <Link to="/login">Sign In</Link></p> 
-            {message.type !== "invisible-msg" && <p className={message.type}>{message.text}</p>}
+            </div>
         </div>
-        </>
     );
-};
+}
 
 export default SignupPage;

@@ -1,7 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
-import { UserContext } from "./UserContext"; // Ensure this path is correct
+import { UserContext } from "./UserContext";
+import { FaUserCircle } from "react-icons/fa";
 
 const LoginPage = () => {
     const [userDetails, setUserDetails] = useState({
@@ -19,6 +20,10 @@ const LoginPage = () => {
             [name]: value
         }));
     };
+
+    const handleSign=()=>{
+        navigate("/signup")
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -71,34 +76,35 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="login-page">
-            <h2>Login</h2>
-            {error && <p className="error-message">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={userDetails.email}
-                        onChange={handleInput}
-                        required
-                    />
+        <div className="container">
+            <div className="left-panel">
+                <div className="logo">
+                    <img src="/path/to/logo.png" alt="GreenVerse Logo" />
                 </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={userDetails.password}
-                        onChange={handleInput}
-                        required
-                    />
+                <h1 className='title'>GreenVerse</h1>
+                <p className='personal-details'>Enter your personal details to start the journey with us</p>
+                <button className="signup-btn" onClick={handleSign}>SIGN UP</button>
+            </div>
+            <div className="right-panel">
+                <div className="help-link">Need Help?</div>
+                <div className="form-container">
+                    <div className="avatar">
+                        <FaUserCircle className="avatar-icon" />
+                    </div>
+                    {error && <p className="error-message">{error}</p>}
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <input type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
+                        </div>
+                        <div className="input-group">
+                            <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
+                        <button type="submit" className="signin-btn">SIGN IN</button>
+                        </div>
+                    </form>
                 </div>
-                <button type="submit">Login</button>
-            </form>
+            </div>
         </div>
     );
-};
+}
 
 export default LoginPage;
