@@ -3,7 +3,7 @@ import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
 import Dashboard from './Dashboard'
 import UserContextProvider from './UserContext';
-import Admin from './Admin'
+import Admin from './components/Admin'
 
 function App() {
   return (

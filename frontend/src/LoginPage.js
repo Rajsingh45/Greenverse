@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { UserContext } from "./UserContext";
 import { FaUserCircle } from "react-icons/fa";
+import logo from './images/logo.png'
 
 const LoginPage = () => {
     const [userDetails, setUserDetails] = useState({
@@ -32,10 +33,11 @@ const LoginPage = () => {
             setError('Invalid email format');
             return;
         }
-         if (userDetails.password.length < 8) {
-             setError('Password must be at least 8 characters long');
-             return;
-         }
+
+        //  if (userDetails.password.length < 8) {
+        //      setError('Password must be at least 8 characters long');
+        //      return;
+        //  }
 
         fetch("http://localhost:5000/auth/login", {
             method: "POST",
@@ -79,7 +81,7 @@ const LoginPage = () => {
         <div className="container">
             <div className="left-panel">
                 <div className="logo">
-                    <img src="/path/to/logo.png" alt="GreenVerse Logo" />
+                    <img src={logo} className='photo' alt="GreenVerse Logo" />
                 </div>
                 <h1 className='title'>GreenVerse</h1>
                 <p className='personal-details'>Enter your personal details to start the journey with us</p>
