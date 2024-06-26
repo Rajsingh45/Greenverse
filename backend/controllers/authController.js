@@ -22,7 +22,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password ,name, role} = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -31,7 +31,8 @@ const register = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ email, password: hashedPassword });
+        // const newUser = new User({ email, password: hashedPassword });
+        const newUser = new User({ email, password: hashedPassword, name, role: role || 'user' });
         await newUser.save();
 
         res.status(201).json({ message: 'User registered successfully' });
@@ -40,7 +41,6 @@ const register = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
-
 const login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -54,9 +54,11 @@ const login = async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
+        // const token = jwt.sign({ email: user.email, id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+        const isAdmin = (email === "admin@example.com" && password === "adminpassword");
 
-        const token = jwt.sign({ email: user.email, id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
-        res.status(200).json({ token });
+        const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        res.status(200).json({ token, role: isAdmin ? 'admin' : 'user' });
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: 'Something went wrong' });
