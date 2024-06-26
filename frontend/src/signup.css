@@ -58,7 +58,7 @@ body {
   margin-bottom: 1rem;
 }
 
-.signup-btn {
+.signup-btn-new {
   width: 50%;
     padding: 1rem;
     border-radius: 30px;
@@ -128,7 +128,7 @@ body {
   color: red;
 }
 
-.signin-btn {
+.signin-btn-new {
   width: 50%;
   padding: 1rem;
   border-radius: 30px;
@@ -203,7 +203,7 @@ body {
   height: 2.5rem;
   }
 
-.signin-btn {
+.signin-btn-new {
   width: 50%;
   padding: 1rem;
   border-radius: 30px;
@@ -220,7 +220,7 @@ body {
   font-size: 5rem;
 }
 
-.signup-btn{
+.signup-btn-new{
   width: 100%;
   padding: 1rem;
   border-radius: 30px;
@@ -249,7 +249,7 @@ body {
   height: 2.5rem;
   }
 
-  .signin-btn {
+  .signin-btn-new {
     width: 100%;
     padding: 1rem;
     border-radius: 30px;
@@ -271,7 +271,7 @@ body {
     font-family: Alata;
   }
 
-  .signup-btn{
+  .signup-btn-new{
     width: 100%;
     padding: 1rem;
     border-radius: 30px;

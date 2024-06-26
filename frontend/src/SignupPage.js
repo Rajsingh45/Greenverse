@@ -1,9 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
-import { UserContext } from "./UserContext"; // Ensure this path is correct
-// import SignupPage from './LoginPage';
-import { FaUserCircle } from "react-icons/fa";
+import { UserContext } from "./UserContext"; 
 
 const SignupPage = () => {
     const [userDetails, setUserDetails] = useState({
@@ -81,6 +79,7 @@ const SignupPage = () => {
             <div className="left-panel-new">
             <div className="help-link-new">Need Help?</div>
                 <h1 className='account'>Create Account</h1>
+                {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
                         <input
@@ -111,7 +110,7 @@ const SignupPage = () => {
                             onChange={handleInput}
                             required
                         />
-                        <button type="submit" className="signup-btn">SIGN UP</button>
+                        <button type="submit" className="signup-btn-new">SIGN UP</button>
                     </div>
                     
                 </form>
@@ -119,7 +118,7 @@ const SignupPage = () => {
             <div className="right-panel-new">
                 <h1 className='welcome'>Welcome Back!</h1>
                 <p className='connected'>To keep connected with us please login with your personal info</p>
-                <button className="signin-btn" onClick={handleLogin}>SIGN IN</button>
+                <button className="signin-btn-new" onClick={handleLogin}>SIGN IN</button>
             </div>
         </div>
     );
