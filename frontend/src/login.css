@@ -26,10 +26,10 @@
   .left-panel, .right-panel {
     padding: 2rem;
   }
-  
+
   .left-panel {
     width: 40%;
-    background: url('./images/logo.png') no-repeat center center;
+    background: url('./images/background.png') no-repeat center center;
     background-size: cover;
     color: white;
     display: flex;
@@ -48,16 +48,15 @@
     right: 0;
     bottom: 0;
   }
+
+.photo{
+  width: 200px;
+  height: 200px;
+}
   
   .left-panel * {
     position: relative; 
     z-index: 1;
-  }
-  
-  .logo img {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 1rem;
   }
   
   .signup-btn {
@@ -164,7 +163,6 @@
       width: 50%; 
     }
     .help-link {
-      position: static;
       align-self: flex-end;
       margin-bottom: 1rem;
     }
