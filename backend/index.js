@@ -7,6 +7,8 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const aqiRoutes = require('./routes/aqi');
+const adminRoutes = require('./routes/admin'); // Add this line
+
 
 const app = express();
 
@@ -28,7 +30,9 @@ mongoose.connect(mongoURL,
 
 
 app.use('/auth', authRoutes);
-app.use('/aqi', aqiRoutes);                         
+app.use('/aqi', aqiRoutes);  
+app.use('/admin',adminRoutes); // Add this line
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
