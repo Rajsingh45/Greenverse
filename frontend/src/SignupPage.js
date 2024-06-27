@@ -54,9 +54,15 @@ const SignupPage = () => {
                 "Content-Type": "application/json"
             }
         })
-        .then((response) => response.json())
+        .then((response) => {
+            if (response.status === 400) {
+                setError("User already exists");
+            }
+
+            return response.json();
+        })
         .then((data) => {
-            setMessage({ type: "success", text: data.message });
+            // setMessage({ type: "success", text: data.message });
 
             setUserDetails({
                 name:"",
