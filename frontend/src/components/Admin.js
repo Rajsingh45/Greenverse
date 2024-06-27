@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import './Admin.css';
+import { useNavigate } from 'react-router-dom';
 
-function Admin() {
+const Admin=()=> {
+  const navigate = useNavigate();
+
+const handleNew=()=>{
+  navigate("/newuser")
+}
+
   return (
     <div className="container">
       <div className="left">
@@ -23,7 +30,7 @@ function Admin() {
             </tr>
           </tbody>
         </table>
-        <button className="add-user-btn">Add New User</button>
+        <button className="add-user-btn" onClick={handleNew}>Add New User</button>
       </div>
       <div className="right">
         <h1 className="dashboard-title">Admin Dashboard</h1>
