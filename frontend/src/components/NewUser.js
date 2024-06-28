@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './NewUser.css';
+import { useNavigate } from 'react-router-dom';
 
 const NewUserForm = () => {
   const [name, setName] = useState('');
@@ -8,6 +9,8 @@ const NewUserForm = () => {
   const [deviceIPs, setDeviceIPs] = useState([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [buttonText, setButtonText] = useState('SAVE');
+  const [emailError, setEmailError] = useState('');
+  const navigate = useNavigate();
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,9 +31,32 @@ const NewUserForm = () => {
     setDeviceIPs(newDeviceIPs);
   };
 
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await fetch('http://localhost:5000/admin/checkemail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error('Error checking email:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid()) {
+      return;
+    }
+
+    const emailExists = await checkEmailExists(email);
+    if (!emailExists) {
+      setEmailError('Email does not exist in the database');
       return;
     }
 
@@ -40,7 +66,7 @@ const NewUserForm = () => {
     setButtonText('SAVED');
 
     try {
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+      const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage');
       }
@@ -64,9 +90,36 @@ const NewUserForm = () => {
 
       const data = await response.json();
       console.log('User added successfully:', data);
-    } catch (error) {
-      console.error('Error adding user:', error);
+
+      // Update number of devices for the user
+      // const updateResponse = await fetch(`http://localhost:5000/admin/${email}/updatedevices`, {
+      //   method: 'PUT',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': `Bearer ${token}`
+      //   },
+      //   body: JSON.stringify({
+      //     noofdevices: numDevices
+      //   })
+      // });
+
+      // if (!updateResponse.ok) {
+      //   throw new Error('Failed to update devices count');
+      // }
+
+      // console.log('Devices count updated successfully');
+    } 
+    catch (error) {
+      console.error('Error:', error);
     }
+  };
+
+  const handleIPSubmission = () => {
+    if (deviceIPs.includes('')) {
+      alert('Please fill in all device IPs');
+      return;
+    }
+    navigate('/admin', { state: { name, devices } });
   };
 
   return (
@@ -94,7 +147,16 @@ const NewUserForm = () => {
             className='textbox'
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onBlur={async () => {
+              const emailExists = await checkEmailExists(email);
+              if (!emailExists) {
+                setEmailError('Email does not exist in the database');
+              } else {
+                setEmailError('');
+              }
+            }}
           />
+          {emailError && <div className="error-message">{emailError}</div>}
 
           <label htmlFor="device" className='box'>No. of Devices:</label>
           <input
@@ -125,7 +187,7 @@ const NewUserForm = () => {
                 />
               </div>
             ))}
-            <button onClick={() => console.log({ name, email, devices, deviceIPs })} className='save-btn'>Submit IPs</button>
+            <button onClick={handleIPSubmission} className='save-btn'>Submit IPs</button>
           </div>
         )}
       </div>

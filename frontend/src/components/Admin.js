@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const Admin=()=> {
+const Admin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [users, setUsers] = useState([
+    { name: 'User A', devices: 50 },
+    { name: 'User B', devices: 20 },
+  ]);
 
-const handleNew=()=>{
-  navigate("/newuser")
-}
+  const handleNew = () => {
+    navigate('/newuser');
+  };
+
+  useEffect(() => {
+    if (location.state && location.state.name && location.state.devices) {
+      const newUser = {
+        name: location.state.name,
+        devices: location.state.devices
+      };
+      setUsers((prevUsers) => [...prevUsers, newUser]);
+      // Clear location state after adding the user to prevent duplicate entries on reload
+      navigate('/admin', { replace: true });
+    }
+  }, [location.state, navigate]);
 
   return (
     <div className="container">
@@ -20,14 +37,12 @@ const handleNew=()=>{
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>User A</td>
-              <td>50</td>
-            </tr>
-            <tr>
-              <td>User B</td>
-              <td>20</td>
-            </tr>
+            {users.map((user, index) => (
+              <tr key={index}>
+                <td>{user.name}</td>
+                <td>{user.devices}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <button className="add-user-btn" onClick={handleNew}>Add New User</button>
@@ -37,6 +52,6 @@ const handleNew=()=>{
       </div>
     </div>
   );
-}
+};
 
 export default Admin;

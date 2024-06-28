@@ -19,4 +19,24 @@ const addUser = async (req, res) => {
     }
 };
 
-module.exports = { addUser };
+const updateUserDevices = async (req, res) => {
+    const { email } = req.params; // Assuming email is passed as a parameter in the URL
+    const { noofdevices } = req.body;
+
+    try {
+        const existingUser = await Admin.findOne({ email });
+        if (!existingUser) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        existingUser.noofdevices = noofdevices;
+        await existingUser.save();
+
+        res.json({ message: 'Number of devices updated successfully', user: existingUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { addUser, updateUserDevices };
