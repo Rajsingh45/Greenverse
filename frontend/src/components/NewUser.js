@@ -7,7 +7,7 @@ const NewUserForm = () => {
   const [devices, setDevices] = useState('');
   const [deviceIPs, setDeviceIPs] = useState([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [buttonText, setButtonText] = useState('SAVE'); // State for button text
+  const [buttonText, setButtonText] = useState('SAVE');
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,12 +28,45 @@ const NewUserForm = () => {
     setDeviceIPs(newDeviceIPs);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid()) {
+      return;
+    }
+
     const numDevices = Number(devices);
     setDeviceIPs(Array(numDevices).fill(''));
     setIsFormSubmitted(true);
-    setButtonText('SAVED'); // Change button text to "SAVED"
+    setButtonText('SAVED');
+
+    try {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+      if (!token) {
+        throw new Error('No token found in localStorage');
+      }
+
+      const response = await fetch('http://localhost:5000/admin/adduser', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          noofdevices: numDevices
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('User added successfully:', data);
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   return (

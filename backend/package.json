@@ -20,7 +20,7 @@
     "jsonwebtoken": "",
     "mongoose": "",
     "morgan": "",
-    "nodemon": "",
+    "nodemon": "^3.1.4",
     "passport": "",
     "passport-local": "",
     "path": ""

@@ -34,11 +34,6 @@ const LoginPage = () => {
             return;
         }
 
-        //  if (userDetails.password.length < 8) {
-        //      setError('Password must be at least 8 characters long');
-        //      return;
-        //  }
-
         fetch("http://localhost:5000/auth/login", {
             method: "POST",
             body: JSON.stringify(userDetails),
@@ -61,7 +56,7 @@ const LoginPage = () => {
             })
             .then((data) => {
                 if (data.token !== undefined) {
-                     localStorage.setItem("nutrify-user", JSON.stringify(data));
+                    localStorage.setItem("token", data.token);
                     loggedData.setLoggedUser(data);
                     
                     if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
