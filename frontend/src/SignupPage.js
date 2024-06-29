@@ -38,15 +38,15 @@ const SignupPage = () => {
             setError('Invalid email format');
             return;
         }
-
+    
         const nameRegex = /^[A-Za-z\s]+$/;
         if (!nameRegex.test(userDetails.name)) {
             setError('Name cannot contain numbers');
             return;
         }
-
+    
         setError('');
-
+    
         fetch("http://localhost:5000/auth/register", {
             method: "POST",
             body: JSON.stringify(userDetails),
@@ -56,32 +56,34 @@ const SignupPage = () => {
         })
         .then((response) => {
             if (response.status === 400) {
-                setError("User already exists");
+                return response.json().then(data => {
+                    setError(data.message || "User already exists");
+                    throw new Error(data.message || "User already exists");
+                });
             }
-
+    
             return response.json();
         })
         .then((data) => {
-            // setMessage({ type: "success", text: data.message });
-
             setUserDetails({
-                name:"",
+                name: "",
                 email: "",
                 password: ""
             });
-
+    
+            setMessage({ type: "success", text: data.message });
             setTimeout(() => {
                 setMessage({ type: "invisible-msg", text: "Dummy Msg" });
             }, 5000);
-
+    
             navigate('/');
-
+    
         })
         .catch((err) => {
-            console.log(err);
+            console.error('Error during signup:', err);
         });
     };
-
+    
     return (
         <div className="container">
             <div className="left-panel-new">
