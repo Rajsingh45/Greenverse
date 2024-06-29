@@ -20,7 +20,12 @@ const AdminSchema = new mongoose.Schema({
     noofdevices:{
         type: Number,
         required: true
+    },
+    deviceIPs: {
+        type: [String],
+        default: []
     }
+
 });
 
 module.exports = mongoose.model('Admin', AdminSchema);
