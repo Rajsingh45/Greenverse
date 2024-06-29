@@ -30,6 +30,33 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+const getDevicesNumber=async(req,res)=>{
+    try {
+            const admin = await Admin.findOne({ email: req.user.email }); // Assuming req.user.email contains the logged-in admin's email
+            if (!admin) {
+              return res.status(404).json({ error: 'Admin not found' });
+            }
+            res.json({ noofdevices: admin.noofdevices });
+          } catch (error) {
+             console.error('Error fetching admin devices:', error);
+             res.status(500).json({ error: 'Server error' });
+           }
+}
+
+const checkEmailExists=async(req,res)=>{
+    const { email } = req.body;
+        try {
+          const user = await User.findOne({ email });
+          if (user) {
+            res.json({ exists: true });
+          } else {
+            res.json({ exists: false });
+          }
+        } catch (error) {
+          res.status(500).json({ error: 'Server error' });
+        }
+      };
+
 const updateUserDevices = async (req, res) => {
     const { email } = req.params; // Assuming email is passed as a parameter in the URL
     const { noofdevices} = req.body;
@@ -50,4 +77,4 @@ const updateUserDevices = async (req, res) => {
     }
 };
 
-module.exports = { addUser,getAllUsers, updateUserDevices };
+module.exports = { addUser,getAllUsers, updateUserDevices,getDevicesNumber,checkEmailExists };

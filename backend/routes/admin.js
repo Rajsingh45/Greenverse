@@ -5,22 +5,15 @@ const { authMiddleware, adminMiddleware } = require('../middleware/authMiddlewar
 const User = require('../models/USER');
 const { updateUserDevices } = require('../controllers/adduserController');
 const { getAllUsers } = require('../controllers/adduserController');
+const {getDevicesNumber}=require('../controllers/adduserController');
+const {checkEmailExists}=require('../controllers/adduserController')
+const Admin=require('../models/ADMIN');
+
+router.get('/devices', authMiddleware,getDevicesNumber)
 
 router.post('/adduser', authMiddleware, adminMiddleware, addUser);
 
-router.post('/checkemail', async (req, res) => {
-    const { email } = req.body;
-    try {
-      const user = await User.findOne({ email });
-      if (user) {
-        res.json({ exists: true });
-      } else {
-        res.json({ exists: false });
-      }
-    } catch (error) {
-      res.status(500).json({ error: 'Server error' });
-    }
-  });
+router.post('/checkemail',checkEmailExists)
 
 router.put('/:email/updatedevices', updateUserDevices);
 

@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'; // Import icons from react-icons
-import image1 from './images/device1.png';
-import image2 from './images/device2.png';
-import image3 from './images/device3.png';
-import image4 from './images/device4.png';
-import image5 from './images/device5.png';
-import image6 from './images/device6.png';
-import image7 from './images/device1.png';
-import image8 from './images/device2.png';
-import image9 from './images/device3.png';
-import image10 from './images/device4.png';
-import image11 from './images/device5.png';
-import image12 from './images/device6.png';
-import image13 from './images/device1.png';
-import image14 from './images/device2.png';
-import image15 from './images/device3.png';
-import image16 from './images/device4.png';
-import image17 from './images/device5.png';
-import image18 from './images/device6.png';
-
-const images = [
-  image1, image2, image3, image4, image5, image6, image7, image8, image9, image10,
-  image11, image12, image13, image14, image15, image16, image17, image18,
-];
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import axios from 'axios'; // Import axios for HTTP requests
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // State to hold total pages
+  const [deviceCount, setDeviceCount] = useState(0); // State to hold number of devices
   const imagesPerPage = 12;
-  const totalPages = Math.ceil(images.length / imagesPerPage);
+
+  useEffect(() => {
+    // Function to fetch number of devices from backend
+    const fetchDeviceCount = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/admin/devices', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const { noofdevices } = response.data;
+        setDeviceCount(noofdevices); // Set number of devices
+        const totalPages = Math.ceil(noofdevices / imagesPerPage);
+        setTotalPages(totalPages); // Set total pages for pagination
+      } catch (error) {
+        console.error('Error fetching device count:', error);
+      }
+    };
+
+    fetchDeviceCount();
+  }, []); // Run once on component mount to fetch device count
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -42,20 +43,25 @@ const Dashboard = () => {
     }
   };
 
-  const currentImages = images.slice(
-    (currentPage - 1) * imagesPerPage,
-    currentPage * imagesPerPage
-  );
+  const renderEmptyCards = () => {
+    const cards = [];
+    for (let i = 0; i < deviceCount; i++) {
+      cards.push(
+        <div className="gallery-item" key={i}>
+          {/* You can customize the appearance of empty cards as needed */}
+          <p>Device {i + 1}</p>
+        </div>
+      );
+    }
+    return cards;
+  };
 
   return (
     <div className="dash">
       <h1 className="title">AQI Dashboard</h1>
       <div className="gallery">
-        {currentImages.map((image, index) => (
-          <div className="gallery-item" key={index}>
-          <img src={image} alt={`AQI Device ${index + 1}`} />
-        </div>
-        ))}
+        {/* Render empty cards based on device count */}
+        {renderEmptyCards()}
       </div>
       <div className="pagination">
         <button

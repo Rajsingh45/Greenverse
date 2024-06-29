@@ -31,7 +31,7 @@ mongoose.connect(mongoURL,
 
 app.use('/auth', authRoutes);
 app.use('/aqi', aqiRoutes);  
-app.use('/admin',adminRoutes); // Add this line
+app.use('/admin',adminRoutes);
 
 
 const PORT = process.env.PORT;
