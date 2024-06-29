@@ -16,7 +16,6 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
-          <Route path="/newuser" element={<NewUser />} />
         </Routes>
         </UserContextProvider>
       </Router>

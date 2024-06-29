@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './NewUser.css';
-import { useNavigate } from 'react-router-dom';
 
-const NewUserForm = () => {
+const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [devices, setDevices] = useState('');
@@ -10,7 +9,10 @@ const NewUserForm = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [buttonText, setButtonText] = useState('SAVE');
   const [emailError, setEmailError] = useState('');
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    setDeviceIPs(Array(Number(devices)).fill(''));
+  }, [devices]);
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -18,7 +20,7 @@ const NewUserForm = () => {
   };
 
   const isFormValid = () => {
-    return name !== '' && isEmailValid(email) && devices !== '';
+    return name !== '' && isEmailValid(email) && devices !== '' && Number(devices) > 0;
   };
 
   const handleDevicesChange = (e) => {
@@ -60,8 +62,7 @@ const NewUserForm = () => {
       return;
     }
 
-    const numDevices = Number(devices);
-    setDeviceIPs(Array(numDevices).fill(''));
+    setEmailError('');
     setIsFormSubmitted(true);
     setButtonText('SAVED');
 
@@ -80,7 +81,7 @@ const NewUserForm = () => {
         body: JSON.stringify({
           name,
           email,
-          noofdevices: numDevices
+          noofdevices: Number(devices),
         })
       });
 
@@ -91,23 +92,11 @@ const NewUserForm = () => {
       const data = await response.json();
       console.log('User added successfully:', data);
 
-      // Update number of devices for the user
-      // const updateResponse = await fetch(`http://localhost:5000/admin/${email}/updatedevices`, {
-      //   method: 'PUT',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Authorization': `Bearer ${token}`
-      //   },
-      //   body: JSON.stringify({
-      //     noofdevices: numDevices
-      //   })
-      // });
-
-      // if (!updateResponse.ok) {
-      //   throw new Error('Failed to update devices count');
-      // }
-
-      // console.log('Devices count updated successfully');
+      onUserAdded({
+        id: Date.now(),
+        name,
+        devices: Number(devices)
+      });
     } 
     catch (error) {
       console.error('Error:', error);
@@ -119,7 +108,7 @@ const NewUserForm = () => {
       alert('Please fill in all device IPs');
       return;
     }
-    navigate('/admin', { state: { name, devices } });
+    onUserAdded({ name, devices: Number(devices) });
   };
 
   return (
