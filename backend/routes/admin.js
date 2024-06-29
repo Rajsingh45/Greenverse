@@ -4,6 +4,7 @@ const { addUser } = require('../controllers/adduserController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const User = require('../models/USER');
 const { updateUserDevices } = require('../controllers/adduserController');
+const { getAllUsers } = require('../controllers/adduserController');
 
 router.post('/adduser', authMiddleware, adminMiddleware, addUser);
 
@@ -22,5 +23,7 @@ router.post('/checkemail', async (req, res) => {
   });
 
 router.put('/:email/updatedevices', updateUserDevices);
+
+router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
 
 module.exports = router;

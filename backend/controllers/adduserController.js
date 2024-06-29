@@ -1,5 +1,6 @@
 const User = require('../models/USER');
 const Admin = require('../models/ADMIN')
+
 const addUser = async (req, res) => {
     const { name, email, noofdevices, deviceIPs } = req.body;
 
@@ -13,6 +14,16 @@ const addUser = async (req, res) => {
         await newUser.save();
 
         res.status(201).json({ message: 'User added successfully', user: newUser });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await Admin.find();
+        res.status(200).json(users);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -39,4 +50,4 @@ const updateUserDevices = async (req, res) => {
     }
 };
 
-module.exports = { addUser, updateUserDevices };
+module.exports = { addUser,getAllUsers, updateUserDevices };

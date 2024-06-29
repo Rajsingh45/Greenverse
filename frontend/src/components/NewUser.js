@@ -65,13 +65,24 @@ const NewUserForm = ({ onUserAdded }) => {
     setEmailError('');
     setIsFormSubmitted(true);
     setButtonText('SAVED');
+  };
 
+  const handleIPSubmission = async () => {
+    // Regular expression to validate IPv4 addresses
+    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  
+    // Check if any IPs are empty or invalid
+    if (deviceIPs.includes('') || deviceIPs.some(ip => !ipRegex.test(ip))) {
+      alert('Please fill in all device IPs with valid IP addresses');
+      return;
+    }
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage');
       }
-
+  
       const response = await fetch('http://localhost:5000/admin/adduser', {
         method: 'POST',
         headers: {
@@ -82,34 +93,28 @@ const NewUserForm = ({ onUserAdded }) => {
           name,
           email,
           noofdevices: Number(devices),
+          deviceIPs
         })
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
       console.log('User added successfully:', data);
-
+  
       onUserAdded({
         id: Date.now(),
         name,
-        devices: Number(devices)
+        noofdevices: Number(devices),
+        deviceIPs
       });
-    } 
-    catch (error) {
+    } catch (error) {
       console.error('Error:', error);
     }
   };
-
-  const handleIPSubmission = () => {
-    if (deviceIPs.includes('')) {
-      alert('Please fill in all device IPs');
-      return;
-    }
-    onUserAdded({ name, devices: Number(devices) });
-  };
+  
 
   return (
     <div className="container">

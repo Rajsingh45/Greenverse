@@ -23,10 +23,14 @@ const AdminSchema = new mongoose.Schema({
     },
     deviceIPs: {
         type: [String],
+        validate: {
+            validator: function (v) {
+                return v.every(ip => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip));
+            },
+            message: props => `${props.value} contains an invalid IP address! Please provide valid IPv4 addresses.`
+        },
         default: []
     }
-
 });
 
 module.exports = mongoose.model('Admin', AdminSchema);
-
