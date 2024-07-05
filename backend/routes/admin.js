@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { addUser } = require('../controllers/adduserController');
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const User = require('../models/USER');
-const { updateUserDevices } = require('../controllers/adduserController');
-const { getAllUsers } = require('../controllers/adduserController');
-const {getDevicesNumber}=require('../controllers/adduserController');
-const {checkEmailExists}=require('../controllers/adduserController')
+const { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser } = require('../controllers/adduserController');
 const Admin=require('../models/ADMIN');
 
 router.get('/devices', authMiddleware,getDevicesNumber)
@@ -18,5 +14,7 @@ router.post('/checkemail',checkEmailExists)
 router.put('/:email/updatedevices', updateUserDevices);
 
 router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
+
+router.delete('/deleteuser', authMiddleware, adminMiddleware, deleteUser); // Add this line
 
 module.exports = router;
