@@ -77,4 +77,20 @@ const updateUserDevices = async (req, res) => {
     }
 };
 
-module.exports = { addUser,getAllUsers, updateUserDevices,getDevicesNumber,checkEmailExists };
+const deleteUser = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      const existingUser = await Admin.findOneAndDelete({ email });
+      if (!existingUser) {
+          return res.status(400).json({ message: 'User not found' });
+      }
+
+      res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Something went wrong' });
+  }
+};
+
+module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser };
