@@ -1,6 +1,11 @@
 const User = require('../models/USER');
 const jwt = require('jsonwebtoken');
+const Admin = require('../models/ADMIN');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+const otpStore = {}; // In-memory store for OTPs
 
 const register = async (req, res) => {
     const { email, password, name, role } = req.body;
@@ -78,4 +83,104 @@ const changePassword = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
-module.exports = { register, login, changePassword };
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // You can use any email service
+    auth: {
+        user: process.env.EMAIL_USER, // Use email from .env
+        pass: process.env.EMAIL_PASS// Your email password
+    }
+});
+
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000); // Generate a 6 digit OTP
+};
+
+const requestOTP = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const otp = generateOTP();
+        otpStore[email] = { otp, expiresAt: Date.now() + 3600000 }; // Store OTP with expiration time
+
+        const mailOptions = {
+            from: 'process.env.EMAIL_USER',
+            to: email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is ${otp}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ message: 'Error sending email' });
+            }
+            res.status(200).json({ message: 'OTP sent successfully' });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+const verifyOTP = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const otpData = otpStore[email];
+        if (!otpData) {
+            return res.status(400).json({ message: 'OTP not requested or expired' });
+        }
+
+        if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        res.status(200).json({ message: 'OTP verified successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { email, otp, newPassword, confirmPassword } = req.body;
+
+    try {
+        const otpData = otpStore[email];
+        if (!otpData) {
+            return res.status(400).json({ message: 'OTP not requested or expired' });
+        }
+
+        if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        user.password = hashedPassword;
+        await user.save();
+
+        delete otpStore[email]; // Remove OTP after successful reset
+
+        res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword };
