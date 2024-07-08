@@ -50,7 +50,7 @@ const checkEmailExists=async(req,res)=>{
           if (user) {
             res.json({ exists: true });
           } else {
-            res.json({ exists: false });
+            res.status(404).json({ exists: false, error: 'Email not found' });
           }
         } catch (error) {
           res.status(500).json({ error: 'Server error' });
