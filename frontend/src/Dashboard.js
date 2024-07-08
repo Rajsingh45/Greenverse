@@ -77,7 +77,6 @@ const Dashboard = () => {
   return (
     <div><Navbar />
     <div className="dash">
-      <h1 className="title">AQI Dashboard</h1>
       <div className="gallery">
         {renderDeviceCards()}
       </div>

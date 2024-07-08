@@ -22,6 +22,10 @@ const LoginPage = () => {
         }));
     };
 
+    const handleForgot=()=>{
+        navigate("/forgot-password")
+    }
+
     const handleSign=()=>{
         navigate("/signup")
     }
@@ -95,6 +99,7 @@ const LoginPage = () => {
                         </div>
                         <div className="input-group">
                             <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
+                            <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
                         <button type="submit" className="signin-btn">SIGN IN</button>
                         </div>
                     </form>

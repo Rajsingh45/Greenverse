@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './NewUser.css';
+import './EditUser.css';
 
-const NewUserForm = ({ onUserAdded }) => {
+const EditUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [devices, setDevices] = useState('');
@@ -187,4 +187,4 @@ const NewUserForm = ({ onUserAdded }) => {
   );
 };
 
-export default NewUserForm;
+export default EditUserForm;

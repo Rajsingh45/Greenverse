@@ -4,7 +4,10 @@ import SignupPage from './SignupPage';
 import Dashboard from './Dashboard'
 import UserContextProvider from './UserContext';
 import Admin from './components/Admin'
-import NewUser from './components/NewUser'
+import ChangePassword from './ChangePassword';
+import ForgotPassword from './ForgotPassword';
+import VerifyOTP from './VerifyOTP';
+import SetPassword from './SetPassword';
 
 function App() {
   return (
@@ -16,6 +19,10 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/set-password" element={<SetPassword />} />
         </Routes>
         </UserContextProvider>
       </Router>

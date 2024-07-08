@@ -145,13 +145,13 @@
     margin-top: 1rem; 
   }
   
-  .forgot-password {
-    text-align: center;
-    width: 100%;
+  .forgot-pass{
+   text-align: right; 
+   width: 100%;
     margin-top: 1rem;
     margin-bottom: 1rem;
     cursor: pointer;
-    color: #27ae60;
+    color: green;
   }
   
   @media (max-width: 767px) {

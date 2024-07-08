@@ -10,7 +10,7 @@ const Navbar = () => {
   };
 
   const handleChangePassword = () => {
-    window.location.href = '/change-password';
+    window.location.href = './change-password';
   };
 
   return (
