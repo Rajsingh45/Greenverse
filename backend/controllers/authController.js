@@ -106,7 +106,7 @@ const requestOTP = async (req, res) => {
         }
 
         const otp = generateOTP();
-        otpStore[email] = { otp, expiresAt: Date.now() + 3600000 }; // Store OTP with expiration time
+        otpStore[email] = { otp, expiresAt: Date.now() + (10 * 60 * 1000) }; // Store OTP with expiration time
 
         const mailOptions = {
             from: 'process.env.EMAIL_USER',
@@ -134,11 +134,11 @@ const verifyOTP = async (req, res) => {
     try {
         const otpData = otpStore[email];
         if (!otpData) {
-            return res.status(400).json({ message: 'OTP not requested or expired' });
+            return res.status(402).json({ message: 'OTP not requested or expired' });
         }
 
         if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
-            return res.status(400).json({ message: 'Invalid or expired OTP' });
+            return res.status(401).json({ message: 'Invalid or expired OTP' });
         }
 
         res.status(200).json({ message: 'OTP verified successfully' });
@@ -158,11 +158,11 @@ const resetPassword = async (req, res) => {
         }
 
         if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
-            return res.status(400).json({ message: 'Invalid or expired OTP' });
+            return res.status(401).json({ message: 'Invalid or expired OTP' });
         }
 
         if (newPassword !== confirmPassword) {
-            return res.status(400).json({ message: 'Passwords do not match' });
+            return res.status(402).json({ message: 'Passwords do not match' });
         }
 
         const user = await User.findOne({ email });

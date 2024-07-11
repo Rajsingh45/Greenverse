@@ -7,7 +7,7 @@ const ForgotPassword = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleGenerateOTP = () => {
+  const handleGenerateOTP = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email) {
@@ -26,9 +26,25 @@ const ForgotPassword = () => {
       return;
     }
 
-    console.log(`OTP generated for email: ${email}`);
-    navigate('/verify-otp', { state: { email } }); // Pass email in the state object
-    setError('');
+    try {
+      const response = await fetch('http://localhost:5000/auth/requestotp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error requesting OTP');
+      }
+
+      navigate('/verify-otp', { state: { email } });
+      setError('');
+    } catch (error) {
+      console.error('Error requesting OTP:', error);
+      setError('Error requesting OTP. Please try again later.');
+    }
   };
 
   return (

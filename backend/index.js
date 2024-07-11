@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-
 const authRoutes = require('./routes/auth');
 const aqiRoutes = require('./routes/aqi');
 const adminRoutes = require('./routes/admin'); // Add this line

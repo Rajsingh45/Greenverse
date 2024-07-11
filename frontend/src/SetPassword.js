@@ -5,10 +5,14 @@ import './SetPassword.css';
 const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [otp, setOtp] = useState(''); // Add OTP state
   const [passwordError, setPasswordError] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const email = location.state?.email; 
+  const email = location.state?.email;
+  
+  // Extract OTP from location state
+  const otpFromState = location.state?.otp;
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -16,10 +20,12 @@ const SetPassword = () => {
       setNewPassword(value);
     } else if (name === 'confirmPassword') {
       setConfirmPassword(value);
+    } else if (name === 'otp') {
+      setOtp(value);
     }
   };
 
-  const handlePasswordSubmit = () => {
+  const handlePasswordSubmit = async () => {
     if (newPassword !== confirmPassword) {
       setPasswordError('Passwords do not match');
       setTimeout(() => {
@@ -28,8 +34,34 @@ const SetPassword = () => {
       return;
     }
 
-    navigate('/'); 
-};
+    try {
+      const response = await fetch('http://localhost:5000/auth/resetpassword', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          otp: otpFromState || otp, // Use OTP from state if available
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || 'Failed to update password');
+      }
+
+      navigate('/'); // Redirect to login page after successful password update
+    } catch (error) {
+      console.error('Error updating password:', error);
+      setPasswordError('Failed to update password. Please try again.');
+      setTimeout(() => {
+        setPasswordError('');
+      }, 5000);
+    }
+  };
 
   return (
     <div className="set-password-container">
