@@ -58,7 +58,7 @@ const NewUserForm = ({ onUserAdded }) => {
 
     const emailExists = await checkEmailExists(email);
     if (!emailExists) {
-      setEmailError('Email does not exist in the database');
+      setEmailError('Email already exists');
       return;
     }
 
@@ -142,7 +142,7 @@ const NewUserForm = ({ onUserAdded }) => {
             onBlur={async () => {
               const emailExists = await checkEmailExists(email);
               if (!emailExists) {
-                setEmailError('Email does not exist in the database');
+                setEmailError('Email already exists');
               } else {
                 setEmailError('');
               }

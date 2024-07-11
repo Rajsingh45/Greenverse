@@ -8,6 +8,8 @@ import ChangePassword from './ChangePassword';
 import ForgotPassword from './ForgotPassword';
 import VerifyOTP from './VerifyOTP';
 import SetPassword from './SetPassword';
+import SelectUser from './components/SelectUser';
+import EditUser from './components/EditUser'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/set-password" element={<SetPassword />} />
+          <Route path="/select-user" element={<SelectUser />} />
+          <Route path="/edit-user" element={<EditUser />} />
         </Routes>
         </UserContextProvider>
       </Router>

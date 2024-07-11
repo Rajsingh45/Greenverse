@@ -11,7 +11,7 @@ router.post('/adduser', authMiddleware, adminMiddleware, addUser);
 
 router.post('/checkemail',checkEmailExists)
 
-router.put('/:email/updatedevices', updateUserDevices);
+router.put('/updatedevices', updateUserDevices);
 
 router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
 

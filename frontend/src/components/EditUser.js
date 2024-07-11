@@ -1,30 +1,61 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Menu, MenuItem, IconButton } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from 'react-router-dom';
 import './EditUser.css';
 
-const EditUserForm = ({ onUserAdded }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [devices, setDevices] = useState('');
-  const [deviceIPs, setDeviceIPs] = useState([]);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [buttonText, setButtonText] = useState('SAVE');
-  const [emailError, setEmailError] = useState('');
+const EditUserForm = ({ onUserUpdated }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = location.state;
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+  const [devices, setDevices] = useState(user.noofdevices);
+  const [deviceIPs, setDeviceIPs] = useState(user.deviceIPs || []);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedIPIndex, setSelectedIPIndex] = useState(null);
+  const [newIP, setNewIP] = useState(''); 
+  const [isAddingIP, setIsAddingIP] = useState(false);
 
   useEffect(() => {
-    setDeviceIPs(Array(Number(devices)).fill(''));
-  }, [devices]);
+    setDeviceIPs(user.deviceIPs || []);
+  }, [user.deviceIPs]);
 
-  const isEmailValid = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  const handleMenuClick = (event, index) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedIPIndex(index);
   };
 
-  const isFormValid = () => {
-    return name !== '' && isEmailValid(email) && devices !== '' && Number(devices) > 0;
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedIPIndex(null);
   };
 
-  const handleDevicesChange = (e) => {
-    setDevices(e.target.value);
+  const handleDeleteIP = () => {
+    if (selectedIPIndex !== null) {
+      const newDeviceIPs = deviceIPs.filter((_, index) => index !== selectedIPIndex);
+      setDeviceIPs(newDeviceIPs);
+      setDevices(newDeviceIPs.length);
+      handleMenuClose();
+    }
+  };
+
+  const handleAddIP = () => {
+    if (newIP === '') {
+      alert('Please enter a valid IP address');
+      return;
+    }
+  
+    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if (!ipRegex.test(newIP)) {
+      alert('Please enter a valid IP address');
+      return;
+    }
+  
+    setDeviceIPs([...deviceIPs, newIP]);
+    setDevices(devices + 1);
+    setNewIP(''); // Clear the new IP input field after adding
   };
 
   const handleDeviceIPChange = (index, value) => {
@@ -33,56 +64,22 @@ const EditUserForm = ({ onUserAdded }) => {
     setDeviceIPs(newDeviceIPs);
   };
 
-  const checkEmailExists = async (email) => {
-    try {
-      const response = await fetch('http://localhost:5000/admin/checkemail', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-      return data.exists;
-    } catch (error) {
-      console.error('Error checking email:', error);
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!isFormValid()) {
-      return;
-    }
-
-    const emailExists = await checkEmailExists(email);
-    if (!emailExists) {
-      setEmailError('Email does not exist in the database');
-      return;
-    }
-
-    setEmailError('');
-    setIsFormSubmitted(true);
-    setButtonText('SAVED');
-  };
-
   const handleIPSubmission = async () => {
     const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  
+
     if (deviceIPs.includes('') || deviceIPs.some(ip => !ipRegex.test(ip))) {
       alert('Please fill in all device IPs with valid IP addresses');
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage');
       }
-  
-      const response = await fetch('http://localhost:5000/admin/adduser', {
-        method: 'POST',
+
+      const response = await fetch(`http://localhost:5000/admin/updatedevices`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -94,94 +91,79 @@ const EditUserForm = ({ onUserAdded }) => {
           deviceIPs
         })
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
       const data = await response.json();
-      console.log('User added successfully:', data);
-  
-      onUserAdded({
-        id: Date.now(),
+      console.log('User updated successfully:', data);
+
+      onUserUpdated({
+        id: user._id,
         name,
         noofdevices: Number(devices),
         deviceIPs
       });
+      
+      navigate('/admin')
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  
 
   return (
-    <div className="container">
-      <div className="left-screen">
-        <h1 className='new-user'>NEW USER</h1>
+    <div className="container-main">
+      <div className="header-main">
+        <h1 className='new-user-edit'>EDIT IP Addresses</h1>
       </div>
-      <div className="right-screen">
-        <form className='input-form' onSubmit={handleSubmit}>
-          <label htmlFor="name" className='box'>Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            className='textbox'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-
-          <label htmlFor="email" className='box'>Email:</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className='textbox'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={async () => {
-              const emailExists = await checkEmailExists(email);
-              if (!emailExists) {
-                setEmailError('Email does not exist in the database');
-              } else {
-                setEmailError('');
-              }
-            }}
-          />
-          {emailError && <div className="error-message">{emailError}</div>}
-
-          <label htmlFor="device" className='box'>No. of Devices:</label>
-          <input
-            type="number"
-            id="device"
-            name="device"
-            className='textbox'
-            value={devices}
-            onChange={handleDevicesChange}
-          />
-
-          <button type="submit" className='save-btn' disabled={!isFormValid()}>{buttonText}</button>
-        </form>
-
-        {isFormSubmitted && (
-          <div className="device-ip-form">
-            <h2>Enter IP Address:</h2>
-            {Array.from({ length: Number(devices) }).map((_, index) => (
-              <div key={index}>
-                <label htmlFor={`device${index + 1}`} className='boxs'>{`Device${index + 1}:`} </label>
-                <input
-                  type="text"
-                  id={`device${index + 1}`}
-                  name={`device${index + 1}`}
-                  className='textboxs'
-                  value={deviceIPs[index] || ''}
-                  onChange={(e) => handleDeviceIPChange(index, e.target.value)}
-                />
-              </div>
-            ))}
+      <div className="content">
+        <div className="right-screen-exist">
+          <h2>Current IP Addresses:</h2>
+          <table className="ip-table">
+            <thead>
+              <tr>
+                <th>Serial No.</th>
+                <th>Current IP Addresses</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {deviceIPs.map((ip, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{ip}</td>
+                  <td>
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      onClick={(e) => handleMenuClick(e, index)}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      id="long-menu"
+                      anchorEl={anchorEl}
+                      keepMounted
+                      open={Boolean(anchorEl) && selectedIPIndex === index}
+                      onClose={handleMenuClose}
+                    >
+                      <MenuItem onClick={handleDeleteIP}>
+                        Delete
+                      </MenuItem>
+                    </Menu>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="button-container">
+            
+            <button onClick={handleAddIP} className="add-ip-btn">Add IP Address</button>
             <button onClick={handleIPSubmission} className='save-btn'>Submit IPs</button>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
