@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useNavigate } from 'react-router-dom';
 import './EditUser.css';
 
 const EditUserForm = ({ onUserUpdated }) => {
@@ -15,7 +14,7 @@ const EditUserForm = ({ onUserUpdated }) => {
   const [deviceIPs, setDeviceIPs] = useState(user.deviceIPs || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIPIndex, setSelectedIPIndex] = useState(null);
-  const [newIP, setNewIP] = useState(''); 
+  const [newIP, setNewIP] = useState('');
   const [isAddingIP, setIsAddingIP] = useState(false);
 
   useEffect(() => {
@@ -41,27 +40,26 @@ const EditUserForm = ({ onUserUpdated }) => {
     }
   };
 
+  const handleAddIPClick = () => {
+    setIsAddingIP(true);
+  };
+
   const handleAddIP = () => {
     if (newIP === '') {
       alert('Please enter a valid IP address');
       return;
     }
-  
+
     const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     if (!ipRegex.test(newIP)) {
       alert('Please enter a valid IP address');
       return;
     }
-  
+
     setDeviceIPs([...deviceIPs, newIP]);
     setDevices(devices + 1);
-    setNewIP(''); // Clear the new IP input field after adding
-  };
-
-  const handleDeviceIPChange = (index, value) => {
-    const newDeviceIPs = [...deviceIPs];
-    newDeviceIPs[index] = value;
-    setDeviceIPs(newDeviceIPs);
+    setNewIP('');
+    setIsAddingIP(false);
   };
 
   const handleIPSubmission = async () => {
@@ -105,8 +103,8 @@ const EditUserForm = ({ onUserUpdated }) => {
         noofdevices: Number(devices),
         deviceIPs
       });
-      
-      navigate('/admin')
+
+      navigate('/admin');
     } catch (error) {
       console.error('Error:', error);
     }
@@ -123,7 +121,7 @@ const EditUserForm = ({ onUserUpdated }) => {
           <table className="ip-table">
             <thead>
               <tr>
-                <th>Serial No.</th>
+                <th>No.</th>
                 <th>Current IP Addresses</th>
                 <th>Actions</th>
               </tr>
@@ -159,14 +157,32 @@ const EditUserForm = ({ onUserUpdated }) => {
             </tbody>
           </table>
           <div className="button-container">
-            
-            <button onClick={handleAddIP} className="add-ip-btn">Add IP Address</button>
+            <div className="add-ip-container">
+              {isAddingIP ? (
+                <>
+                  <input
+                    type="text"
+                    value={newIP}
+                    onChange={(e) => setNewIP(e.target.value)}
+                    placeholder="Enter new IP address"
+                    className="textboxs"
+                  />
+                  <button onClick={handleAddIP} className="add-ip-btn">Save IP Address</button>
+                </>
+              ) : (
+                <button onClick={handleAddIPClick} className="add-ip-btn">Add IP Address</button>
+              )}
+            </div>
             <button onClick={handleIPSubmission} className='save-btn'>Submit IPs</button>
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+EditUserForm.defaultProps = {
+  onUserUpdated: () => {},
 };
 
 export default EditUserForm;

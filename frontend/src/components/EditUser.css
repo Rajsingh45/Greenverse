@@ -62,3 +62,10 @@
 .add-ip-btn:hover, .save-btn:hover {
   background-color: #0056b3;
 }
+
+.textboxs {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}

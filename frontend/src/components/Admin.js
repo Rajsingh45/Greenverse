@@ -135,6 +135,7 @@ const Admin = () => {
                         open={Boolean(anchorEl) && menuUser?._id === user._id}
                         onClose={handleMenuClose}
                       >
+                        <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
                         <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
                         <MenuItem onClick={() => handleDeleteUser(user._id)}>Delete</MenuItem>
                       </Menu>
