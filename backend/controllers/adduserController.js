@@ -56,39 +56,42 @@ const checkEmailExists = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 const updateUserDevices = async (req, res) => {
-    const { name,noofdevices, deviceIPs,email } = req.body;
+    const { name, noofdevices, deviceIPs, email } = req.body;
+  
+    try {
+      const existingUser = await Admin.findOne({ email });
+      if (!existingUser) {
+        return res.status(400).json({ message: 'User not found' });
+      }
+  
+      // Directly update the device IPs and the number of devices
+      existingUser.deviceIPs = deviceIPs;
+      existingUser.noofdevices = noofdevices;
+      existingUser.name = name;
+  
+      await existingUser.save();
+  
+      res.json({ message: 'Number of devices updated successfully', user: existingUser });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Something went wrong' });
+}
+};
+
+const renameUser = async (req, res) => {
+    const { email ,newName} = req.body;
 
     try {
         const existingUser = await Admin.findOne({ email });
         if (!existingUser) {
-             return res.status(400).json({ message: 'User not found' });
-         }
-
-        const currentDevices = existingUser.noofdevices;
-        const diff = noofdevices - currentDevices;
-
-        if (diff > 0) {
-            // Adding devices
-            if (deviceIPs.length !== diff) {
-                return res.status(400).json({ message: `You need to provide ${diff} new IP addresses` });
-            }
-            existingUser.deviceIPs = existingUser.deviceIPs.concat(deviceIPs);
-        } else if (diff < 0) {
-            // Removing devices
-            const absDiff = Math.abs(diff);
-            if (deviceIPs.length !== absDiff) {
-                return res.status(400).json({ message: `You need to provide ${absDiff} IP addresses to remove` });
-            }
-            existingUser.deviceIPs = existingUser.deviceIPs.filter(ip => !deviceIPs.includes(ip));
+            return res.status(400).json({ message: 'User not found' });
         }
 
-        existingUser.noofdevices = noofdevices;
-        existingUser.name=name;
+        existingUser.name = newName;
         await existingUser.save();
 
-        res.json({ message: 'Number of devices updated successfully', user: existingUser });
+        res.json({ message: 'User renamed successfully', user: existingUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -111,4 +114,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser };
+module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser , renameUser};
