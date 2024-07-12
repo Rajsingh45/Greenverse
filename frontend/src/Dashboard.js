@@ -12,10 +12,21 @@ import Navbar from './Navbar';
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const [deviceCount, setDeviceCount] = useState(0);
   const imagesPerPage = 6;
   const images = [device1, device2, device3, device4, device5, device6];
+
+  const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
+
+  // Function to handle profile picture change
+  const handleProfilePicChange = (file) => {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
+      setProfilePic(URL.createObjectURL(file));
+    } else {
+      alert('Please select a JPG or PNG image smaller than 1MB.');
+    }
+  };
 
   useEffect(() => {
     const fetchDeviceCount = async () => {
@@ -29,7 +40,7 @@ const Dashboard = () => {
         const { noofdevices } = response.data;
         setDeviceCount(noofdevices);
         const totalPages = Math.ceil(noofdevices / imagesPerPage);
-        setTotalPages(totalPages); 
+        setTotalPages(totalPages);
       } catch (error) {
         console.error('Error fetching device count:', error);
       }
@@ -59,7 +70,7 @@ const Dashboard = () => {
     const endIndex = startIndex + imagesPerPage;
     const cards = [];
     for (let i = startIndex; i < endIndex && i < deviceCount; i++) {
-      const image = images[i % images.length]; 
+      const image = images[i % images.length];
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
@@ -75,8 +86,8 @@ const Dashboard = () => {
   };
 
   return (
-    <div><Navbar />
-    <div className="dash">
+    <div className="dashboard">
+      <Navbar profilePic={profilePic} /> {/* Pass profilePic as a prop to Navbar */}
       <div className="gallery">
         {renderDeviceCards()}
       </div>
@@ -99,7 +110,6 @@ const Dashboard = () => {
           <FaArrowRight />
         </button>
       </div>
-    </div>
     </div>
   );
 };

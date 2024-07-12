@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
-import { Menu, MenuItem, IconButton } from '@mui/material';
+import { Menu, MenuItem, IconButton, TextField } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,6 +13,8 @@ const Admin = () => {
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuUser, setMenuUser] = useState(null);
+  const [renamingUser, setRenamingUser] = useState(null);
+  const [newName, setNewName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,10 +26,19 @@ const Admin = () => {
             'Authorization': `Bearer ${token}`
           }
         });
+
         const data = await response.json();
-        setUsers(data);
+        console.log('Fetched users:', data);
+        
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          console.error('Fetched data is not an array:', data);
+          setUsers([]);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
+        setUsers([]); // Fallback to an empty array on error
       }
     };
 
@@ -49,13 +60,35 @@ const Admin = () => {
     setAnchorEl(null);
   };
 
-  const handleUserUpdated = (updatedUser) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user._id === updatedUser.id ? updatedUser : user
-      )
-    );
-    setShowEditUserForm(false);
+  const handleRenameUser = (user) => {
+    console.log('Renaming user:', user);
+    setRenamingUser(user._id);
+    setNewName(user.name);
+    setAnchorEl(null);
+  };
+  
+  const handleRenameChange = (event) => {
+    console.log('New name:', event.target.value);
+    setNewName(event.target.value);
+  };
+  
+  const handleRenameBlur = () => {
+    if (renamingUser) {
+      console.log('Renaming blur:', renamingUser, newName);
+      const updatedUsers = users.map((user) =>
+        user._id === renamingUser ? { ...user, name: newName } : user
+      );
+      setUsers(updatedUsers);
+      setRenamingUser(null);
+      setNewName('');
+    }
+  };
+  
+  const handleRenameKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      console.log('Enter key pressed');
+      handleRenameBlur();
+    }
   };
 
   const handleDeleteUser = async (userId) => {
@@ -98,6 +131,15 @@ const Admin = () => {
     setMenuUser(null);
   };
 
+  const handleUserUpdated = (updatedUser) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user._id === updatedUser.id ? updatedUser : user
+      )
+    );
+    setShowEditUserForm(false);
+  };
+
   return (
     <div className="container">
       {showNewUserForm ? (
@@ -116,32 +158,44 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user._id}>
-                    <td>{user.name}</td>
-                    <td>{user.noofdevices}</td>
-                    <td>
-                      <IconButton
-                        aria-controls="simple-menu"
-                        aria-haspopup="true"
-                        onClick={(event) => handleMenuOpen(event, user)}
-                      >
-                        <MoreVert />
-                      </IconButton>
-                      <Menu
-                        id="simple-menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl) && menuUser?._id === user._id}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
-                        <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
-                        <MenuItem onClick={() => handleDeleteUser(user._id)}>Delete</MenuItem>
-                      </Menu>
-                    </td>
-                  </tr>
-                ))}
+              {users.map((user) => (
+  <tr key={user._id}>
+    <td>
+      {renamingUser === user._id ? (
+        <TextField
+          value={newName}
+          onChange={handleRenameChange}
+          onBlur={handleRenameBlur}
+          onKeyDown={handleRenameKeyDown}
+          autoFocus
+        />
+      ) : (
+        user.name
+      )}
+    </td>
+    <td>{user.noofdevices}</td>
+    <td>
+      <IconButton
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={(event) => handleMenuOpen(event, user)}
+      >
+        <MoreVert />
+      </IconButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl) && menuUser?._id === user._id}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
+        <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
+        <MenuItem onClick={() => handleDeleteUser(user._id)}>Delete</MenuItem>
+      </Menu>
+    </td>
+  </tr>
+))}
               </tbody>
             </table>
             <button className="add-user-btn" onClick={handleNewUser}>Add New User</button>
