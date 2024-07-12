@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
-import { Menu, MenuItem, IconButton } from '@mui/material';
+import { Menu, MenuItem, IconButton, TextField } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,6 +12,8 @@ const Admin = () => {
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [renamingUser, setRenamingUser] = useState(null);
+  const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
   const navigate = useNavigate();
 
@@ -25,9 +27,17 @@ const Admin = () => {
           }
         });
         const data = await response.json();
-        setUsers(data);
+        console.log('Fetched users:', data);
+
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          console.error('Fetched data is not an array:', data);
+          setUsers([]);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
+        setUsers([]);
       }
     };
 
@@ -41,12 +51,43 @@ const Admin = () => {
 
   const handleUserAdded = (newUser) => {
     setUsers((prevUsers) => [...prevUsers, newUser]);
-    setShowNewUserForm(false); 
+    setShowNewUserForm(false);
   };
 
   const handleEditUser = (user) => {
     navigate('/edit-user', { state: { user } });
     setAnchorEl(null);
+  };
+
+  const handleRenameUser = (user) => {
+    console.log('Renaming user:', user);
+    setRenamingUser(user._id);
+    setNewName(user.name);
+    setAnchorEl(null);
+  };
+
+  const handleRenameChange = (event) => {
+    console.log('New name:', event.target.value);
+    setNewName(event.target.value);
+  };
+
+  const handleRenameBlur = () => {
+    if (renamingUser) {
+      console.log('Renaming blur:', renamingUser, newName);
+      const updatedUsers = users.map((user) =>
+        user._id === renamingUser ? { ...user, name: newName } : user
+      );
+      setUsers(updatedUsers);
+      setRenamingUser(null);
+      setNewName('');
+    }
+  };
+
+  const handleRenameKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      console.log('Enter key pressed');
+      handleRenameBlur();
+    }
   };
 
   const handleUserUpdated = (updatedUser) => {
@@ -69,16 +110,16 @@ const Admin = () => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ id: userId }) 
+          body: JSON.stringify({ id: userId })
         });
-        
+
         if (!response.ok) {
           throw new Error('Failed to delete user');
         }
-  
+
         const data = await response.json();
         console.log(data.message); // User deleted successfully
-  
+
         setUsers((prevUsers) => prevUsers.filter(user => user._id !== userId));
         setAnchorEl(null);
       } catch (error) {
@@ -87,7 +128,7 @@ const Admin = () => {
       }
     }
   };
-  
+
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
     setMenuUser(user);
@@ -118,7 +159,19 @@ const Admin = () => {
               <tbody>
                 {users.map((user) => (
                   <tr key={user._id}>
-                    <td>{user.name}</td>
+                    <td>
+                      {renamingUser === user._id ? (
+                        <TextField
+                          value={newName}
+                          onChange={handleRenameChange}
+                          onBlur={handleRenameBlur}
+                          onKeyDown={handleRenameKeyDown}
+                          autoFocus
+                        />
+                      ) : (
+                        user.name
+                      )}
+                    </td>
                     <td>{user.noofdevices}</td>
                     <td>
                       <IconButton

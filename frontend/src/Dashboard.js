@@ -17,6 +17,17 @@ const Dashboard = () => {
   const imagesPerPage = 6;
   const images = [device1, device2, device3, device4, device5, device6];
 
+  const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
+
+  // Function to handle profile picture change
+  const handleProfilePicChange = (file) => {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
+      setProfilePic(URL.createObjectURL(file));
+    } else {
+      alert('Please select a JPG or PNG image smaller than 1MB.');
+    }
+  };
+
   useEffect(() => {
     const fetchDeviceCount = async () => {
       try {
@@ -75,8 +86,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div><Navbar />
-    <div className="dash">
+    <div className="dashboard">
+      <Navbar profilePic={profilePic} /> {/* Pass profilePic as a prop to Navbar */}
+      <div className="dash">
       <div className="gallery">
         {renderDeviceCards()}
       </div>
