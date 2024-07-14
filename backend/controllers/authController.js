@@ -221,6 +221,27 @@ const uploadProfilePicture = async (req, res) => {
     }
   };
 
+
+const getProfilePicture = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    if (!user || !user.profilePicture) {
+      return res.status(404).json({ message: 'Profile picture not found' });
+    }
+
+    const filePath = path.join(__dirname, '..', user.profilePicture);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'Profile picture not found' });
+    }
+
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error fetching profile picture:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
   const renameUser = async (req, res) => {
     const { email, newName } = req.body;
 
@@ -248,4 +269,4 @@ const uploadProfilePicture = async (req, res) => {
     }
 };
 
-module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser };
+module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};

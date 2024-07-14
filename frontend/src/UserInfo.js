@@ -23,9 +23,17 @@ const UserProfile = () => {
         const data = await response.json();
         if (data && data.email && data.name) {
           setUser(data);
-          const storedProfilePic = localStorage.getItem('profilePic');
-          if (storedProfilePic) {
-            setProfilePic(storedProfilePic);
+
+          const profilePicResponse = await fetch('http://localhost:5000/auth/profile-picture', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+
+          if (profilePicResponse.ok) {
+            const profilePicBlob = await profilePicResponse.blob();
+            const profilePicURL = URL.createObjectURL(profilePicBlob);
+            setProfilePic(profilePicURL);
           }
         } else {
           console.error('Invalid user data:', data);
@@ -66,7 +74,6 @@ const UserProfile = () => {
       if (data.message === 'Profile picture uploaded successfully') {
         alert('Profile picture updated successfully.');
         const imageURL = URL.createObjectURL(profilePicFile);
-        localStorage.setItem('profilePic', imageURL);
         setProfilePic(imageURL);
         setProfilePicFile(null);
       } else {
