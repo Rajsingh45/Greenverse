@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const UserProfile = () => {
   const [user, setUser] = useState({});
   const [profilePic, setProfilePic] = useState(null);
+  const [profilePicFile, setProfilePicFile] = useState(null);
+  const [isEditingName, setIsEditingName] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +23,10 @@ const UserProfile = () => {
         const data = await response.json();
         if (data && data.email && data.name) {
           setUser(data);
+          const storedProfilePic = localStorage.getItem('profilePic');
+          if (storedProfilePic) {
+            setProfilePic(storedProfilePic);
+          }
         } else {
           console.error('Invalid user data:', data);
         }
@@ -32,16 +38,79 @@ const UserProfile = () => {
     fetchUser();
   }, []);
 
-  const handleSubmit = () => {
-    navigate('/dashboard');
-  };
-
   const handleProfilePicChange = (event) => {
     const file = event.target.files[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
       setProfilePic(URL.createObjectURL(file));
+      setProfilePicFile(file);
     } else {
       alert('Please select a JPG or PNG image smaller than 1MB.');
+    }
+  };
+
+  const handleSubmitProfilePic = async () => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('profilePicture', profilePicFile);
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.message === 'Profile picture uploaded successfully') {
+        alert('Profile picture updated successfully.');
+        const imageURL = URL.createObjectURL(profilePicFile);
+        localStorage.setItem('profilePic', imageURL);
+        setProfilePic(imageURL);
+        setProfilePicFile(null);
+      } else {
+        console.error('Error uploading profile picture:', data);
+        alert('Failed to upload profile picture.');
+      }
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      alert('An error occurred while uploading the profile picture.');
+    }
+  };
+
+  const handleEditNameClick = () => {
+    setIsEditingName(true);
+  };
+
+  const handleNameChange = (event) => {
+    setUser({ ...user, name: event.target.value });
+  };
+
+  const handleSubmitName = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/rename', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: user.email, newName: user.name })
+      });
+
+      const data = await response.json();
+      if (data.message === 'Name updated successfully in both collections') {
+        alert('Name updated successfully.');
+        setIsEditingName(false);
+      } else {
+        console.error('Error updating name:', data);
+        alert('Failed to update name.');
+      }
+    } catch (error) {
+      console.error('Error updating name:', error);
+      alert('An error occurred while updating the name.');
     }
   };
 
@@ -66,23 +135,43 @@ const UserProfile = () => {
         <TextField
           label="Name"
           value={user.name || ''}
-          InputProps={{ readOnly: true }}
+          onChange={handleNameChange}
+          InputProps={{ readOnly: !isEditingName }}
           variant="outlined"
           fullWidth
         />
       </div>
-      <div className="profile-field">
-        {profilePic ? (
+      <div className="buttons-container">
+        {isEditingName ? (
           <Button
             variant="contained"
-            onClick={handleSubmit}
+            onClick={handleSubmitName}
+            className="profile-button"
           >
-            Submit
+            Submit Name
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            onClick={handleEditNameClick}
+            className="profile-button"
+          >
+            Edit Name
+          </Button>
+        )}
+        {profilePicFile ? (
+          <Button
+            variant="contained"
+            onClick={handleSubmitProfilePic}
+            className="profile-button"
+          >
+            Submit Profile Picture
           </Button>
         ) : (
           <Button
             variant="contained"
             component="label"
+            className="profile-button"
           >
             Upload Profile Picture
             <input
@@ -94,11 +183,6 @@ const UserProfile = () => {
           </Button>
         )}
       </div>
-      {/* {profilePic && (
-        <div className="profile-pic-container">
-          <img src={profilePic} alt="Profile" className="profile-pic" />
-        </div>
-      )} */}
     </div>
   );
 };

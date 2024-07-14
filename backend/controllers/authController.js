@@ -221,4 +221,31 @@ const uploadProfilePicture = async (req, res) => {
     }
   };
 
-module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture };
+  const renameUser = async (req, res) => {
+    const { email, newName } = req.body;
+
+    try {
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return res.status(400).json({ message: 'User not found in users collection' });
+        }
+
+        const existingAdmin = await Admin.findOne({ email });
+        if (!existingAdmin) {
+            return res.status(400).json({ message: 'User not found in admins collection' });
+        }
+
+        existingUser.name = newName;
+        existingAdmin.name = newName;
+
+        await existingUser.save();
+        await existingAdmin.save();
+
+        res.json({ message: 'Name updated successfully in both collections', user: existingUser, admin: existingAdmin });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser };

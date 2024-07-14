@@ -2,17 +2,16 @@ import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
-import { Menu, MenuItem, IconButton, TextField } from '@mui/material';
+import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [renamingUser, setRenamingUser] = useState(null);
+  const [renamingUserEmail, setRenamingUserEmail] = useState(null);
   const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
   const navigate = useNavigate();
@@ -61,32 +60,47 @@ const Admin = () => {
 
   const handleRenameUser = (user) => {
     console.log('Renaming user:', user);
-    setRenamingUser(user._id);
+    setRenamingUserEmail(user.email);
     setNewName(user.name);
     setAnchorEl(null);
   };
 
   const handleRenameChange = (event) => {
-    console.log('New name:', event.target.value);
     setNewName(event.target.value);
   };
 
-  const handleRenameBlur = () => {
-    if (renamingUser) {
-      console.log('Renaming blur:', renamingUser, newName);
-      const updatedUsers = users.map((user) =>
-        user._id === renamingUser ? { ...user, name: newName } : user
-      );
-      setUsers(updatedUsers);
-      setRenamingUser(null);
-      setNewName('');
-    }
-  };
+  const handleRenameSubmit = async () => {
+    if (renamingUserEmail) {
+      console.log('Renaming user:', renamingUserEmail, newName);
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch('http://localhost:5000/auth/rename', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: renamingUserEmail, newName })
+        });
 
-  const handleRenameKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      console.log('Enter key pressed');
-      handleRenameBlur();
+        const data = await response.json();
+        if (data.message === 'Name updated successfully in both collections') {
+          const updatedUsers = users.map((user) =>
+            user.email === renamingUserEmail ? { ...user, name: newName } : user
+          );
+          setUsers(updatedUsers);
+          alert('Name updated successfully.');
+        } else {
+          console.error('Error updating name:', data);
+          alert('Failed to update name.');
+        }
+      } catch (error) {
+        console.error('Error updating name:', error);
+        alert('An error occurred while updating the name.');
+      }
+
+      setRenamingUserEmail(null);
+      setNewName('');
     }
   };
 
@@ -144,7 +158,7 @@ const Admin = () => {
       {showNewUserForm ? (
         <NewUserForm onUserAdded={handleUserAdded} />
       ) : showEditUserForm ? (
-        <EditUserForm user={selectedUser} onUserUpdated={handleUserUpdated} />
+        <EditUserForm onUserUpdated={handleUserUpdated} />
       ) : (
         <>
           <div className="left">
@@ -158,16 +172,24 @@ const Admin = () => {
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user._id}>
+                  <tr key={user.email}>
                     <td>
-                      {renamingUser === user._id ? (
-                        <TextField
-                          value={newName}
-                          onChange={handleRenameChange}
-                          onBlur={handleRenameBlur}
-                          onKeyDown={handleRenameKeyDown}
-                          autoFocus
-                        />
+                      {renamingUserEmail === user.email ? (
+                        <>
+                          <TextField
+                            value={newName}
+                            onChange={handleRenameChange}
+                            autoFocus
+                          />
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleRenameSubmit}
+                            className='save-button'
+                          >
+                            Save
+                          </Button>
+                        </>
                       ) : (
                         user.name
                       )}
@@ -185,7 +207,7 @@ const Admin = () => {
                         id="simple-menu"
                         anchorEl={anchorEl}
                         keepMounted
-                        open={Boolean(anchorEl) && menuUser?._id === user._id}
+                        open={Boolean(anchorEl) && menuUser?.email === user.email}
                         onClose={handleMenuClose}
                       >
                         <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>

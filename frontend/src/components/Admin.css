@@ -65,6 +65,12 @@
   text-align: center;
 }
 
+.save-button{
+  margin-left: 20px !important;
+  margin-top: 10px !important;
+  background-color: green !important;
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: row;
