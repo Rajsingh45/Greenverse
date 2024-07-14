@@ -194,4 +194,31 @@ const getAllUsers = async (req, res) => {
     }
   };
 
-module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers };
+  const fs = require('fs');
+const path = require('path');
+const uploadProfilePicture = async (req, res) => {
+    try {
+      const user = await User.findOne({email : req.user.email});
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      if (user.profilePicture) {
+        const oldFilePath = path.join(__dirname, '..', user.profilePicture);
+        fs.unlink(oldFilePath, (err) => {
+            if (err) {
+                console.error('Error deleting old profile picture:', err);
+            }
+        });
+    }
+  
+      user.profilePicture = req.file.path;
+      await user.save();
+  
+      res.json({ message: 'Profile picture uploaded successfully', user });
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
+module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture };
