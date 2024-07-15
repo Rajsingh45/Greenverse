@@ -84,6 +84,20 @@ const changePassword = async (req, res) => {
     }
 };
 
+const checkEmailExists = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+            res.json({ exists: true });
+        } else {
+            res.status(404).json({ exists: false, error: 'Email Not exists' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 const transporter = nodemailer.createTransport({
     service: 'gmail', // You can use any email service
     auth: {
@@ -269,4 +283,4 @@ const getProfilePicture = async (req, res) => {
     }
 };
 
-module.exports = { register, login, changePassword, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+module.exports = { register, login, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};

@@ -43,10 +43,10 @@ const getDevicesNumber = async (req, res) => {
     }
 };
 
-const checkEmailExists = async (req, res) => {
+const checkAdminEmailExists = async (req, res) => {
     const { email } = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await Admin.findOne({ email });
         if (!user) {
             res.json({ exists: true });
         } else {
@@ -114,4 +114,4 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser , renameUser};
+module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser , renameUser};
