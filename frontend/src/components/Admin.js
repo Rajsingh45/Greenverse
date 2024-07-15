@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Admin.css';
+import Navbar from '../Navbar.js'
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
 import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
@@ -154,6 +155,8 @@ const Admin = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="container">
       {showNewUserForm ? (
         <NewUserForm onUserAdded={handleUserAdded} />
@@ -227,6 +230,7 @@ const Admin = () => {
         </>
       )}
     </div>
+    </>
   );
 };
 

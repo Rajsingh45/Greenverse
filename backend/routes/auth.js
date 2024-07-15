@@ -9,12 +9,16 @@ router.post('/login', login);
 
 router.put('/changepassword', authMiddleware, changePassword);
 router.post('/checkemail',checkEmailExists)
+
 router.post('/requestotp', requestOTP); // Add this line
 router.post('/verifyotp', verifyOTP); // Add this line
 router.post('/resetpassword', resetPassword); // Add this line
+
 router.get('/users', authMiddleware, getAllUsers)
+
 router.post('/upload', authMiddleware, upload.single('profilePicture'), uploadProfilePicture);
 router.put('/rename', authMiddleware, renameUser); 
 router.get('/profile-picture', authMiddleware, getProfilePicture);
+
 
 module.exports = router;

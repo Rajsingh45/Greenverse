@@ -50,7 +50,7 @@ const checkAdminEmailExists = async (req, res) => {
         if (!user) {
             res.json({ exists: true });
         } else {
-            res.status(404).json({ exists: false, error: 'Email already exists' });
+            res.status(404).json({ exists: false, error: 'Email Not exists' });
         }
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
@@ -114,4 +114,22 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser , renameUser};
+const searchUserByName = async (req, res) => {
+    const { name } = req.query;
+
+    try {
+        const users = await Admin.find({ name: new RegExp(name, 'i') });
+        
+        if (!users || users.length === 0) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error searching for user by name:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser, renameUser, searchUserByName };
+

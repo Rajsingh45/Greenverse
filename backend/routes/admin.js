@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const User = require('../models/USER');
-const { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser , renameUser} = require('../controllers/adduserController');
+const { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists,  searchUserByName ,deleteUser , renameUser} = require('../controllers/adduserController');
 const Admin=require('../models/ADMIN');
 
 router.get('/devices', authMiddleware,getDevicesNumber)
@@ -18,5 +18,7 @@ router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
 router.put('/rename', authMiddleware, adminMiddleware, renameUser); // Add this line
 
 router.delete('/deleteuser', authMiddleware, adminMiddleware, deleteUser); // Add this line
+
+router.get('/search-user', authMiddleware, searchUserByName); // Add this line
 
 module.exports = router;
