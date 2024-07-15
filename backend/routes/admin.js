@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
 const User = require('../models/USER');
-const { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkEmailExists, deleteUser , renameUser} = require('../controllers/adduserController');
+const { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser , renameUser} = require('../controllers/adduserController');
 const Admin=require('../models/ADMIN');
 
 router.get('/devices', authMiddleware,getDevicesNumber)
 
 router.post('/adduser', authMiddleware, adminMiddleware, addUser);
 
-router.post('/checkemail',checkEmailExists)
+router.post('/checkemail',checkAdminEmailExists)
 
 router.put('/updatedevices', updateUserDevices);
 

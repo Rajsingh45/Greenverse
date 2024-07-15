@@ -30,7 +30,7 @@ const ChangePasswordPage = () => {
             return;
         }
 
-        fetch("http://localhost:5000/admin/checkemail", {
+        fetch("http://localhost:5000/auth/checkemail", {
             method: "POST",
             body: JSON.stringify({ email: passwordDetails.email }),
             headers: {
@@ -49,7 +49,7 @@ const ChangePasswordPage = () => {
         })
         .then(() => {
             const token = localStorage.getItem('token');
-            fetch("http://localhost:5000/auth/change-password", {
+            fetch("http://localhost:5000/auth/changepassword", {
                 method: "PUT",
                 body: JSON.stringify({
                     email: passwordDetails.email,
