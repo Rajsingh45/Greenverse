@@ -8,6 +8,7 @@ const UserProfile = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -121,12 +122,23 @@ const UserProfile = () => {
     }
   };
 
+  const openModal = (e) => {
+    e.stopPropagation();
+    setModalVisible(true);
+  };
+
+  const closeModal = (e) => {
+    e.stopPropagation();
+    setModalVisible(false);
+  };
+
   return (
     <div className="profile-container">
       <Avatar
         src={profilePic}
         alt="Profile"
         className="profile-avatar"
+        onClick={openModal}
       />
       <Typography variant="h4" className="title-profile">User Profile</Typography>
       <div className="profile-field">
@@ -190,6 +202,14 @@ const UserProfile = () => {
           </Button>
         )}
       </div>
+      {modalVisible && (
+        <div className="modal" onClick={closeModal}>
+          <span className="close" onClick={closeModal}>&times;</span>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <img src={profilePic} alt="Enlarged Profile" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
