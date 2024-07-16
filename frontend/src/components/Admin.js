@@ -1,48 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Admin.css';
-import Navbar from '../Navbar.js'
-import NewUserForm from './NewUser';
-import EditUserForm from './EditUser';
 import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
-import { useNavigate } from 'react-router-dom';
+import NewUserForm from './NewUser';
+import EditUserForm from './EditUser';
 
-const Admin = () => {
-  const [users, setUsers] = useState([]);
+const Admin = ({ users, setUsers }) => {
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [renamingUserEmail, setRenamingUserEmail] = useState(null);
   const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        console.log('Fetched users:', data);
-
-        if (Array.isArray(data)) {
-          setUsers(data);
-        } else {
-          console.error('Fetched data is not an array:', data);
-          setUsers([]);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        setUsers([]);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const [userToEdit, setUserToEdit] = useState(null); 
 
   const handleNewUser = () => {
     setShowNewUserForm(true);
@@ -54,13 +24,21 @@ const Admin = () => {
     setShowNewUserForm(false);
   };
 
+  const handleUserUpdated = (updatedUser) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => (user._id === updatedUser._id ? updatedUser : user))
+    );
+    setShowEditUserForm(false);
+  };
+
   const handleEditUser = (user) => {
-    navigate('/edit-user', { state: { user } });
+    setUserToEdit(user);
+    setShowEditUserForm(true);
+    setShowNewUserForm(false);
     setAnchorEl(null);
   };
 
   const handleRenameUser = (user) => {
-    console.log('Renaming user:', user);
     setRenamingUserEmail(user.email);
     setNewName(user.name);
     setAnchorEl(null);
@@ -72,7 +50,6 @@ const Admin = () => {
 
   const handleRenameSubmit = async () => {
     if (renamingUserEmail) {
-      console.log('Renaming user:', renamingUserEmail, newName);
       const token = localStorage.getItem('token');
       try {
         const response = await fetch('http://localhost:5000/auth/rename', {
@@ -92,26 +69,15 @@ const Admin = () => {
           setUsers(updatedUsers);
           alert('Name updated successfully.');
         } else {
-          console.error('Error updating name:', data);
           alert('Failed to update name.');
         }
       } catch (error) {
-        console.error('Error updating name:', error);
         alert('An error occurred while updating the name.');
       }
 
       setRenamingUserEmail(null);
       setNewName('');
     }
-  };
-
-  const handleUserUpdated = (updatedUser) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user._id === updatedUser.id ? updatedUser : user
-      )
-    );
-    setShowEditUserForm(false);
   };
 
   const handleDeleteUser = async (userId) => {
@@ -133,20 +99,12 @@ const Admin = () => {
         }
 
         const data = await response.json();
-        console.log(data.message); // User deleted successfully
-
         setUsers((prevUsers) => prevUsers.filter(user => user._id !== userId));
         setAnchorEl(null);
       } catch (error) {
-        console.error('Error deleting user:', error);
         alert('Error deleting user');
       }
     }
-  };
-
-  const handleMenuOpen = (event, user) => {
-    setAnchorEl(event.currentTarget);
-    setMenuUser(user);
   };
 
   const handleMenuClose = () => {
@@ -154,9 +112,20 @@ const Admin = () => {
     setMenuUser(null);
   };
 
+
+  const handleMenuOpen = (event, user) => {
+    setAnchorEl(event.currentTarget);
+    setMenuUser(user);
+  };
+
+  // const handleMenuClose = () => {
+  //   setAnchorEl(null);
+  //   setMenuUser(null);
+  // };
+
   return (
     <>
-    <Navbar/>
+    {/* <Navbar/> */}
     <div className="container">
       {showNewUserForm ? (
         <NewUserForm onUserAdded={handleUserAdded} />

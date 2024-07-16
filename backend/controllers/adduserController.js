@@ -5,7 +5,7 @@ const addUser = async (req, res) => {
     const { name, email, noofdevices, deviceIPs } = req.body;
 
     try {
-        const existingUser = await User.findOne({ email });
+        const existingUser = await Admin.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'Email already exists' });
         }

@@ -10,6 +10,7 @@ import VerifyOTP from './VerifyOTP';
 import SetPassword from './SetPassword';
 import EditUser from './components/EditUser'
 import UserInfo from './UserInfo';
+import DashboardPage from './ParentComponent';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<DashboardPage />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />

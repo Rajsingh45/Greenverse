@@ -8,7 +8,7 @@ import device3 from './images/device3.png';
 import device4 from './images/device4.png';
 import device5 from './images/device5.png';
 import device6 from './images/device6.png';
-import Navbar from './Navbar';
+import UserNavbar from './UserNavbar';
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <Navbar profilePic={profilePic} /> {/* Pass profilePic as a prop to Navbar */}
+      <UserNavbar profilePic={profilePic} /> 
       <div className="dash">
       <div className="gallery">
         {renderDeviceCards()}

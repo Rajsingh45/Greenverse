@@ -44,37 +44,54 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = ({ searchQuery, setSearchQuery }) => {
+const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
-  const dropdownRef = useRef(null);
+  const [userName, setUserName] = useState(''); // State for storing user name
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const dropdownRef = useRef(null); // Ref for the dropdown menu
 
   useEffect(() => {
-    const fetchProfilePic = async () => {
+    const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/auth/profile-picture', {
+        const userResponse = await fetch('http://localhost:5000/auth/users', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
-        if (response.ok) {
-          const profilePicBlob = await response.blob();
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUserName(userData.name);
+        } else {
+          console.error('Failed to fetch user data');
+        }
+
+        const profileResponse = await fetch('http://localhost:5000/auth/profile-picture', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (profileResponse.ok) {
+          const profilePicBlob = await profileResponse.blob();
           const profilePicURL = URL.createObjectURL(profilePicBlob);
           setProfilePic(profilePicURL);
         } else {
           console.error('Failed to fetch profile picture');
         }
       } catch (error) {
-        console.error('Error fetching profile picture:', error);
+        console.error('Error fetching user data:', error);
       }
     };
 
-    fetchProfilePic();
+    fetchUserData();
   }, []);
 
   useEffect(() => {
+    // Add event listener to detect clicks outside the dropdown
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownVisible(false);
@@ -91,6 +108,11 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
     setDropdownVisible(!dropdownVisible);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = './';
+  };
+
   const handleChangePassword = () => {
     window.location.href = './change-password';
   };
@@ -99,13 +121,48 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
     window.location.href = './user-info';
   };
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearchChange = async (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    if (query.length >= 1) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`http://localhost:5000/admin/search-user?name=${query}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setSearchResults(data);
+        } else {
+          console.error('Failed to search users');
+        }
+      } catch (error) {
+        console.error('Error searching users:', error);
+      }
+    } else {
+      setSearchResults([]);
+    }
   };
 
   return (
-    <div className="navbar">
+    <div className="navbar sticky-top">
       <h1 className="navbar-title">AQI Dashboard</h1>
+      <Search>
+        <SearchIconWrapper>
+          <SearchIcon />
+        </SearchIconWrapper>
+        <StyledInputBase
+          placeholder="Search by user name…"
+          inputProps={{ 'aria-label': 'search' }}
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+      </Search>
+      {userName && <span className="user-greeting">Hi {userName}!</span>}
       <div className="profile-icon-container">
         {profilePic ? (
           <img src={profilePic} alt="Profile" className="profile-icon" onClick={toggleDropdown} />
@@ -119,17 +176,16 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           </div>
         )}
       </div>
-      <Search>
-        <SearchIconWrapper>
-          <SearchIcon />
-        </SearchIconWrapper>
-        <StyledInputBase
-          placeholder="Search by user name…"
-          inputProps={{ 'aria-label': 'search' }}
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
-      </Search>
+      <button className="logout-button" onClick={handleLogout}>Logout</button>
+      {searchResults.length > 0 && (
+        <div className="search-results">
+          {searchResults.map((user) => (
+            <div key={user._id} className="search-result-item">
+              {user.name}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
