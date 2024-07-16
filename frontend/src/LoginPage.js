@@ -1,18 +1,44 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { UserContext } from "./UserContext";
 import { FaUserCircle } from "react-icons/fa";
-import logo from './images/logo.png'
+import logo from './images/logo.png';
 
 const LoginPage = () => {
     const [userDetails, setUserDetails] = useState({
         email: "",
         password: ""
     });
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const loggedData = useContext(UserContext); // Ensure UserContext is properly imported and used
+    const loggedData = useContext(UserContext);
+
+    // Load last used credentials on component mount
+    useEffect(() => {
+        const lastUsedCredentials = JSON.parse(localStorage.getItem('lastUsedCredentials')) || {};
+        if (lastUsedCredentials.email && lastUsedCredentials.password) {
+            setUserDetails({
+                email: lastUsedCredentials.email,
+                password: lastUsedCredentials.password
+            });
+            setRememberMe(true);
+        }
+    }, []);
+
+    // Load password if email matches a remembered user
+    useEffect(() => {
+        const storedCredentials = JSON.parse(localStorage.getItem('rememberedUsers')) || {};
+        const rememberedUser = storedCredentials[userDetails.email];
+        if (rememberedUser) {
+            setUserDetails((prevState) => ({ ...prevState, password: rememberedUser }));
+            setRememberMe(true); // Keep checkbox ticked if the user was remembered
+        } else {
+            setUserDetails((prevState) => ({ ...prevState, password: '' }));
+            setRememberMe(false); // Untick checkbox if the user was not remembered
+        }
+    }, [userDetails.email]);
 
     const handleInput = (e) => {
         const { name, value } = e.target;
@@ -22,13 +48,17 @@ const LoginPage = () => {
         }));
     };
 
-    const handleForgot=()=>{
-        navigate("/forgot-password")
-    }
+    const handleCheckboxChange = () => {
+        setRememberMe(!rememberMe);
+    };
 
-    const handleSign=()=>{
-        navigate("/signup")
-    }
+    const handleForgot = () => {
+        navigate("/forgot-password");
+    };
+
+    const handleSign = () => {
+        navigate("/signup");
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -40,7 +70,7 @@ const LoginPage = () => {
 
         fetch("http://localhost:5000/auth/login", {
             method: "POST",
-            body: JSON.stringify(userDetails),
+            body: JSON.stringify({ ...userDetails, rememberMe }),
             headers: {
                 "Content-Type": "application/json"
             }
@@ -62,7 +92,19 @@ const LoginPage = () => {
                 if (data.token !== undefined) {
                     localStorage.setItem("token", data.token);
                     loggedData.setLoggedUser(data);
-                    
+
+                    const storedCredentials = JSON.parse(localStorage.getItem('rememberedUsers')) || {};
+
+                    if (rememberMe) {
+                        storedCredentials[userDetails.email] = userDetails.password;
+                        localStorage.setItem('rememberedUsers', JSON.stringify(storedCredentials));
+                        localStorage.setItem('lastUsedCredentials', JSON.stringify(userDetails));
+                    } else {
+                        delete storedCredentials[userDetails.email];
+                        localStorage.setItem('rememberedUsers', JSON.stringify(storedCredentials));
+                        localStorage.removeItem('lastUsedCredentials');
+                    }
+
                     if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
                         navigate("/admin");
                     } else {
@@ -99,8 +141,12 @@ const LoginPage = () => {
                         </div>
                         <div className="input-group">
                             <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
+                            <label>
+                                <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} />
+                                Remember Me
+                            </label>
                             <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
-                        <button type="submit" className="signin-btn">SIGN IN</button>
+                            <button type="submit" className="signin-btn">SIGN IN</button>
                         </div>
                     </form>
                 </div>

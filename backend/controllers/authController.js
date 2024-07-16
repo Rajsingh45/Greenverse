@@ -37,8 +37,14 @@ const register = async (req, res) => {
     }
 };
 
+
+// Generate a token for the "Remember Me" feature
+const generateRememberMeToken = () => {
+    return crypto.randomBytes(32).toString('hex');
+};
+
 const login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
 
     try {
         const user = await User.findOne({ email });
@@ -52,7 +58,48 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+
+        if (rememberMe) {
+            // If "Remember Me" is checked, create a long-lasting token
+            const rememberMeToken = generateRememberMeToken();
+            user.rememberMeToken = rememberMeToken;
+            user.rememberMeTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+            res.cookie('rememberMeToken', rememberMeToken, {
+                httpOnly: true,
+                secure: true, // Set to true if you're using https
+                maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+            });
+        } else {
+            // If "Remember Me" is not checked, clear the remember me token
+            user.rememberMeToken = null;
+            user.rememberMeTokenExpiry = null;
+            res.clearCookie('rememberMeToken');
+        }
+
+        await user.save();
+
         res.status(200).json({ token, role: user.role });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+const rememberMe = async (req, res) => {
+    const { rememberMeToken } = req.cookies;
+
+    if (!rememberMeToken) {
+        return res.status(401).json({ message: 'No remember me token found' });
+    }
+
+    try {
+        const user = await User.findOne({ rememberMeToken, rememberMeTokenExpiry: { $gt: new Date() } });
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid or expired remember me token' });
+        }
+
+        const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        res.status(200).json({ token, user: { email: user.email, role: user.role } });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -283,4 +330,4 @@ const getProfilePicture = async (req, res) => {
     }
 };
 
-module.exports = { register, login, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+module.exports = { register, login, rememberMe , changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};

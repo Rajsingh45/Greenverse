@@ -19,8 +19,9 @@ const UserSchema = new mongoose.Schema({
     },
     password: { type: String, required: true },
     profilePicture: { type: String, default: '' },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' }
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    rememberMeToken: { type: String, sparse: true, select: false },
+    rememberMeTokenExpiry: { type: Date, sparse: true, select: false }
 });
 
 module.exports = mongoose.model('User', UserSchema);
-
