@@ -153,7 +153,50 @@
     cursor: pointer;
     color: green;
   }
-  
+
+  .remember-container {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.remember-me-label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.remember-me {
+    appearance: none;
+    width: 23px;
+    height: 23px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+    position: relative;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.remember-me:checked {
+    border-color: green;
+    background-color: green;
+}
+
+.remember-me:checked::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
   @media (max-width: 767px) {
     .container {
       flex-direction: row;

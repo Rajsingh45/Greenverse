@@ -141,13 +141,15 @@ const LoginPage = () => {
                         </div>
                         <div className="input-group">
                             <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
-                            <label>
-                                <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} />
+                        </div>
+                        <div className="remember-container">
+                            <label className="remember-me-label">
+                                <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
                                 Remember Me
                             </label>
-                            <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
-                            <button type="submit" className="signin-btn">SIGN IN</button>
                         </div>
+                        <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
+                        <button type="submit" className="signin-btn">SIGN IN</button>
                     </form>
                 </div>
             </div>

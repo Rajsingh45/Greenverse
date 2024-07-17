@@ -53,18 +53,35 @@
 .user-greeting {
   margin-left: 20px;
   margin-right: 20px;
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 600;
   color: #ecf0f1;
-  animation: fadeIn 1s ease-in-out;
+  animation: fadeIn 3s ease-in-out, moveUpDown 3s ease-in-out infinite;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #c2cacd, #74c57c);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  text-align: center;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes moveUpDown {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
