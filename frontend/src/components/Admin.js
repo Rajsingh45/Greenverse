@@ -7,8 +7,8 @@ import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
-const Admin = () => {
-  const [users, setUsers] = useState([]);
+const Admin = ({users, setUsers}) => {
+  // const [users, setUsers] = useState([]);
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -75,7 +75,7 @@ const Admin = () => {
       console.log('Renaming user:', renamingUserEmail, newName);
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:5000/auth/rename', {
+        const response = await fetch('http://localhost:5000/admin/rename', {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
