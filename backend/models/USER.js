@@ -12,10 +12,10 @@ const UserSchema = new mongoose.Schema({
         }
     },
     email: {
-        type: String, 
-        required: true, 
+        type: String,
+        required: true,
         unique: true,
-        match: [/\S+@\S+\.\S+/, 'Please fill a valid email address'] 
+        match: [/\S+@\S+\.\S+/, 'Please fill a valid email address']
     },
     password: { type: String, required: true },
     profilePicture: { type: String, default: '' },
@@ -32,7 +32,32 @@ UserSchema.pre('save', function (next) {
     if (!this.rememberMeTokenExpiry) {
         this.rememberMeTokenExpiry = undefined;
     }
+
+    // role ka issue aaya toh next two lines delete
+    if (this.role === 'user') {
+        this.role = undefined;
+    }
+
     next();
 });
+
+// role ka issue aaya toh next  lines delete
+UserSchema.post('init', function (doc) {
+    if (!doc.role) {
+        doc.role = 'user';
+    }
+});
+
+function transform(doc, ret) {
+    if (ret.role === 'user') {
+        delete ret.role;
+    }
+    return ret;
+}
+
+UserSchema.set('toJSON', { transform });
+UserSchema.set('toObject', { transform });
+
+//yaha tak sab delete
 
 module.exports = mongoose.model('User', UserSchema);
