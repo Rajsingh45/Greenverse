@@ -1,18 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Admin.css';
-import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
-import MoreVert from '@mui/icons-material/MoreVert';
+import Navbar from '../Navbar.js'
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
+import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
+import MoreVert from '@mui/icons-material/MoreVert';
+import { useNavigate } from 'react-router-dom';
 
-const Admin = ({ users, setUsers }) => {
+const Admin = () => {
+  const [users, setUsers] = useState([]);
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [renamingUserEmail, setRenamingUserEmail] = useState(null);
   const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
-  const [userToEdit, setUserToEdit] = useState(null); 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/admin/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        console.log('Fetched users:', data);
+
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
+          console.error('Fetched data is not an array:', data);
+          setUsers([]);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        setUsers([]);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const handleNewUser = () => {
     setShowNewUserForm(true);
@@ -24,21 +54,13 @@ const Admin = ({ users, setUsers }) => {
     setShowNewUserForm(false);
   };
 
-  const handleUserUpdated = (updatedUser) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) => (user._id === updatedUser._id ? updatedUser : user))
-    );
-    setShowEditUserForm(false);
-  };
-
   const handleEditUser = (user) => {
-    setUserToEdit(user);
-    setShowEditUserForm(true);
-    setShowNewUserForm(false);
+    navigate('/edit-user', { state: { user } });
     setAnchorEl(null);
   };
 
   const handleRenameUser = (user) => {
+    console.log('Renaming user:', user);
     setRenamingUserEmail(user.email);
     setNewName(user.name);
     setAnchorEl(null);
@@ -50,6 +72,7 @@ const Admin = ({ users, setUsers }) => {
 
   const handleRenameSubmit = async () => {
     if (renamingUserEmail) {
+      console.log('Renaming user:', renamingUserEmail, newName);
       const token = localStorage.getItem('token');
       try {
         const response = await fetch('http://localhost:5000/auth/rename', {
@@ -69,9 +92,11 @@ const Admin = ({ users, setUsers }) => {
           setUsers(updatedUsers);
           alert('Name updated successfully.');
         } else {
+          console.error('Error updating name:', data);
           alert('Failed to update name.');
         }
       } catch (error) {
+        console.error('Error updating name:', error);
         alert('An error occurred while updating the name.');
       }
 
@@ -80,7 +105,16 @@ const Admin = ({ users, setUsers }) => {
     }
   };
 
-  const handleDeleteUser = async (userId) => {
+  const handleUserUpdated = (updatedUser) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.email === updatedUser.email ? updatedUser : user
+      )
+    );
+    setShowEditUserForm(false);
+  };
+
+  const handleDeleteUser = async (userEmail) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this user?');
     if (confirmDelete) {
       try {
@@ -91,7 +125,7 @@ const Admin = ({ users, setUsers }) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ id: userId })
+          body: JSON.stringify({ email: userEmail })
         });
 
         if (!response.ok) {
@@ -99,29 +133,26 @@ const Admin = ({ users, setUsers }) => {
         }
 
         const data = await response.json();
-        setUsers((prevUsers) => prevUsers.filter(user => user._id !== userId));
+        console.log(data.message); // User deleted successfully
+
+        setUsers((prevUsers) => prevUsers.filter(user => user.email !== userEmail));
         setAnchorEl(null);
       } catch (error) {
+        console.error('Error deleting user:', error);
         alert('Error deleting user');
       }
     }
   };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setMenuUser(null);
-  };
-
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
     setMenuUser(user);
   };
 
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  //   setMenuUser(null);
-  // };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setMenuUser(null);
+  };
 
   return (
     <>
@@ -184,7 +215,7 @@ const Admin = ({ users, setUsers }) => {
                       >
                         <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
                         <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
-                        <MenuItem onClick={() => handleDeleteUser(user._id)}>Delete</MenuItem>
+                        <MenuItem onClick={() => handleDeleteUser(user.email)}>Delete</MenuItem>
                       </Menu>
                     </td>
                   </tr>

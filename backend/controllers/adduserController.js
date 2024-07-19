@@ -99,10 +99,10 @@ const renameUser = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    const { userId } = req.body;
+    const { email } = req.body;
 
     try {
-        const existingUser = await Admin.findOneAndDelete({ userId });
+        const existingUser = await Admin.findOneAndDelete({ email });
         if (!existingUser) {
             return res.status(400).json({ message: 'User not found' });
         }
