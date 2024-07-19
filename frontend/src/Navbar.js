@@ -99,6 +99,11 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
     window.location.href = './user-info';
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = './';
+  };
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
   };
@@ -130,6 +135,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           onChange={handleSearchChange}
         />
       </Search>
+      <button className="logout-button" onClick={handleLogout}>Logout</button>
     </div>
   );
 };

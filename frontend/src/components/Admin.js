@@ -169,6 +169,8 @@ const Admin = ({users, setUsers}) => {
               <thead>
                 <tr>
                   <th>Users</th>
+                  <th>Email</th>
+                  <th>Date</th>
                   <th>Devices</th>
                   <th>Actions</th>
                 </tr>
@@ -197,6 +199,18 @@ const Admin = ({users, setUsers}) => {
                         user.name
                       )}
                     </td>
+                    <td>{renamingUserEmail === user.email ? (
+                        <>
+                          <TextField
+                            value={newName}
+                            onChange={handleRenameChange}
+                            autoFocus
+                          />
+                        </>
+                      ) : (
+                        user.email
+                      )}</td>
+                      <td>{user.dateAdded}</td>
                     <td>{user.noofdevices}</td>
                     <td>
                       <IconButton

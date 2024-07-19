@@ -102,17 +102,22 @@ const NewUserForm = ({ onUserAdded }) => {
       const data = await response.json();
       console.log('User added successfully:', data);
   
+      const currentDate = new Date();
+      const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
+      console.log(`User added on: ${formattedDate}`);
+  
       onUserAdded({
         id: Date.now(),
         name,
+        email,
         noofdevices: Number(devices),
-        deviceIPs
+        deviceIPs,
+        dateAdded: formattedDate
       });
     } catch (error) {
       console.error('Error:', error);
     }
   };
-  
 
   return (
     <div className="container">
