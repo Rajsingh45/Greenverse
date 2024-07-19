@@ -38,7 +38,6 @@ const register = async (req, res) => {
 };
 
 
-// Generate a token for the "Remember Me" feature
 const generateRememberMeToken = () => {
     return crypto.randomBytes(32).toString('hex');
 };
@@ -47,7 +46,7 @@ const login = async (req, res) => {
     const { email, password, rememberMe } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+rememberMeToken +rememberMeTokenExpiry');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -60,7 +59,6 @@ const login = async (req, res) => {
         const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
 
         if (rememberMe) {
-            // If "Remember Me" is checked, create a long-lasting token
             const rememberMeToken = generateRememberMeToken();
             user.rememberMeToken = rememberMeToken;
             user.rememberMeTokenExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
@@ -70,9 +68,8 @@ const login = async (req, res) => {
                 maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
             });
         } else {
-            // If "Remember Me" is not checked, clear the remember me token
-            user.rememberMeToken = null;
-            user.rememberMeTokenExpiry = null;
+            user.rememberMeToken = undefined;
+            user.rememberMeTokenExpiry = undefined;
             res.clearCookie('rememberMeToken');
         }
 
@@ -93,7 +90,7 @@ const rememberMe = async (req, res) => {
     }
 
     try {
-        const user = await User.findOne({ rememberMeToken, rememberMeTokenExpiry: { $gt: new Date() } });
+        const user = await User.findOne({ rememberMeToken, rememberMeTokenExpiry: { $gt: new Date() } }).select('+rememberMeToken +rememberMeTokenExpiry');
         if (!user) {
             return res.status(401).json({ message: 'Invalid or expired remember me token' });
         }

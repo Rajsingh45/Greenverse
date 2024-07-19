@@ -20,8 +20,19 @@ const UserSchema = new mongoose.Schema({
     password: { type: String, required: true },
     profilePicture: { type: String, default: '' },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    rememberMeToken: { type: String, sparse: true, select: false },
-    rememberMeTokenExpiry: { type: Date, sparse: true, select: false }
+    rememberMeToken: { type: String, select: false },
+    rememberMeTokenExpiry: { type: Date, select: false }
+});
+
+// Middleware to remove null or undefined rememberMeToken and rememberMeTokenExpiry
+UserSchema.pre('save', function (next) {
+    if (!this.rememberMeToken) {
+        this.rememberMeToken = undefined;
+    }
+    if (!this.rememberMeTokenExpiry) {
+        this.rememberMeTokenExpiry = undefined;
+    }
+    next();
 });
 
 module.exports = mongoose.model('User', UserSchema);
