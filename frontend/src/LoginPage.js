@@ -139,7 +139,7 @@ const LoginPage = () => {
                         <div className="input-group">
                             <input type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
                         </div>
-                        <div className="input-group">
+                        <div className="input-group change">
                             <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
                         </div>
                         <div className="remember-container">

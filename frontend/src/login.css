@@ -157,8 +157,12 @@
   .remember-container {
     display: flex;
     align-items: center;
-    margin-top: 1rem;
+    margin-top: 0 !important;
     width: 100%;
+}
+
+.change{
+  margin-bottom: 10px !important;
 }
 
 .remember-me-label {
@@ -166,6 +170,7 @@
     align-items: center;
     font-size: 1rem;
     cursor: pointer;
+    width: 100%;
 }
 
 .remember-me {
