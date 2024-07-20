@@ -135,6 +135,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           onChange={handleSearchChange}
         />
       </Search>
+      <span className="user-greeting">Hi Admin!</span>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
     </div>
   );

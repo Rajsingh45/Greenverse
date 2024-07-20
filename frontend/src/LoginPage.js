@@ -147,8 +147,9 @@ const LoginPage = () => {
                                 <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
                                 Remember Me
                             </label>
+                            <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
                         </div>
-                        <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
+                        
                         <button type="submit" className="signin-btn">SIGN IN</button>
                     </form>
                 </div>

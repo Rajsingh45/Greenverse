@@ -85,7 +85,7 @@ const Admin = ({users, setUsers}) => {
         });
 
         const data = await response.json();
-        if (data.message === 'Name updated successfully in both collections') {
+        if (data.message === 'User renamed successfully') {
           const updatedUsers = users.map((user) =>
             user.email === renamingUserEmail ? { ...user, name: newName } : user
           );
@@ -199,17 +199,8 @@ const Admin = ({users, setUsers}) => {
                         user.name
                       )}
                     </td>
-                    <td>{renamingUserEmail === user.email ? (
-                        <>
-                          <TextField
-                            value={newName}
-                            onChange={handleRenameChange}
-                            autoFocus
-                          />
-                        </>
-                      ) : (
-                        user.email
-                      )}</td>
+                    <td>
+                        {user.email}</td>
                       <td>{user.dateAdded}</td>
                     <td>{user.noofdevices}</td>
                     <td>
