@@ -41,7 +41,7 @@ UserSchema.pre('save', function (next) {
     next();
 });
 
-// role ka issue aaya toh next  lines delete
+// role ka issue aaya toh next lines delete
 UserSchema.post('init', function (doc) {
     if (!doc.role) {
         doc.role = 'user';

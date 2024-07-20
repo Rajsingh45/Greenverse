@@ -30,7 +30,16 @@ const AdminSchema = new mongoose.Schema({
             message: props => `${props.value} contains an invalid IP address! Please provide valid IPv4 addresses.`
         },
         default: []
-    }
+    },
+    dateAdded: { type: String, default: () => formatDate(new Date()) } // Update this line
+
 });
+
+const formatDate = (date) => {
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+};
 
 module.exports = mongoose.model('Admin', AdminSchema);

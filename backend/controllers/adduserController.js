@@ -10,7 +10,7 @@ const addUser = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        const newUser = new Admin({ name, email, noofdevices, deviceIPs, role: 'user' });
+        const newUser = new Admin({ name, email, noofdevices, deviceIPs, role: 'user',dateAdded: formatDate(new Date()) });
         await newUser.save();
 
         res.status(201).json({ message: 'User added successfully', user: newUser });
@@ -18,6 +18,12 @@ const addUser = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
+};
+    const formatDate = (date) => {
+        const day = date.getDate();
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
 };
 
 const getAllUsers = async (req, res) => {
