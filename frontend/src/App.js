@@ -11,6 +11,7 @@ import SetPassword from './SetPassword';
 import EditUser from './components/EditUser'
 import UserInfo from './UserInfo';
 import DashboardPage from './ParentComponent';
+import DeviceDetail from './DeviceDetail'
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/set-password" element={<SetPassword />} />
           <Route path="/edit-user" element={<EditUser />} />
           <Route path="/user-info" element={<UserInfo />} />
+          <Route path="/device/:deviceId" element={<DeviceDetail/>} />
         </Routes>
         </UserContextProvider>
       </Router>

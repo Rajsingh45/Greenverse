@@ -1,0 +1,81 @@
+.device-detail-page {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.table-section {
+    width: 70%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-section th, .table-section td {
+    border: 1px solid #ddd;
+    padding: 28px;
+    text-align: center;
+}
+
+.table-section th {
+    background-color: #f2f2f2;
+}
+
+.filter-section {
+    width: 30%;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.filter-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.date-picker {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.date-picker label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.MuiFormControl-root {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .device-detail-page {
+        flex-direction: column;
+    }
+
+    .table-section, .filter-section {
+        width: 100%;
+    }
+}
+
+@media (max-width: 320px) {
+    .device-detail-page {
+        padding: 10px;
+    }
+
+    .table-section th, .table-section td {
+        padding: 4px;
+    }
+
+    .filter-section h3 {
+        font-size: 1.2em;
+    }
+}

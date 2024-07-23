@@ -33,6 +33,15 @@ app.use('/auth', authRoutes);
 app.use('/aqi', aqiRoutes);  
 app.use('/admin',adminRoutes);
 
+app.get('/locations', (req, res) => {
+  const locations = [
+      { lat: 19.0760, lng: 72.8777, label: 'Mumbai-New' },
+      // { lat: 19.1247, lng: 72.8234, label: 'B' }
+      // Add more locations here
+  ];
+  res.json(locations);
+});
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
