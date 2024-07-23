@@ -1,17 +1,9 @@
 const mongoose = require('mongoose');
 
-const AQISchema = new mongoose.Schema({
-    deviceId: String,
-    pm25: Number,
-    pm10: Number,
-    temperature: Number,
-    humidity: Number,
-    pressure: Number,
-    co2: Number,
-    voc: Number,
-    gasResistance: Number,
-    iaq: Number,
-    createdAt: { type: Date, default: Date.now }
+const aqiSchema = new mongoose.Schema({
+    date: { type: Date, required: true },
+    parameter: { type: String, required: true },
+    value: { type: Number, required: true }
 });
 
-module.exports = mongoose.model('AQI', AQISchema);
+module.exports = mongoose.model('AQI', aqiSchema);

@@ -56,6 +56,42 @@
     width: 100%;
 }
 
+.dropdown-section {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.dropdown-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.dropdown-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.graph-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: 80%;
+    width: 100%;
+}
+
+.graph-button:hover {
+    background-color: #0056b3;
+}
+
 @media (max-width: 768px) {
     .device-detail-page {
         flex-direction: column;

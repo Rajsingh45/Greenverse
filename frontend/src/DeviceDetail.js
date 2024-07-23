@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './DeviceDetail.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -9,11 +9,42 @@ import 'dayjs/locale/en-gb';
 
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
+    const navigate = useNavigate();
     const [startDate, setStartDate] = useState(dayjs());
     const [endDate, setEndDate] = useState(dayjs());
     const [selectedOption, setSelectedOption] = useState('');
+    const [error, setError] = useState('');
 
-    const column1Data = ['Data 1', 'Data 3', 'Data 3', 'Data 3', 'Data 3'];
+    const column1Data = ['A', 'B', 'C', 'D', 'E'];
+
+    const handleStartDateChange = (newValue) => {
+        if (newValue.isAfter(endDate)) {
+            setEndDate(newValue);
+        }
+        setStartDate(newValue);
+    };
+
+    const handleEndDateChange = (newValue) => {
+        if (newValue.isBefore(startDate)) {
+            setStartDate(newValue);
+        }
+        setEndDate(newValue);
+    };
+
+    const handleSubmit = () => {
+        if (!startDate || !endDate || !selectedOption) {
+            setError('All fields must be filled.');
+        } else {
+            setError('');
+            navigate(`/graph/${deviceId}`, {
+                state: {
+                    startDate: startDate.format('YYYY-MM-DD'),
+                    endDate: endDate.format('YYYY-MM-DD'),
+                    parameter:selectedOption
+                }
+            });
+        }
+    };
 
     return (
         <div className="device-detail-page">
@@ -42,8 +73,8 @@ const DeviceDetailPage = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
                         <DatePicker
                             value={startDate}
-                            onChange={(newValue) => setStartDate(newValue)}
-                            format="DD/MM/YYYY"
+                            onChange={handleStartDateChange}
+                            format="DD-MM-YYYY"
                         />
                     </LocalizationProvider>
                 </div>
@@ -52,13 +83,14 @@ const DeviceDetailPage = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
                         <DatePicker
                             value={endDate}
-                            onChange={(newValue) => setEndDate(newValue)}
-                            format="DD/MM/YYYY"
+                            onChange={handleEndDateChange}
+                            format="DD-MM-YYYY"
+                            minDate={startDate}
                         />
                     </LocalizationProvider>
                 </div>
                 <div className="dropdown-section">
-                    <label>Select Column 1 Value:</label>
+                    <label>Select Parameter:</label>
                     <select
                         value={selectedOption}
                         onChange={(e) => setSelectedOption(e.target.value)}
@@ -70,6 +102,12 @@ const DeviceDetailPage = () => {
                             </option>
                         ))}
                     </select>
+                </div>
+                {error && <div className="error-message">{error}</div>}
+                <div>
+                    <button type="button" className="graph-button" onClick={handleSubmit}>
+                        Show Graph
+                    </button>
                 </div>
             </div>
         </div>

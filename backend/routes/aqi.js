@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
-// const { getAQIData,postAQIData } = require('../controllers/aqiController');
+const { addAQIData, getAQIData } = require('../controllers/aqiController');
 
-// router.get('/data/:deviceId', authMiddleware, getAQIData);
-// router.post('/data/:deviceId', authMiddleware, postAQIData);
+router.post('/add', addAQIData);
+router.get('/data', getAQIData);
 
 module.exports = router;

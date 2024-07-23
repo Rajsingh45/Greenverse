@@ -1,25 +1,50 @@
 const AQI = require('../models/AQI');
+const dayjs = require('dayjs');
 
-const getAQIData = async (req, res) => {
-    const { deviceId } = req.params;
+// Convert DD-MM-YYYY string to JavaScript Date object
+const formatDate = (dateString) => dayjs(dateString, 'DD-MM-YYYY').toDate();
+
+exports.addAQIData = async (req, res) => {
+    const { date, parameter, value } = req.body;
+
     try {
-        const aqiData = await AQI.find({ deviceId }).sort({ createdAt: -1 }).limit(1);
-        res.json(aqiData[0]);
+        const formattedDate = formatDate(date);
+        const newAQI = new AQI({ date: formattedDate, parameter, value });
+        await newAQI.save();
+
+        res.status(201).json(newAQI);
     } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error adding AQI data', error });
+    }
+};
+
+exports.getAQIData = async (req, res) => {
+    const { startDate, endDate, parameter } = req.query;
+
+    try {
+        const start = formatDate(startDate);
+        const end = formatDate(endDate);
+
+        // Validate the dates
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+            return res.status(400).json({ message: 'Invalid date format' });
+        }
+
+        const query = {
+            date: { $gte: start, $lte: end }
+        };
+
+        // Filter by parameter if provided
+        if (parameter) {
+            query.parameter = parameter;
+        }
+
+        const data = await AQI.find(query).sort({ date: 1 });
+
+        res.status(200).json(data);
+    } catch (error) {
+        console.error(error);
         res.status(500).json({ message: 'Error fetching AQI data', error });
     }
 };
-
-const postAQIData = async (req, res) => {
-    const { deviceId } = req.params;
-    const { pm25, pm10, temperature, humidity, pressure, co2, voc, gasResistance, iaq } = req.body;
-    try {
-        const newAQIData = new AQI({ deviceId, pm25, pm10, temperature, humidity, pressure, co2, voc, gasResistance, iaq });
-        await newAQIData.save();
-        res.status(201).json(newAQIData);
-    } catch (error) {
-        res.status(500).json({ message: 'Error saving AQI data', error });
-    }
-};
-
-module.exports = { getAQIData, postAQIData };
