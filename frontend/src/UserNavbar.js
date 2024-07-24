@@ -114,6 +114,10 @@ const Navbar = () => {
     navigate('/')
   };
 
+  const handleContact=()=>{
+    navigate('/contact-us')
+  }
+
   const handleChangePassword = () => {
     navigate('/change-password')
   };
@@ -178,6 +182,7 @@ const Navbar = () => {
         )}
       </div>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
+      <button className="logout-button" onClick={handleContact}>Contact Us</button>
       {/* {searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.map((user) => (

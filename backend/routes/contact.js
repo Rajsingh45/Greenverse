@@ -5,7 +5,7 @@ const router = express.Router();
 require('dotenv').config(); // Load environment variables from .env file
 
 router.post('/contact', async (req, res) => {
-  const { name, email, phone, query } = req.body;
+  const { name, email, phone, message } = req.body;
 
   // Create a transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -20,12 +20,19 @@ router.post('/contact', async (req, res) => {
   let mailOptions = {
     from: `"Contact Us Form" <${process.env.EMAIL_USER}>`, // sender address
     to: `${process.env.EMAIL_USER}`, // replace with your company email address
+    replyTo: email,
     subject: 'New Contact Us Form Submission', // Subject line
     text: `You have a new contact form submission from:
-           Name: ${name}
-           Email: ${email}
-           Phone: ${phone}
-           Query: ${query}`, // plain text body
+         Name: ${name}
+         Email: ${email}
+         Phone: ${phone}
+         Message: ${message}`,
+  html: `<p>You have a new contact form submission from:</p>
+         <p>Name: ${name}<br>
+         Email: ${email}<br>
+         Phone: ${phone}<br>
+         Message: ${message}</p>
+         <p style="color: red; font-weight: bold;">Note: Click 'Reply' to respond to the user's email address. Remember to remove this note before sending your reply.</p>`,
   };
 
   // Send mail with defined transport object

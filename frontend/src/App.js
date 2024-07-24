@@ -13,6 +13,7 @@ import UserInfo from './UserInfo';
 import DashboardPage from './ParentComponent';
 import DeviceDetail from './DeviceDetail'
 import GraphPage from './GraphPage'
+import ContactUs from './ContactUs'
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/user-info" element={<UserInfo />} />
           <Route path="/device/:deviceId" element={<DeviceDetail/>} />
           <Route path="/graph/:deviceId" element={<GraphPage />} />
+          <Route path="/contact-us" element={<ContactUs />} />
         </Routes>
         </UserContextProvider>
       </Router>

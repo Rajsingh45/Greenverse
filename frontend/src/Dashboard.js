@@ -12,13 +12,13 @@ import UserNavbar from './UserNavbar';
 
 const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1); 
+  const [totalPages, setTotalPages] = useState(1);
   const [deviceCount, setDeviceCount] = useState(0);
   const imagesPerPage = 6;
   const images = [device1, device2, device3, device4, device5, device6];
 
   const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
-
+  
   // Function to handle profile picture change
   const handleProfilePicChange = (file) => {
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
@@ -40,7 +40,7 @@ const Dashboard = () => {
         const { noofdevices } = response.data;
         setDeviceCount(noofdevices);
         const totalPages = Math.ceil(noofdevices / imagesPerPage);
-        setTotalPages(totalPages); 
+        setTotalPages(totalPages);
       } catch (error) {
         console.error('Error fetching device count:', error);
       }
@@ -70,7 +70,7 @@ const Dashboard = () => {
     const endIndex = startIndex + imagesPerPage;
     const cards = [];
     for (let i = startIndex; i < endIndex && i < deviceCount; i++) {
-      const image = images[i % images.length]; 
+      const image = images[i % images.length];
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <UserNavbar profilePic={profilePic} /> 
+      <UserNavbar profilePic={profilePic} />
       <div className="dash">
         <div className="gallery">
           {renderDeviceCards()}
@@ -111,30 +111,7 @@ const Dashboard = () => {
             <FaArrowRight />
           </button>
         </div>
-        <div className="contact-us">
-          <h2>Contact Us</h2>
-          <form>
-            <div className='name-phone'>
-            <div className="form-group form-new">
-              <label className='fields' htmlFor="name">Name:</label>
-              <input type="text" id="name" name="name" className='name-field' required />
-            </div>
-            <div className="form-group form-news">
-              <label className='fields' htmlFor="number">Phone:</label>
-              <input type="number" id="phone" name="phone" className='name-field' required />
-            </div>
-            </div>
-            <div className="form-group">
-              <label className='fields' htmlFor="email">Email:</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-            <div className="form-group">
-              <label className='fields' htmlFor="message">Message:</label>
-              <textarea id="message" name="message" rows="4" required></textarea>
-            </div>
-            <button type="submit" className="submit-button">Submit</button>
-          </form>
-        </div>
+        
       </div>
     </div>
   );
