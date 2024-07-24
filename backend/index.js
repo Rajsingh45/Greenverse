@@ -8,6 +8,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const aqiRoutes = require('./routes/aqi');
 const adminRoutes = require('./routes/admin'); // Add this line
+const contactRoutes = require('./routes/contact');
 
 
 const app = express();
@@ -32,6 +33,7 @@ mongoose.connect(mongoURL,
 app.use('/auth', authRoutes);
 app.use('/aqi', aqiRoutes);  
 app.use('/admin',adminRoutes);
+app.use('/', contactRoutes);
 
 app.get('/locations', (req, res) => {
   const locations = [
