@@ -4,6 +4,7 @@ import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,6 +52,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const dropdownRef = useRef(null); // Ref for the dropdown menu
+  const navigate=useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -91,7 +93,6 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    // Add event listener to detect clicks outside the dropdown
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownVisible(false);
@@ -110,15 +111,15 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = './';
+    navigate('/')
   };
 
   const handleChangePassword = () => {
-    window.location.href = './change-password';
+    navigate('/change-password')
   };
 
   const handleUserInfo = () => {
-    window.location.href = './user-info';
+    navigate('/user-info');
   };
 
   const handleSearchChange = async (event) => {
@@ -177,7 +178,7 @@ const Navbar = () => {
         )}
       </div>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
-      {searchResults.length > 0 && (
+      {/* {searchResults.length > 0 && (
         <div className="search-results">
           {searchResults.map((user) => (
             <div key={user._id} className="search-result-item">
@@ -185,7 +186,7 @@ const Navbar = () => {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   );
 };

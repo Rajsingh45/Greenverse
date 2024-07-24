@@ -6,6 +6,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
+import UserNavbar from './UserNavbar'
 
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
@@ -47,6 +48,8 @@ const DeviceDetailPage = () => {
     };
 
     return (
+        <>
+        <UserNavbar/>
         <div className="device-detail-page">
             <div className="table-section">
                 <table>
@@ -111,6 +114,7 @@ const DeviceDetailPage = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 

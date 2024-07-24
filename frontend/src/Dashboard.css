@@ -70,3 +70,87 @@
   font-size: 1.2rem;
   margin: 0 10px;
 }
+
+.contact-us {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+.contact-us h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.fields{
+  text-align: left;
+  margin-left: 5px;
+}
+
+.name-phone{
+  display: flex;
+}
+
+.form-new{
+  margin-right: 20px;
+  width: 100%;
+}
+
+.form-news{
+  width: 100%;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .gallery-item {
+    width: calc(50% - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-item {
+    width: 100%;
+  }
+
+  .pagination {
+    flex-direction: column;
+  }
+
+  .pagination-button {
+    margin: 5px 0;
+  }
+}

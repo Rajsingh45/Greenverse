@@ -89,29 +89,53 @@ const Dashboard = () => {
     <div className="dashboard">
       <UserNavbar profilePic={profilePic} /> 
       <div className="dash">
-      <div className="gallery">
-        {renderDeviceCards()}
+        <div className="gallery">
+          {renderDeviceCards()}
+        </div>
+        <div className="pagination">
+          <button
+            className="pagination-button"
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+          >
+            <FaArrowLeft />
+          </button>
+          <span className="page-number">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            className="pagination-button"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+          >
+            <FaArrowRight />
+          </button>
+        </div>
+        <div className="contact-us">
+          <h2>Contact Us</h2>
+          <form>
+            <div className='name-phone'>
+            <div className="form-group form-new">
+              <label className='fields' htmlFor="name">Name:</label>
+              <input type="text" id="name" name="name" className='name-field' required />
+            </div>
+            <div className="form-group form-news">
+              <label className='fields' htmlFor="number">Phone:</label>
+              <input type="number" id="phone" name="phone" className='name-field' required />
+            </div>
+            </div>
+            <div className="form-group">
+              <label className='fields' htmlFor="email">Email:</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div className="form-group">
+              <label className='fields' htmlFor="message">Message:</label>
+              <textarea id="message" name="message" rows="4" required></textarea>
+            </div>
+            <button type="submit" className="submit-button">Submit</button>
+          </form>
+        </div>
       </div>
-      <div className="pagination">
-        <button
-          className="pagination-button"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-        >
-          <FaArrowLeft />
-        </button>
-        <span className="page-number">
-          {currentPage} / {totalPages}
-        </span>
-        <button
-          className="pagination-button"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-        >
-          <FaArrowRight />
-        </button>
-      </div>
-    </div>
     </div>
   );
 };
