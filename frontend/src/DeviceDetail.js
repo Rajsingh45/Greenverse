@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import './DeviceDetail.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
-import UserNavbar from './UserNavbar'
+import UserNavbar from './UserNavbar';
+import TextField from '@mui/material/TextField';
 
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
@@ -39,9 +39,9 @@ const DeviceDetailPage = () => {
             setError('');
             navigate(`/graph/${deviceId}`, {
                 state: {
-                    startDate: startDate.format('YYYY-MM-DD'),
-                    endDate: endDate.format('YYYY-MM-DD'),
-                    parameter:selectedOption
+                    startDate: startDate.format('YYYY-MM-DDTHH:mm:ss'),
+                    endDate: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+                    parameter: selectedOption
                 }
             });
         }
@@ -49,71 +49,71 @@ const DeviceDetailPage = () => {
 
     return (
         <>
-        <UserNavbar/>
-        <div className="device-detail-page">
-            <div className="table-section">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Column 1</th>
-                            <th>Column 2</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {column1Data.map((item, index) => (
-                            <tr key={index}>
-                                <td>{item}</td>
-                                <td>Data {index * 2 + 2}</td>
+            <UserNavbar />
+            <div className="device-detail-page">
+                <div className="table-section">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Column 1</th>
+                                <th>Column 2</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {column1Data.map((item, index) => (
+                                <tr key={index}>
+                                    <td>{item}</td>
+                                    <td>Data {index * 2 + 2}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="filter-section">
+                    <h3>Filter by Date and Time</h3>
+                    <div className="date-picker">
+                        <label>From:</label>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
+                            <DateTimePicker
+                                value={startDate}
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <div className="date-picker">
+                        <label>To:</label>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
+                            <DateTimePicker
+                                value={endDate}
+                                onChange={handleEndDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                                minDate={startDate}
+                            />
+                        </LocalizationProvider>
+                    </div>
+                    <div className="dropdown-section">
+                        <label>Select Parameter:</label>
+                        <select
+                            value={selectedOption}
+                            onChange={(e) => setSelectedOption(e.target.value)}
+                        >
+                            <option value="" disabled>Select an option</option>
+                            {column1Data.map((item, index) => (
+                                <option key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    {error && <div className="error-message">{error}</div>}
+                    <div>
+                        <button type="button" className="graph-button" onClick={handleSubmit}>
+                            Show Graph
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div className="filter-section">
-                <h3>Filter by Date</h3>
-                <div className="date-picker">
-                    <label>From:</label>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
-                        <DatePicker
-                            value={startDate}
-                            onChange={handleStartDateChange}
-                            format="DD-MM-YYYY"
-                        />
-                    </LocalizationProvider>
-                </div>
-                <div className="date-picker">
-                    <label>To:</label>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
-                        <DatePicker
-                            value={endDate}
-                            onChange={handleEndDateChange}
-                            format="DD-MM-YYYY"
-                            minDate={startDate}
-                        />
-                    </LocalizationProvider>
-                </div>
-                <div className="dropdown-section">
-                    <label>Select Parameter:</label>
-                    <select
-                        value={selectedOption}
-                        onChange={(e) => setSelectedOption(e.target.value)}
-                    >
-                        <option value="" disabled>Select an option</option>
-                        {column1Data.map((item, index) => (
-                            <option key={index} value={item}>
-                                {item}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                {error && <div className="error-message">{error}</div>}
-                <div>
-                    <button type="button" className="graph-button" onClick={handleSubmit}>
-                        Show Graph
-                    </button>
-                </div>
-            </div>
-        </div>
         </>
     );
 };

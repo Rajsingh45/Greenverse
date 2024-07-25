@@ -1,14 +1,14 @@
 const AQI = require('../models/AQI');
 const dayjs = require('dayjs');
 
-// Convert DD-MM-YYYY string to JavaScript Date object
-const formatDate = (dateString) => dayjs(dateString, 'DD-MM-YYYY').toDate();
+// Convert ISO 8601 string to JavaScript Date object
+const formatDateTime = (dateTimeString) => dayjs(dateTimeString).toDate();
 
 exports.addAQIData = async (req, res) => {
     const { date, parameter, value } = req.body;
 
     try {
-        const formattedDate = formatDate(date);
+        const formattedDate = formatDateTime(date);
         const newAQI = new AQI({ date: formattedDate, parameter, value });
         await newAQI.save();
 
@@ -23,8 +23,8 @@ exports.getAQIData = async (req, res) => {
     const { startDate, endDate, parameter } = req.query;
 
     try {
-        const start = formatDate(startDate);
-        const end = formatDate(endDate);
+        const start = formatDateTime(startDate);
+        const end = formatDateTime(endDate);
 
         // Validate the dates
         if (isNaN(start.getTime()) || isNaN(end.getTime())) {

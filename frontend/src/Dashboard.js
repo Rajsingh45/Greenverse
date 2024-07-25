@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Dashboard.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import axios from 'axios'; // Import axios for HTTP requests
+import axios from 'axios';
 import device1 from './images/device1.png';
 import device2 from './images/device2.png';
 import device3 from './images/device3.png';
@@ -10,21 +10,34 @@ import device5 from './images/device5.png';
 import device6 from './images/device6.png';
 import UserNavbar from './UserNavbar';
 
-const Dashboard = ({ isReadOnly = false }) => {
+const Dashboard = ({ isReadOnly = false, devices = 0 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [deviceCount, setDeviceCount] = useState(0);
   const imagesPerPage = 6;
   const images = [device1, device2, device3, device4, device5, device6];
 
+  // const totalPages = Math.ceil(devices / imagesPerPage);
+  const [totalPages, setTotalPages] = useState(1);
   const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
-  
+  const [deviceCount, setDeviceCount] = useState(0);
+
   // Function to handle profile picture change
   const handleProfilePicChange = (file) => {
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
       setProfilePic(URL.createObjectURL(file));
     } else {
       alert('Please select a JPG or PNG image smaller than 1MB.');
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
   };
 
@@ -48,18 +61,6 @@ const Dashboard = ({ isReadOnly = false }) => {
 
     fetchDeviceCount();
   }, []);
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
 
   const handleNameClick = (deviceId) => {
     if (!isReadOnly) {
