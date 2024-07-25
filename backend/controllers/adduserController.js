@@ -137,5 +137,20 @@ const searchUserByName = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser, renameUser, searchUserByName };
+const getUserDevicesByEmail = async (req, res) => {
+    const { email } = req.query;
+
+    try {
+        const user = await Admin.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json({ devices: user.noofdevices });
+    } catch (error) {
+        console.error('Error fetching user devices:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser, renameUser, searchUserByName, getUserDevicesByEmail};
 

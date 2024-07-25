@@ -14,6 +14,7 @@ import DashboardPage from './ParentComponent';
 import DeviceDetail from './DeviceDetail'
 import GraphPage from './GraphPage'
 import ContactUs from './ContactUs'
+import UserDetail from './UserDetail'
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/device/:deviceId" element={<DeviceDetail/>} />
           <Route path="/graph/:deviceId" element={<GraphPage />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/user/:email" element={<UserDetail />} />
         </Routes>
         </UserContextProvider>
       </Router>

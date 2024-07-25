@@ -217,7 +217,10 @@ const Admin = ({ users, setUsers }) => {
                 <tbody>
                   {users.map((user) => (
                     <tr key={user.email}>
-                      <td>
+                      <td
+                        style={{ color: 'blue', cursor: 'pointer' }}
+                        onClick={() => navigate(`/user/${user.email}`)}
+                      >
                         {renamingUserEmail === user.email ? (
                           <>
                             <TextField

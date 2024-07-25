@@ -10,7 +10,7 @@ import device5 from './images/device5.png';
 import device6 from './images/device6.png';
 import UserNavbar from './UserNavbar';
 
-const Dashboard = () => {
+const Dashboard = ({ isReadOnly = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deviceCount, setDeviceCount] = useState(0);
@@ -62,7 +62,9 @@ const Dashboard = () => {
   };
 
   const handleNameClick = (deviceId) => {
-    window.location.href = `/device/${deviceId}`;
+    if (!isReadOnly) {
+      window.location.href = `/device/${deviceId}`;
+    }
   };
 
   const renderDeviceCards = () => {
@@ -75,7 +77,7 @@ const Dashboard = () => {
         <div className="gallery-item" key={i}>
           <div className="image-container">
             <img src={image} alt={`Device ${i + 1}`} />
-            <div className="device-name-card" onClick={() => handleNameClick(i + 1)}>
+            <div className={`device-name-card ${isReadOnly ? 'readonly' : ''}`} onClick={() => handleNameClick(i + 1)}>
               <p className="device-text">Device {i + 1}</p>
             </div>
           </div>
@@ -111,7 +113,6 @@ const Dashboard = () => {
             <FaArrowRight />
           </button>
         </div>
-        
       </div>
     </div>
   );
