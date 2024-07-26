@@ -14,6 +14,7 @@ import {
     Legend
 } from 'chart.js';
 import 'chartjs-adapter-date-fns'; // Import date-fns adapter
+import './GraphPage.css'
 
 ChartJS.register(
     LineElement,
