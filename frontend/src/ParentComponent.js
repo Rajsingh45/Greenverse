@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
 import Admin from './components/Admin';
+import Layout from './Layout';
 
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);
@@ -41,7 +41,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <Admin users={filteredUsers} setUsers={setUsers} />
     </div>
   );

@@ -47,7 +47,6 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const dropdownRef = useRef(null);
-  const [showSearchInput, setShowSearchInput] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -110,20 +109,12 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleContact = () => {
-    navigate('/contact-us');
-  };
-
   const handleChangePassword = () => {
     navigate('/change-password');
   };
 
   const handleUserInfo = () => {
     navigate('/user-info');
-  };
-
-  const handleSearchIconClick = () => {
-    setShowSearchInput(!showSearchInput);
   };
 
   const handleSearchChange = async (event) => {
@@ -194,8 +185,6 @@ const Navbar = () => {
             />
           </Search>
         </div>
-
-        {/* <button className="contact-button" onClick={handleContact}>Contact Us</button> */}
 
         {profilePic ? (
           <img src={profilePic} alt="Profile" className="profile-icon" onClick={toggleDropdown} />

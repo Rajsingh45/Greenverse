@@ -3,6 +3,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const mqttMongoIntegration = require('./services/mqttMongoIntegration');
+
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -25,6 +27,7 @@ mongoose.connect(mongoURL,
 )
 .then(() => {
     console.log('Database connection successful');
+    mqttMongoIntegration();
   }).catch((err) => {
     console.error('Database connection error:', err);
   });
@@ -46,4 +49,3 @@ app.get('/locations', (req, res) => {
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-

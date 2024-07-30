@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect} from 'react';
 import './DeviceDetail.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
 import UserNavbar from './UserNavbar';
 import TextField from '@mui/material/TextField';
+import Layout from './Layout';
 
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
@@ -15,7 +16,13 @@ const DeviceDetailPage = () => {
     const [endDate, setEndDate] = useState(dayjs());
     const [selectedOption, setSelectedOption] = useState('');
     const [error, setError] = useState('');
+    
+    // Check if user is admin
+    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
 
+    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+
+    console.log("Is Admin:", isAdmin);
     const column1Data = ['A', 'B', 'C', 'D', 'E'];
 
     const handleStartDateChange = (newValue) => {
@@ -47,9 +54,47 @@ const DeviceDetailPage = () => {
         }
     };
 
+    const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/admin/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        setUsers(data);
+        setFilteredUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFilteredUsers(
+        users.filter(user =>
+          user.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchQuery, users]);
+
     return (
         <>
-            <UserNavbar />
+            {/* <UserNavbar /> */}
+            
+            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
             <div className="device-detail-page">
                 <div className="table-section">
                     <table>

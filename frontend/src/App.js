@@ -19,8 +19,8 @@ import UserDetail from './UserDetail'
 function App() {
   return (
     <div className="App">
-      <Router>
       <UserContextProvider>
+      <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -37,8 +37,8 @@ function App() {
           <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/user/:email" element={<UserDetail />} />
         </Routes>
-        </UserContextProvider>
       </Router>
+      </UserContextProvider>
     </div>
   );
 }

@@ -107,8 +107,11 @@ const LoginPage = () => {
 
                     if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
                         navigate("/admin");
+                        // localStorage.setItem('adminCredentials', JSON.stringify(data));
+                        localStorage.setItem('adminCredentials', JSON.stringify(userDetails));
                     } else {
                         navigate("/dashboard");
+                        localStorage.setItem('adminCredentials', JSON.stringify(userDetails));
                     }
                 }
             })

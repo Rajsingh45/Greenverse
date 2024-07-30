@@ -177,13 +177,9 @@ const Admin = ({ users, setUsers }) => {
       const baseURL = 'https://www.google.com/maps/embed?';
       const params = new URLSearchParams({
         center: `${avgLat},${avgLng}`,
-        // zoom: '1',
-        // size: '600x300',
         markers: locations.map(loc => `${loc.lat},${loc.lng}`).join('|')
-        
       });
 
-      console.log(params.markers)
       setMapUrl(`${baseURL}${params.toString()}`);
     } catch (error) {
       console.error('Error fetching map locations:', error);
@@ -193,6 +189,14 @@ const Admin = ({ users, setUsers }) => {
   useEffect(() => {
     initMap();
   }, []);
+
+  const handleNameClick = (user, event) => {
+    if (renamingUserEmail === user.email) {
+      event.stopPropagation(); // Prevent navigation
+    } else {
+      navigate(`/user/${user.email}`);
+    }
+  };
 
   return (
     <>
@@ -219,7 +223,7 @@ const Admin = ({ users, setUsers }) => {
                     <tr key={user.email}>
                       <td
                         style={{ color: 'blue', cursor: 'pointer' }}
-                        onClick={() => navigate(`/user/${user.email}`)}
+                        onClick={(event) => handleNameClick(user, event)}
                       >
                         {renamingUserEmail === user.email ? (
                           <>

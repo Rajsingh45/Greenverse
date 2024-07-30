@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Dashboard from './Dashboard';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
 import device1 from './images/device1.png';
@@ -9,7 +8,7 @@ import device3 from './images/device3.png';
 import device4 from './images/device4.png';
 import device5 from './images/device5.png';
 import device6 from './images/device6.png';
-import UserNavbar from './UserNavbar';
+import Layout from './Layout';
 
 const UserDetail = ( devices = 0) => {
   const { email } = useParams();
@@ -41,17 +40,7 @@ const UserDetail = ( devices = 0) => {
 
   // const totalPages = Math.ceil(devices / imagesPerPage);
   const [totalPages, setTotalPages] = useState(1);
-  const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
   const [deviceCount, setDeviceCount] = useState(0);
-
-  // Function to handle profile picture change
-  const handleProfilePicChange = (file) => {
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
-      setProfilePic(URL.createObjectURL(file));
-    } else {
-      alert('Please select a JPG or PNG image smaller than 1MB.');
-    }
-  };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -91,10 +80,46 @@ const UserDetail = ( devices = 0) => {
     return cards;
   };
 
+  const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/admin/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        setUsers(data);
+        setFilteredUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFilteredUsers(
+        users.filter(user =>
+          user.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredUsers(users);
+    }
+  }, [searchQuery, users]);
 
   return (
     <div className="dashboard">
-      <UserNavbar profilePic={profilePic} />
+      {/* <Navbar profilePic={profilePic} /> */}
+      <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="dash">
         <div className="gallery">
           {renderDeviceCards()}
