@@ -1,4 +1,4 @@
-import React, { useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import './DeviceDetail.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -8,6 +8,8 @@ import 'dayjs/locale/en-gb';
 import UserNavbar from './UserNavbar';
 import TextField from '@mui/material/TextField';
 import Layout from './Layout';
+import IconButton from '@mui/material/IconButton';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
@@ -16,13 +18,17 @@ const DeviceDetailPage = () => {
     const [endDate, setEndDate] = useState(dayjs());
     const [selectedOption, setSelectedOption] = useState('');
     const [error, setError] = useState('');
-    
+    const [liveData, setLiveData] = useState(null);
+    const [datePickerOpen, setDatePickerOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+
     // Check if user is admin
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-
     const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+    const [searchQuery, setSearchQuery] = useState('');
 
     console.log("Is Admin:", isAdmin);
+
     const column1Data = ['A', 'B', 'C', 'D', 'E'];
 
     const handleStartDateChange = (newValue) => {
@@ -54,49 +60,49 @@ const DeviceDetailPage = () => {
         }
     };
 
-    const [users, setUsers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+    useEffect(() => {
+        // Set up WebSocket connection
+        const socket = new WebSocket('ws://localhost:8080');
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        setUsers(data);
-        setFilteredUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            setLiveData(data);
+        };
+
+        return () => {
+            socket.close();
+        };
+    }, []);
+
+    const handleDatePickerToggle = () => {
+        setDatePickerOpen(!datePickerOpen);
     };
 
-    fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    if (searchQuery) {
-      setFilteredUsers(
-        users.filter(user =>
-          user.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredUsers(users);
-    }
-  }, [searchQuery, users]);
+    const handleDateSelection = (newValue) => {
+        setSelectedDate(newValue);
+        setDatePickerOpen(false);
+    };
 
     return (
         <>
             {/* <UserNavbar /> */}
-            
             {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
             <div className="device-detail-page">
                 <div className="table-section">
+                    <div className="calendar-icon-container">
+                        <IconButton onClick={handleDatePickerToggle}>
+                            <CalendarTodayIcon />
+                        </IconButton>
+                        {datePickerOpen && (
+                            <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
+                            <DateTimePicker
+                                value={startDate}
+                                onChange={handleStartDateChange}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
+                        )}
+                    </div>
                     <table>
                         <thead>
                             <tr>
@@ -108,7 +114,7 @@ const DeviceDetailPage = () => {
                             {column1Data.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item}</td>
-                                    <td>Data {index * 2 + 2}</td>
+                                    <td>{liveData ? `Live Data: ${liveData.value}` : 'Waiting for data...'}</td>
                                 </tr>
                             ))}
                         </tbody>

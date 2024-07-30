@@ -1,14 +1,18 @@
 const mqtt = require('mqtt');
 const { MongoClient } = require('mongodb');
-require('dotenv').config(); // Load environment variables
+const WebSocket = require('ws');
+require('dotenv').config();
 
 const mongoURL = process.env.MONGODB_URL;
-const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com'; // MQTT broker URL with SSL/TLS
+const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com';
 const mqttTopic = 'esp32/pub';
-const dbName = 'Airbuddi'; // Specify your database name
-const collectionName = 'sensors'; // Collection name
+const dbName = 'Airbuddi'; 
+const collectionName = 'sensors'; 
 
 const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Create a WebSocket server
+const wss = new WebSocket.Server({ port: 8080 });
 
 function getFormattedTime() {
   const now = new Date();
@@ -21,27 +25,24 @@ function getFormattedTime() {
 async function main() {
   let mqttClient;
   try {
-    // Connect to MongoDB
     await mongoClient.connect();
     console.log('Connected to MongoDB');
-    const db = mongoClient.db(dbName); // Use the specified database
+    const db = mongoClient.db(dbName);
 
-    // List collections
     const collections = await db.listCollections().toArray();
     console.log('Collections in database:', collections.map(coll => coll.name));
 
-    const collection = db.collection(collectionName); // Use the collection
+    const collection = db.collection(collectionName);
 
-    // Connect to MQTT broker
     mqttClient = mqtt.connect(mqttUrl, {
-      key: require('fs').readFileSync(process.env.MQTT_KEY_PATH),      // Path to private key file
-      cert: require('fs').readFileSync(process.env.MQTT_CERT_PATH),    // Path to certificate file
-      ca: require('fs').readFileSync(process.env.MQTT_CA_PATH),        // Path to CA certificate file
-      connectTimeout: 10000,              // Adjust if necessary
+      key: require('fs').readFileSync(process.env.MQTT_KEY_PATH),      
+      cert: require('fs').readFileSync(process.env.MQTT_CERT_PATH),    
+      ca: require('fs').readFileSync(process.env.MQTT_CA_PATH),        
+      connectTimeout: 10000,             
       protocol: 'mqtts',
-      clean: true,                        // Matches "Clean Start"
-      reconnectPeriod: 10000,             // Reconnect every 10 seconds if disconnected
-      will: {                             // Configure Last Will and Testament if needed
+      clean: true,                       
+      reconnectPeriod: 10000,            
+      will: {                            
         topic: mqttTopic,
         payload: 'Will message',
         qos: 0,
@@ -61,22 +62,23 @@ async function main() {
     });
 
     mqttClient.on('message', async (topic, message) => {
-      console.log('Received message on topic:', topic);
-      console.log('Message content:', message.toString()); // Log the raw message content
       if (topic === mqttTopic) {
         try {
           const messageData = JSON.parse(message.toString());
-          console.log('Parsed data:', messageData);
-
-          // Add the formatted time to the message data
           messageData.timestamp = getFormattedTime();
 
           const result = await collection.insertOne(messageData);
-          
-          // Check if the result is valid
+
           if (result.insertedCount > 0) {
             console.log('Data inserted with custom ID:', messageData.id);
-          } 
+            // Broadcast the data to WebSocket clients
+            wss.clients.forEach(client => {
+              if (client.readyState === WebSocket.OPEN) {
+                console.log("Sending data to WebSocket client:", messageData);
+                client.send(JSON.stringify(messageData));
+              }
+            });
+          }
         } catch (err) {
           console.error('Failed to process message or insert data into MongoDB:', err.message);
         }
@@ -89,6 +91,7 @@ async function main() {
       console.log('Gracefully shutting down...');
       await mongoClient.close();
       mqttClient.end();
+      wss.close();
       process.exit();
     });
 
