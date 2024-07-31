@@ -5,13 +5,13 @@ const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [devices, setDevices] = useState('');
-  const [deviceIPs, setDeviceIPs] = useState([]);
+  const [espTopics, setEspTopics] = useState([]);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [buttonText, setButtonText] = useState('SAVE');
   const [emailError, setEmailError] = useState('');
 
   useEffect(() => {
-    setDeviceIPs(Array(Number(devices)).fill(''));
+    setEspTopics(Array(Number(devices)).fill(''));
   }, [devices]);
 
   const isEmailValid = (email) => {
@@ -27,10 +27,10 @@ const NewUserForm = ({ onUserAdded }) => {
     setDevices(e.target.value);
   };
 
-  const handleDeviceIPChange = (index, value) => {
-    const newDeviceIPs = [...deviceIPs];
-    newDeviceIPs[index] = value;
-    setDeviceIPs(newDeviceIPs);
+  const handleEspTopicChange = (index, value) => {
+    const newEspTopics = [...espTopics];
+    newEspTopics[index] = value;
+    setEspTopics(newEspTopics);
   };
 
   const checkEmailExists = async (email) => {
@@ -67,11 +67,11 @@ const NewUserForm = ({ onUserAdded }) => {
     setButtonText('SAVED');
   };
 
-  const handleIPSubmission = async () => {
-    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  const handleTopicSubmission = async () => {
+    const espRegex = /^esp32\/pub\d+$/;
   
-    if (deviceIPs.includes('') || deviceIPs.some(ip => !ipRegex.test(ip))) {
-      alert('Please fill in all device IPs with valid IP addresses');
+    if (espTopics.includes('') || espTopics.some(topic => !espRegex.test(topic))) {
+      alert('Please fill in all devices with valid topics');
       return;
     }
   
@@ -91,7 +91,7 @@ const NewUserForm = ({ onUserAdded }) => {
           name,
           email,
           noofdevices: Number(devices),
-          deviceIPs
+          espTopics
         })
       });
   
@@ -111,7 +111,7 @@ const NewUserForm = ({ onUserAdded }) => {
         name,
         email,
         noofdevices: Number(devices),
-        deviceIPs,
+        espTopics,
         dateAdded: formattedDate
       });
     } catch (error) {
@@ -170,7 +170,7 @@ const NewUserForm = ({ onUserAdded }) => {
 
         {isFormSubmitted && (
           <div className="device-ip-form">
-            <h2>Enter IP Address:</h2>
+            <h2>Enter AWS Topic:</h2>
             {Array.from({ length: Number(devices) }).map((_, index) => (
               <div key={index}>
                 <label htmlFor={`device${index + 1}`} className='boxs'>{`Device${index + 1}:`} </label>
@@ -179,12 +179,12 @@ const NewUserForm = ({ onUserAdded }) => {
                   id={`device${index + 1}`}
                   name={`device${index + 1}`}
                   className='textboxs'
-                  value={deviceIPs[index] || ''}
-                  onChange={(e) => handleDeviceIPChange(index, e.target.value)}
+                  value={espTopics[index] || ''}
+                  onChange={(e) => handleEspTopicChange(index, e.target.value)}
                 />
               </div>
             ))}
-            <button onClick={handleIPSubmission} className='save-btn'>Submit IPs</button>
+            <button onClick={handleTopicSubmission} className='save-btn'>Submit Topics</button>
           </div>
         )}
       </div>

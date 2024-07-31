@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './DeviceDetail.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
 import UserNavbar from './UserNavbar';
-import TextField from '@mui/material/TextField';
 import Layout from './Layout';
 import IconButton from '@mui/material/IconButton';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -14,35 +13,70 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const DeviceDetailPage = () => {
     const { deviceId } = useParams();
     const navigate = useNavigate();
-    const [startDate, setStartDate] = useState(dayjs());
-    const [endDate, setEndDate] = useState(dayjs());
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
     const [selectedOption, setSelectedOption] = useState('');
     const [error, setError] = useState('');
     const [liveData, setLiveData] = useState(null);
-    const [datePickerOpen, setDatePickerOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(null);
-
-    // Check if user is admin
-    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+    const [parameterOptions, setParameterOptions] = useState([]);
+    const [calendarDate, setCalendarDate] = useState(new Date());
+    const [maxDate, setMaxDate] = useState(new Date()); // State for maxDate
+    const [datePickerOpen, setDatePickerOpen] = useState(true);
+    const wsRef = useRef(null);
     const [searchQuery, setSearchQuery] = useState('');
 
-    console.log("Is Admin:", isAdmin);
+    const fetchDataAndParameters = async (date) => {
+        try {
+            const formattedDate = dayjs(date).format('YYYY-MM-DD');
+            const formattedTime = dayjs(date).format('HH:mm:00');
+            const response = await fetch(`http://localhost:5000/api/data?date=${formattedDate}&time=${formattedTime}`);
+            const result = await response.json();
 
-    const column1Data = ['A', 'B', 'C', 'D', 'E'];
-
-    const handleStartDateChange = (newValue) => {
-        if (newValue.isAfter(endDate)) {
-            setEndDate(newValue);
+            if (result.length > 0) {
+                const data = result[0];
+                const headers = Object.keys(data).filter(key => key !== '_id' && key !== 'id' && key !== 'dateTime');
+                setParameterOptions(headers);
+                setLiveData(data);
+            } else {
+                setParameterOptions([]);
+                setLiveData(null);
+            }
+        } catch (error) {
+            console.error('Error fetching data and parameters:', error);
         }
-        setStartDate(newValue);
     };
 
-    const handleEndDateChange = (newValue) => {
-        if (newValue.isBefore(startDate)) {
-            setStartDate(newValue);
+    useEffect(() => {
+        fetchDataAndParameters(calendarDate);
+
+        return () => {
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
+        };
+    }, [calendarDate]);
+
+    useEffect(() => {
+        // Update maxDate every minute
+        const interval = setInterval(() => {
+            setMaxDate(new Date());
+        }, 60000); // 60,000 ms = 1 minute
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        if (date > endDate) {
+            setEndDate(date);
         }
-        setEndDate(newValue);
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+        if (date < startDate) {
+            setStartDate(date);
+        }
     };
 
     const handleSubmit = () => {
@@ -52,69 +86,75 @@ const DeviceDetailPage = () => {
             setError('');
             navigate(`/graph/${deviceId}`, {
                 state: {
-                    startDate: startDate.format('YYYY-MM-DDTHH:mm:ss'),
-                    endDate: endDate.format('YYYY-MM-DDTHH:mm:ss'),
+                    startDate: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss'),
+                    endDate: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss'),
                     parameter: selectedOption
                 }
             });
         }
     };
 
-    useEffect(() => {
-        // Set up WebSocket connection
-        const socket = new WebSocket('ws://localhost:8080');
-
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            setLiveData(data);
-        };
-
-        return () => {
-            socket.close();
-        };
-    }, []);
-
-    const handleDatePickerToggle = () => {
-        setDatePickerOpen(!datePickerOpen);
+    const handleDateSelection = (date) => {
+        setCalendarDate(date);
+        fetchDataAndParameters(date);
     };
 
-    const handleDateSelection = (newValue) => {
-        setSelectedDate(newValue);
-        setDatePickerOpen(false);
+    const handleIconClick = () => {
+        setCalendarDate(dayjs().toDate()); // Set to current date and time
+        setDatePickerOpen(true); // Open the date picker
     };
+
+    const filterFutureTimes = (time) => {
+        const now = new Date();
+        return time.getTime() <= now.getTime();
+    };
+
+    // Check if user is admin
+    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+
+    console.log("Is Admin:", isAdmin);
 
     return (
         <>
-            {/* <UserNavbar /> */}
             {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
             <div className="device-detail-page">
                 <div className="table-section">
                     <div className="calendar-icon-container">
-                        <IconButton onClick={handleDatePickerToggle}>
-                            <CalendarTodayIcon />
-                        </IconButton>
-                        {datePickerOpen && (
-                            <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
-                            <DateTimePicker
-                                value={startDate}
-                                onChange={handleStartDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </LocalizationProvider>
-                        )}
+                        <div className="date-pickers">
+                            <IconButton onClick={handleIconClick}>
+                                <CalendarTodayIcon />
+                            </IconButton>
+                            {datePickerOpen && (
+                                <DatePicker
+                                    selected={calendarDate}
+                                    onChange={handleDateSelection}
+                                    showTimeSelect
+                                    timeIntervals={1} // Allows selecting every minute
+                                    timeFormat="HH:mm"
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    className='date-picker-input'
+                                    onClickOutside={() => setDatePickerOpen(true)}
+                                    maxDate={maxDate} // Restrict future dates and times
+                                    filterTime={filterFutureTimes} // Restrict future times
+                                    yearDropdownItemNumber={15} // Number of years to show in dropdown
+                                    scrollableYearDropdown
+                                />
+                            )}
+                        </div>
                     </div>
                     <table>
                         <thead>
                             <tr>
-                                <th>Column 1</th>
-                                <th>Column 2</th>
+                                <th>Parameter</th>
+                                <th>Value</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {column1Data.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{item}</td>
-                                    <td>{liveData ? `Live Data: ${liveData.value}` : 'Waiting for data...'}</td>
+                            {liveData && Object.entries(liveData).filter(([key]) => !['_id', 'dateTime'].includes(key)).map(([key, value]) => (
+                                <tr key={key}>
+                                    <td>{key}</td>
+                                    <td>{value}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -124,24 +164,31 @@ const DeviceDetailPage = () => {
                     <h3>Filter by Date and Time</h3>
                     <div className="date-picker">
                         <label>From:</label>
-                        <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
-                            <DateTimePicker
-                                value={startDate}
-                                onChange={handleStartDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                            />
-                        </LocalizationProvider>
+                        <DatePicker
+                            selected={startDate}
+                            onChange={handleStartDateChange}
+                            showTimeSelect
+                            timeIntervals={1} // Allows selecting every minute
+                            timeFormat="HH:mm"
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            className='date-picker-input'
+                            maxDate={maxDate} // Restrict future dates and times
+                            filterTime={filterFutureTimes} // Restrict future times
+                        />
                     </div>
                     <div className="date-picker">
                         <label>To:</label>
-                        <LocalizationProvider dateAdapter={AdapterDayjs} locale="en-gb">
-                            <DateTimePicker
-                                value={endDate}
-                                onChange={handleEndDateChange}
-                                renderInput={(params) => <TextField {...params} />}
-                                minDate={startDate}
-                            />
-                        </LocalizationProvider>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={handleEndDateChange}
+                            showTimeSelect
+                            timeIntervals={1} // Allows selecting every minute
+                            timeFormat="HH:mm"
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            className='date-picker-input'
+                            maxDate={maxDate} // Restrict future dates and times
+                            filterTime={filterFutureTimes} // Restrict future times
+                        />
                     </div>
                     <div className="dropdown-section">
                         <label>Select Parameter:</label>
@@ -150,7 +197,7 @@ const DeviceDetailPage = () => {
                             onChange={(e) => setSelectedOption(e.target.value)}
                         >
                             <option value="" disabled>Select an option</option>
-                            {column1Data.map((item, index) => (
+                            {parameterOptions.map((item, index) => (
                                 <option key={index} value={item}>
                                     {item}
                                 </option>

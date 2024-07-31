@@ -20,6 +20,7 @@
     "dotenv": "",
     "express": "",
     "jsonwebtoken": "",
+    "moment-timezone": "^0.5.45",
     "mongoose": "",
     "morgan": "",
     "mqtt": "^5.8.1",

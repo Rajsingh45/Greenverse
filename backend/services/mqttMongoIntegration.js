@@ -2,6 +2,7 @@ const mqtt = require('mqtt');
 const { MongoClient } = require('mongodb');
 const WebSocket = require('ws');
 require('dotenv').config();
+const moment = require('moment-timezone');
 
 const mongoURL = process.env.MONGODB_URL;
 const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com';
@@ -14,12 +15,11 @@ const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifie
 // Create a WebSocket server
 const wss = new WebSocket.Server({ port: 8080 });
 
-function getFormattedTime() {
-  const now = new Date();
-  const hours = now.getHours().toString().padStart(2, '0');
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const seconds = now.getSeconds().toString().padStart(2, '0');
-  return `${hours}:${minutes}:${seconds}`;
+function getFormattedDateTime() {
+  const now = moment().tz('Asia/Kolkata'); // IST timezone
+  const date = now.format('YYYY-MM-DD'); // YYYY-MM-DD
+  const time = now.format('HH:mm:00'); // HH:MM:00
+  return `${date} ${time}`;
 }
 
 async function main() {
@@ -35,14 +35,14 @@ async function main() {
     const collection = db.collection(collectionName);
 
     mqttClient = mqtt.connect(mqttUrl, {
-      key: require('fs').readFileSync(process.env.MQTT_KEY_PATH),      
-      cert: require('fs').readFileSync(process.env.MQTT_CERT_PATH),    
-      ca: require('fs').readFileSync(process.env.MQTT_CA_PATH),        
-      connectTimeout: 10000,             
+      key: require('fs').readFileSync(process.env.MQTT_KEY_PATH),
+      cert: require('fs').readFileSync(process.env.MQTT_CERT_PATH),
+      ca: require('fs').readFileSync(process.env.MQTT_CA_PATH),
+      connectTimeout: 10000,
       protocol: 'mqtts',
-      clean: true,                       
-      reconnectPeriod: 10000,            
-      will: {                            
+      clean: true,
+      reconnectPeriod: 10000,
+      will: {
         topic: mqttTopic,
         payload: 'Will message',
         qos: 0,
@@ -61,26 +61,43 @@ async function main() {
       });
     });
 
-    mqttClient.on('message', async (topic, message) => {
+    let lastStoredMinute = null;
+
+    mqttClient.on('message', (topic, message) => {
       if (topic === mqttTopic) {
         try {
           const messageData = JSON.parse(message.toString());
-          messageData.timestamp = getFormattedTime();
+          const currentDateTime = getFormattedDateTime();
+          const currentMinute = currentDateTime.split(' ')[1].slice(0, 5); // HH:MM
 
-          const result = await collection.insertOne(messageData);
+          // Check if it's the beginning of a new minute
+          if (currentMinute !== lastStoredMinute) {
+            lastStoredMinute = currentMinute;
 
-          if (result.insertedCount > 0) {
-            console.log('Data inserted with custom ID:', messageData.id);
-            // Broadcast the data to WebSocket clients
-            wss.clients.forEach(client => {
-              if (client.readyState === WebSocket.OPEN) {
-                console.log("Sending data to WebSocket client:", messageData);
-                client.send(JSON.stringify(messageData));
+            // Store data and broadcast to WebSocket clients
+            (async () => {
+              try {
+                const result = await collection.insertOne({
+                  ...messageData,
+                  dateTime: currentDateTime // Store full datetime in IST
+                });
+
+                if (result.insertedCount > 0) {
+                  console.log('Data inserted:', result.insertedCount);
+                  // Broadcast the data to WebSocket clients
+                  wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                      client.send(JSON.stringify(messageData));
+                    }
+                  });
+                }
+              } catch (err) {
+                console.error('Failed to insert data into MongoDB:', err.message);
               }
-            });
+            })();
           }
         } catch (err) {
-          console.error('Failed to process message or insert data into MongoDB:', err.message);
+          console.error('Failed to process message:', err.message);
         }
       } else {
         console.warn('Received message on unexpected topic:', topic);
