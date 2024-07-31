@@ -1,128 +1,110 @@
 const mqtt = require('mqtt');
 const { MongoClient } = require('mongodb');
-const WebSocket = require('ws');
+const fs = require('fs');
 require('dotenv').config();
-const moment = require('moment-timezone');
 
 const mongoURL = process.env.MONGODB_URL;
 const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com';
-const mqttTopic = 'esp32/pub';
-const dbName = 'Airbuddi'; 
-const collectionName = 'sensors'; 
-
+const dbName = 'Airbuddi';
 const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Create a WebSocket server
-const wss = new WebSocket.Server({ port: 8080 });
+let mqttClient;
+const lastStoredTimestamps = {};
 
 function getFormattedDateTime() {
-  const now = moment().tz('Asia/Kolkata'); // IST timezone
-  const date = now.format('YYYY-MM-DD'); // YYYY-MM-DD
-  const time = now.format('HH:mm:00'); // HH:MM:00
-  return `${date} ${time}`;
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0];
+    return `${date} ${time}`;
 }
 
-async function main() {
-  let mqttClient;
-  try {
-    await mongoClient.connect();
-    console.log('Connected to MongoDB');
-    const db = mongoClient.db(dbName);
+function getFormattedMinute() {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return now;
+}
 
-    const collections = await db.listCollections().toArray();
-    console.log('Collections in database:', collections.map(coll => coll.name));
-
-    const collection = db.collection(collectionName);
-
+async function connectMQTT() {
     mqttClient = mqtt.connect(mqttUrl, {
-      key: require('fs').readFileSync(process.env.MQTT_KEY_PATH),
-      cert: require('fs').readFileSync(process.env.MQTT_CERT_PATH),
-      ca: require('fs').readFileSync(process.env.MQTT_CA_PATH),
-      connectTimeout: 10000,
-      protocol: 'mqtts',
-      clean: true,
-      reconnectPeriod: 10000,
-      will: {
-        topic: mqttTopic,
-        payload: 'Will message',
-        qos: 0,
-        retain: false
-      }
+        key: fs.readFileSync(process.env.MQTT_KEY_PATH),
+        cert: fs.readFileSync(process.env.MQTT_CERT_PATH),
+        ca: fs.readFileSync(process.env.MQTT_CA_PATH),
+        connectTimeout: 10000,
+        protocol: 'mqtts',
+        clean: true,
+        reconnectPeriod: 10000
     });
 
     mqttClient.on('connect', () => {
-      console.log('Connected to MQTT broker');
-      mqttClient.subscribe(mqttTopic, { qos: 0 }, (err) => {
-        if (err) {
-          console.error('Failed to subscribe to topic:', err.message);
-        } else {
-          console.log(`Subscribed to topic: ${mqttTopic}`);
-        }
-      });
+        console.log('Connected to MQTT broker');
     });
 
-    let lastStoredMinute = null;
-
-    mqttClient.on('message', (topic, message) => {
-      if (topic === mqttTopic) {
+    mqttClient.on('message', async (topic, message) => {
+        console.log(`Message received on topic ${topic}: ${message.toString()}`);
         try {
-          const messageData = JSON.parse(message.toString());
-          const currentDateTime = getFormattedDateTime();
-          const currentMinute = currentDateTime.split(' ')[1].slice(0, 5); // HH:MM
+            const messageData = JSON.parse(message.toString());
+            const currentMinute = getFormattedMinute();
 
-          // Check if it's the beginning of a new minute
-          if (currentMinute !== lastStoredMinute) {
-            lastStoredMinute = currentMinute;
+            if (!lastStoredTimestamps[topic] || currentMinute > lastStoredTimestamps[topic]) {
+                lastStoredTimestamps[topic] = currentMinute;
 
-            // Store data and broadcast to WebSocket clients
-            (async () => {
-              try {
+                const db = mongoClient.db(dbName);
+                const collection = db.collection(topic);
                 const result = await collection.insertOne({
-                  ...messageData,
-                  dateTime: currentDateTime // Store full datetime in IST
+                    ...messageData,
+                    dateTime: currentMinute
                 });
 
                 if (result.insertedCount > 0) {
-                  console.log('Data inserted:', result.insertedCount);
-                  // Broadcast the data to WebSocket clients
-                  wss.clients.forEach(client => {
-                    if (client.readyState === WebSocket.OPEN) {
-                      client.send(JSON.stringify(messageData));
-                    }
-                  });
+                    console.log('Data inserted:', result.insertedCount);
                 }
-              } catch (err) {
-                console.error('Failed to insert data into MongoDB:', err.message);
-              }
-            })();
-          }
+            } else {
+                console.log(`Data for topic ${topic} is already stored for minute ${currentMinute}`);
+            }
         } catch (err) {
-          console.error('Failed to process message:', err.message);
+            console.error('Failed to process message:', err.message);
         }
-      } else {
-        console.warn('Received message on unexpected topic:', topic);
-      }
     });
 
-    process.on('SIGINT', async () => {
-      console.log('Gracefully shutting down...');
-      await mongoClient.close();
-      mqttClient.end();
-      wss.close();
-      process.exit();
+    mqttClient.on('error', (err) => {
+        console.error('MQTT Client Error:', err.stack || err.message || err);
     });
-
-  } catch (err) {
-    console.error('Failed to connect to MongoDB or MQTT broker:', err.message);
-  }
-
-  mongoClient.on('error', (err) => {
-    console.error('MongoDB Client Error:', err.message);
-  });
-
-  mqttClient.on('error', (err) => {
-    console.error('MQTT Client Error:', err.stack || err.message || err);
-  });
 }
 
-module.exports = main;
+async function subscribeToTopics() {
+    if (!mqttClient) {
+        await connectMQTT(); // Initialize MQTT client if not already
+    }
+
+    try {
+        await mongoClient.connect();
+        console.log('Connected to MongoDB');
+        const db = mongoClient.db(dbName);
+
+        // Fetch users to get the latest topics
+        const users = await db.collection('admins').find().toArray();
+        console.log('Fetched users:', users);
+
+        const espTopics = users.flatMap(user => user.espTopics || []);
+        console.log(`Subscribing to topics: ${espTopics.join(', ')}`);
+
+        if (espTopics.length === 0) {
+            console.error('No topics found to subscribe.');
+            return;
+        }
+
+        espTopics.forEach(topic => {
+            mqttClient.subscribe(topic, { qos: 0 }, (err) => {
+                if (err) {
+                    console.error(`Failed to subscribe to topic ${topic}:`, err.message);
+                } else {
+                    console.log(`Subscribed to topic: ${topic}`);
+                }
+            });
+        });
+    } catch (err) {
+        console.error('Failed to connect to MongoDB or MQTT broker:', err.message);
+    }
+}
+
+module.exports = subscribeToTopics;

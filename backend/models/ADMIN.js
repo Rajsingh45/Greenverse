@@ -22,14 +22,14 @@ const AdminSchema = new mongoose.Schema({
     },
     espTopics: { 
         type: [String],
-        validate: {
-            validator: function (v) {
-                const espTopicRegex = /^esp32\/pub\d+$/;
-                return v.every(topic => espTopicRegex.test(topic));
-            },
-            message: props => `${props.value} contains an invalid topic! Please provide valid esp/pub{number} topics.`
-        },
-        default: []
+        // validate: {
+            // validator: function (v) {
+            //     // const espTopicRegex = /^esp32\/pub\d+$/;
+            //     return v.every(topic => espTopicRegex.test(topic));
+            // },
+            // message: props => `${props.value} contains an invalid topic! Please provide valid esp/pub{number} topics.`
+        // },
+        // default: []
     },
     dateAdded: { 
         type: String, 
