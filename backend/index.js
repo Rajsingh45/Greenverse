@@ -28,7 +28,8 @@ mongoose.connect(mongoURL,
 )
 .then(() => {
     console.log('Database connection successful');
-    mqttMongoIntegration();
+    // mqttMongoIntegration();
+    
   }).catch((err) => {
     console.error('Database connection error:', err);
   });

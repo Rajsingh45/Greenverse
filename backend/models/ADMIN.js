@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
-
 const AdminSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true, 
+        required: true,
         validate: {
             validator: function (v) {
                 return /^[A-Za-z\s]+$/.test(v);
@@ -17,23 +16,27 @@ const AdminSchema = new mongoose.Schema({
         unique: true,
         match: [/\S+@\S+\.\S+/, 'Please fill a valid email address'] 
     },
-    noofdevices:{
+    noofdevices: {
         type: Number,
         required: true
     },
-    deviceIPs: {
+    espTopics: { 
         type: [String],
-        validate: {
-            validator: function (v) {
-                return v.every(ip => /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip));
-            },
-            message: props => `${props.value} contains an invalid IP address! Please provide valid IPv4 addresses.`
-        },
-        default: []
+        // validate: {
+            // validator: function (v) {
+            //     // const espTopicRegex = /^esp32\/pub\d+$/;
+            //     return v.every(topic => espTopicRegex.test(topic));
+            // },
+            // message: props => `${props.value} contains an invalid topic! Please provide valid esp/pub{number} topics.`
+        // },
+        // default: []
     },
-    dateAdded: { type: String, default: () => formatDate(new Date()) } // Update this line
-
+    dateAdded: { 
+        type: String, 
+        default: () => formatDate(new Date()) 
+    }
 });
+
 
 const formatDate = (date) => {
     const day = date.getDate();
