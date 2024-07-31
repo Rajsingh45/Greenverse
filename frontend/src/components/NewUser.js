@@ -9,6 +9,7 @@ const NewUserForm = ({ onUserAdded }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [buttonText, setButtonText] = useState('SAVE');
   const [emailError, setEmailError] = useState('');
+  const [topicError, setTopicError] = useState('');
 
   useEffect(() => {
     setEspTopics(Array(Number(devices)).fill(''));
@@ -68,10 +69,9 @@ const NewUserForm = ({ onUserAdded }) => {
   };
 
   const handleTopicSubmission = async () => {
-    const espRegex = /^esp32\/pub\d+$/;
-  
-    if (espTopics.includes('') || espTopics.some(topic => !espRegex.test(topic))) {
-      alert('Please fill in all devices with valid topics');
+    const uniqueTopics = new Set(espTopics);
+    if (espTopics.length !== uniqueTopics.size) {
+      alert('Please ensure all topics are unique');
       return;
     }
   

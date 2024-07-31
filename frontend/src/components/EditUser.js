@@ -50,9 +50,9 @@ const EditUserForm = ({ onUserUpdated }) => {
       return;
     }
 
-    const topicRegex = /^esp32\/pub\d+$/;
-    if (!topicRegex.test(newTopic)) {
-      alert('Please enter a valid esp32/pub{number} topic');
+    const uniqueTopics = new Set(espTopics);
+    if (uniqueTopics.has(newTopic)) {
+      alert('Topic already exists');
       return;
     }
 
@@ -63,10 +63,9 @@ const EditUserForm = ({ onUserUpdated }) => {
   };
 
   const handleTopicSubmission = async () => {
-    const topicRegex = /^esp32\/pub\d+$/;
-
-    if (espTopics.includes('') || espTopics.some(topic => !topicRegex.test(topic))) {
-      alert('Please fill in all topics with valid esp32/pub{number} format');
+    const uniqueTopics = new Set(espTopics);
+    if (espTopics.length !== uniqueTopics.size) {
+      alert('Please ensure all topics are unique');
       return;
     }
 

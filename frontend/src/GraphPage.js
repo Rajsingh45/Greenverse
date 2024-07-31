@@ -19,7 +19,7 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { FaChevronDown } from 'react-icons/fa';
 import './GraphPage.css';
-import UserNavbar from './UserNavbar'
+import UserNavbar from './UserNavbar';
 import Layout from './Layout';
 
 ChartJS.register(
@@ -55,65 +55,67 @@ const GraphPage = () => {
     console.log("Is Admin:", isAdmin);
 
     const [users, setUsers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredUsers, setFilteredUsers] = useState([]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        setUsers(data);
-        setFilteredUsers(data);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                setUsers(data);
+                setFilteredUsers(data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
 
-    fetchUsers();
-  }, []);
+        fetchUsers();
+    }, []);
 
-  useEffect(() => {
-    if (searchQuery) {
-      setFilteredUsers(
-        users.filter(user =>
-          user.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredUsers(users);
-    }
-  }, [searchQuery, users]);
-
+    useEffect(() => {
+        if (searchQuery) {
+            setFilteredUsers(
+                users.filter(user =>
+                    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+            );
+        } else {
+            setFilteredUsers(users);
+        }
+    }, [searchQuery, users]);
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/aqi/data?startDate=${startDate}&endDate=${endDate}&parameter=${parameter}`, {
+            const startDateTime = `${startDate}`;
+            const endDateTime = `${endDate}`;
+    
+            const response = await fetch(`http://localhost:5000/api/datas?parameter=${parameter}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-
+    
             const data = await response.json();
             console.log('Fetched data:', data);
-
+    
             if (!Array.isArray(data)) {
                 console.warn('Data is not in expected format');
                 setChartData({
                     labels: [],
                     datasets: [
                         {
-                            label: 'Air Quality Index',
+                            label: parameter,
                             data: [],
                             borderColor: 'rgba(75,192,192,1)',
                             fill: false
@@ -122,14 +124,14 @@ const GraphPage = () => {
                 });
                 return;
             }
-
+    
             if (data.length === 0) {
                 console.warn('No data available for the selected date range.');
                 setChartData({
                     labels: [],
                     datasets: [
                         {
-                            label: 'Air Quality Index',
+                            label: parameter,
                             data: [],
                             borderColor: 'rgba(75,192,192,1)',
                             fill: false
@@ -138,15 +140,17 @@ const GraphPage = () => {
                 });
                 return;
             }
-
-            const dates = data.map(entry => dayjs(entry.date).format('YYYY-MM-DDTHH:mm:ss'));
-            const values = data.map(entry => entry.value);
-
+    
+            // Extract and format data
+            const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
+            const values = data.map(entry => entry[parameter]);
+    
+            // Update chart data
             setChartData({
-                labels: dates,
+                labels: labels,
                 datasets: [
                     {
-                        label: 'Air Quality Index',
+                        label: parameter,
                         data: values,
                         borderColor: 'rgba(75,192,192,1)',
                         fill: false
@@ -159,7 +163,7 @@ const GraphPage = () => {
                 labels: [],
                 datasets: [
                     {
-                        label: 'Air Quality Index',
+                        label: parameter,
                         data: [],
                         borderColor: 'rgba(75,192,192,1)',
                         fill: false
@@ -168,6 +172,8 @@ const GraphPage = () => {
             });
         }
     };
+    
+    
 
     useEffect(() => {
         fetchData();
@@ -261,21 +267,20 @@ const GraphPage = () => {
 
     return (
         <>
-        {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
-        <div className="graph-page-wrapper">
-            <div className="chart-section">
-                <div className="dropdown-container" ref={dropdownRef}>
-                    <button className="dropdown-button" onClick={toggleDropdown}>
-                        Download <FaChevronDown className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`} />
-                    </button>
-                    <div className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
-                        <button onClick={() => handleDownload('PNG')} className="dropdown-item">PNG</button>
-                        <button onClick={() => handleDownload('PDF')} className="dropdown-item">PDF</button>
-                        <button onClick={() => handleDownload('Excel')} className="dropdown-item">Excel</button>
-                        <button onClick={() => handleDownload('Word')} className="dropdown-item">Word</button>
+            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
+            <div className="graph-page-wrapper">
+                <div className="chart-section">
+                    <div className="dropdown-container" ref={dropdownRef}>
+                        <button className="dropdown-button" onClick={toggleDropdown}>
+                            Download <FaChevronDown className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`} />
+                        </button>
+                        <div className={`dropdown-menu ${dropdownOpen ? 'show' : ''}`}>
+                            <button onClick={() => handleDownload('PNG')} className="dropdown-item">PNG</button>
+                            <button onClick={() => handleDownload('PDF')} className="dropdown-item">PDF</button>
+                            <button onClick={() => handleDownload('Excel')} className="dropdown-item">Excel</button>
+                            <button onClick={() => handleDownload('Word')} className="dropdown-item">Word</button>
+                        </div>
                     </div>
-                </div>
-                <div className="chart-container">
                     <Line
                         data={chartData}
                         options={{
@@ -284,32 +289,19 @@ const GraphPage = () => {
                                     type: 'time',
                                     time: {
                                         unit: getTicks(),
-                                        tooltipFormat: 'dd-MM-yyyy HH:mm',
-                                        displayFormats: {
-                                            minute: 'dd-MM-yyyy HH:mm',
-                                            day: 'dd-MM-yyyy'
-                                        }
                                     },
                                     title: {
                                         display: true,
                                         text: 'Date and Time'
                                     },
                                     ticks: {
-                                        callback: formatTick,
-                                        maxTicksLimit: 10,
-                                        autoSkip: true,
-                                        maxRotation: 0,
-                                        minRotation: 0
-                                    },
-                                    grid: {
-                                        display: true,
-                                        drawBorder: false
+                                        callback: formatTick
                                     }
                                 },
                                 y: {
                                     title: {
                                         display: true,
-                                        text: 'AQI Value'
+                                        text: parameter
                                     }
                                 }
                             }
@@ -317,7 +309,6 @@ const GraphPage = () => {
                     />
                 </div>
             </div>
-        </div>
         </>
     );
 };
