@@ -11,62 +11,62 @@ const EditUserForm = ({ onUserUpdated }) => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [devices, setDevices] = useState(user.noofdevices);
-  const [deviceIPs, setDeviceIPs] = useState(user.deviceIPs || []);
+  const [espTopics, setEspTopics] = useState(user.espTopics || []); // Changed from deviceIPs
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedIPIndex, setSelectedIPIndex] = useState(null);
-  const [newIP, setNewIP] = useState('');
-  const [isAddingIP, setIsAddingIP] = useState(false);
+  const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
+  const [newTopic, setNewTopic] = useState('');
+  const [isAddingTopic, setIsAddingTopic] = useState(false);
 
   useEffect(() => {
-    setDeviceIPs(user.deviceIPs || []);
-  }, [user.deviceIPs]);
+    setEspTopics(user.espTopics || []); // Changed from deviceIPs
+  }, [user.espTopics]);
 
   const handleMenuClick = (event, index) => {
     setAnchorEl(event.currentTarget);
-    setSelectedIPIndex(index);
+    setSelectedTopicIndex(index);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedIPIndex(null);
+    setSelectedTopicIndex(null);
   };
 
-  const handleDeleteIP = () => {
-    if (selectedIPIndex !== null) {
-      const newDeviceIPs = deviceIPs.filter((_, index) => index !== selectedIPIndex);
-      setDeviceIPs(newDeviceIPs);
-      setDevices(newDeviceIPs.length);
+  const handleDeleteTopic = () => {
+    if (selectedTopicIndex !== null) {
+      const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+      setEspTopics(newEspTopics);
+      setDevices(newEspTopics.length);
       handleMenuClose();
     }
   };
 
-  const handleAddIPClick = () => {
-    setIsAddingIP(true);
+  const handleAddTopicClick = () => {
+    setIsAddingTopic(true);
   };
 
-  const handleAddIP = () => {
-    if (newIP === '') {
-      alert('Please enter a valid IP address');
+  const handleAddTopic = () => {
+    if (newTopic === '') {
+      alert('Please enter a valid topic');
       return;
     }
 
-    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if (!ipRegex.test(newIP)) {
-      alert('Please enter a valid IP address');
+    const topicRegex = /^esp32\/pub\d+$/;
+    if (!topicRegex.test(newTopic)) {
+      alert('Please enter a valid esp32/pub{number} topic');
       return;
     }
 
-    setDeviceIPs([...deviceIPs, newIP]);
+    setEspTopics([...espTopics, newTopic]);
     setDevices(devices + 1);
-    setNewIP('');
-    setIsAddingIP(false);
+    setNewTopic('');
+    setIsAddingTopic(false);
   };
 
-  const handleIPSubmission = async () => {
-    const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  const handleTopicSubmission = async () => {
+    const topicRegex = /^esp32\/pub\d+$/;
 
-    if (deviceIPs.includes('') || deviceIPs.some(ip => !ipRegex.test(ip))) {
-      alert('Please fill in all device IPs with valid IP addresses');
+    if (espTopics.includes('') || espTopics.some(topic => !topicRegex.test(topic))) {
+      alert('Please fill in all topics with valid esp32/pub{number} format');
       return;
     }
 
@@ -86,7 +86,7 @@ const EditUserForm = ({ onUserUpdated }) => {
           name,
           email,
           noofdevices: Number(devices),
-          deviceIPs
+          espTopics // Changed from deviceIPs
         })
       });
 
@@ -101,7 +101,7 @@ const EditUserForm = ({ onUserUpdated }) => {
         id: user._id,
         name,
         noofdevices: Number(devices),
-        deviceIPs
+        espTopics // Changed from deviceIPs
       });
 
       navigate('/admin');
@@ -113,24 +113,24 @@ const EditUserForm = ({ onUserUpdated }) => {
   return (
     <div className="container-main">
       <div className="header-main">
-        <h1 className='new-user-edit'>EDIT IP Addresses</h1>
+        <h1 className='new-user-edit'>EDIT AWS Topics</h1>
       </div>
       <div className="content">
         <div className="right-screen-exist">
-          <h2>Current IP Addresses:</h2>
+          <h2>Current AWS Topics:</h2>
           <table className="ip-table">
             <thead>
               <tr>
                 <th>No.</th>
-                <th>Current IP Addresses</th>
+                <th>Current AWS Topic</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {deviceIPs.map((ip, index) => (
+              {espTopics.map((topic, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{ip}</td>
+                  <td>{topic}</td>
                   <td>
                     <IconButton
                       aria-label="more"
@@ -144,10 +144,10 @@ const EditUserForm = ({ onUserUpdated }) => {
                       id="long-menu"
                       anchorEl={anchorEl}
                       keepMounted
-                      open={Boolean(anchorEl) && selectedIPIndex === index}
+                      open={Boolean(anchorEl) && selectedTopicIndex === index}
                       onClose={handleMenuClose}
                     >
-                      <MenuItem onClick={handleDeleteIP}>
+                      <MenuItem onClick={handleDeleteTopic}>
                         Delete
                       </MenuItem>
                     </Menu>
@@ -157,23 +157,23 @@ const EditUserForm = ({ onUserUpdated }) => {
             </tbody>
           </table>
           <div className="button-container">
-            <div className="add-ip-container">
-              {isAddingIP ? (
+            <div className="add-ip-container"> {/* Keeping class name as it is */}
+              {isAddingTopic ? (
                 <>
                   <input
                     type="text"
-                    value={newIP}
-                    onChange={(e) => setNewIP(e.target.value)}
+                    value={newTopic} // Renamed from newIP
+                    onChange={(e) => setNewTopic(e.target.value)} // Renamed from setNewIP
                     placeholder="Enter new IP address"
                     className="textboxs"
                   />
-                  <button onClick={handleAddIP} className="add-ip-btn">Save IP Address</button>
+                  <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button> {/* Keeping class name as it is */}
                 </>
               ) : (
-                <button onClick={handleAddIPClick} className="add-ip-btn">Add IP Address</button>
+                <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button> 
               )}
             </div>
-            <button onClick={handleIPSubmission} className='save-btn'>Submit IPs</button>
+            <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button> {/* Keeping class name as it is */}
           </div>
         </div>
       </div>

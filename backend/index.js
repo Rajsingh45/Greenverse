@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const mqttMongoIntegration = require('./services/mqttMongoIntegration');
+const dataRoutes = require('./routes/dataRoutes');
 
 require('dotenv').config();
 
@@ -37,6 +38,8 @@ app.use('/auth', authRoutes);
 app.use('/aqi', aqiRoutes);  
 app.use('/admin',adminRoutes);
 app.use('/', contactRoutes);
+
+app.use('/api', dataRoutes); 
 
 app.get('/locations', (req, res) => {
   const locations = [

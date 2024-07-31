@@ -2,7 +2,7 @@ const User = require('../models/USER');
 const Admin = require('../models/ADMIN');
 
 const addUser = async (req, res) => {
-    const { name, email, noofdevices, deviceIPs } = req.body;
+    const { name, email, noofdevices, espTopics } = req.body;
 
     try {
         const existingUser = await Admin.findOne({ email });
@@ -10,7 +10,7 @@ const addUser = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        const newUser = new Admin({ name, email, noofdevices, deviceIPs, role: 'user',dateAdded: formatDate(new Date()) });
+        const newUser = new Admin({ name, email, noofdevices, espTopics, role: 'user', dateAdded: formatDate(new Date()) });
         await newUser.save();
 
         res.status(201).json({ message: 'User added successfully', user: newUser });
@@ -19,12 +19,14 @@ const addUser = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
-    const formatDate = (date) => {
-        const day = date.getDate();
-        const month = date.toLocaleString('default', { month: 'short' });
-        const year = date.getFullYear();
-        return `${day} ${month} ${year}`;
+
+const formatDate = (date) => {
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
 };
+
 
 const getAllUsers = async (req, res) => {
     try {
@@ -63,26 +65,25 @@ const checkAdminEmailExists = async (req, res) => {
     }
 };
 const updateUserDevices = async (req, res) => {
-    const { name, noofdevices, deviceIPs, email } = req.body;
-  
+    const { name, noofdevices, espTopics, email } = req.body;
+
     try {
-      const existingUser = await Admin.findOne({ email });
-      if (!existingUser) {
-        return res.status(400).json({ message: 'User not found' });
-      }
-  
-      // Directly update the device IPs and the number of devices
-      existingUser.deviceIPs = deviceIPs;
-      existingUser.noofdevices = noofdevices;
-      existingUser.name = name;
-  
-      await existingUser.save();
-  
-      res.json({ message: 'Number of devices updated successfully', user: existingUser });
+        const existingUser = await Admin.findOne({ email });
+        if (!existingUser) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        existingUser.espTopics = espTopics; 
+        existingUser.noofdevices = noofdevices;
+        existingUser.name = name;
+
+        await existingUser.save();
+
+        res.json({ message: 'Number of devices updated successfully', user: existingUser });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Something went wrong' });
-}
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
 };
 
 const renameUser = async (req, res) => {
