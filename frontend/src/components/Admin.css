@@ -149,3 +149,55 @@ iframe {
     font-size: 1.5rem;
   }
 }
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align pagination to the right */
+  margin-top: 20px;
+}
+
+/* Pagination component styling */
+.MuiPagination-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 5px 10px;
+}
+
+/* Pagination button styling */
+.MuiPagination-ul {
+  display: flex;
+  gap: 5px; /* Space between page numbers */
+}
+
+/* Page button */
+.MuiPaginationItem-root {
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover and focus states */
+.MuiPaginationItem-root:hover,
+.MuiPaginationItem-root.Mui-selected {
+  background-color: #3f51b5; /* Primary color for hover/selected state */
+  color: #fff;
+}
+
+/* Disabled button styling */
+.MuiPaginationItem-root.Mui-disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Typography styling for page number info */
+.MuiTypography-body1 {
+  margin-left: 16px;
+  font-size: 14px;
+  color: #333;
+}

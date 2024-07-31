@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NewUser.css';
+import { useNavigate } from 'react-router-dom';
 
 const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
@@ -10,6 +11,7 @@ const NewUserForm = ({ onUserAdded }) => {
   const [buttonText, setButtonText] = useState('SAVE');
   const [emailError, setEmailError] = useState('');
   const [topicError, setTopicError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     setEspTopics(Array(Number(devices)).fill(''));
@@ -105,6 +107,7 @@ const NewUserForm = ({ onUserAdded }) => {
       const currentDate = new Date();
       const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
       console.log(`User added on: ${formattedDate}`);
+      navigate('/admin');
   
       onUserAdded({
         id: Date.now(),
@@ -134,6 +137,7 @@ const NewUserForm = ({ onUserAdded }) => {
             className='textbox'
             value={name}
             onChange={(e) => setName(e.target.value)}
+            disabled={isFormSubmitted}
           />
 
           <label htmlFor="email" className='box'>Email:</label>
@@ -143,6 +147,7 @@ const NewUserForm = ({ onUserAdded }) => {
             name="email"
             className='textbox'
             value={email}
+            disabled={isFormSubmitted}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={async () => {
               const emailExists = await checkEmailExists(email);
@@ -163,9 +168,10 @@ const NewUserForm = ({ onUserAdded }) => {
             className='textbox'
             value={devices}
             onChange={handleDevicesChange}
+            disabled={isFormSubmitted}
           />
 
-          <button type="submit" className='save-btn' disabled={!isFormValid()}>{buttonText}</button>
+          <button type="submit" className='save-btn' disabled={!isFormValid() || isFormSubmitted}>{buttonText}</button>
         </form>
 
         {isFormSubmitted && (

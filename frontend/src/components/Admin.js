@@ -3,7 +3,7 @@ import './Admin.css';
 import Navbar from '../Navbar.js';
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
-import { Menu, MenuItem, IconButton, TextField, Button } from '@mui/material';
+import { Menu, MenuItem, IconButton, TextField, Button , Pagination,Typography } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,12 +16,19 @@ const Admin = ({ users, setUsers }) => {
   const [menuUser, setMenuUser] = useState(null);
   const [mapUrl, setMapUrl] = useState('');
   const navigate = useNavigate();
+  const usersPerPage = 3;
+  const [currentPage, setCurrentPage] = useState(1); // New state for current page
+  const [totalPages, setTotalPages] = useState(1);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
+        const response = await fetch(`http://localhost:5000/admin/users?page=${currentPage}&limit=${usersPerPage}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -29,10 +36,11 @@ const Admin = ({ users, setUsers }) => {
         const data = await response.json();
         console.log('Fetched users:', data);
 
-        if (Array.isArray(data)) {
-          setUsers(data);
+        if (data.total) {
+          setUsers(data || []);
+          setTotalPages(Math.ceil(data.total / usersPerPage));
         } else {
-          console.error('Fetched data is not an array:', data);
+          console.error('Total count not found in response:', data);
           setUsers([]);
         }
       } catch (error) {
@@ -42,16 +50,18 @@ const Admin = ({ users, setUsers }) => {
     };
 
     fetchUsers();
-  }, [setUsers]);
+  }, [currentPage,setUsers]);
 
   const handleNewUser = () => {
     setShowNewUserForm(true);
     setShowEditUserForm(false);
+    navigate('/admin/new-user');
   };
 
   const handleUserAdded = (newUser) => {
     setUsers((prevUsers) => [...prevUsers, newUser]);
     setShowNewUserForm(false);
+    navigate('/admin');
   };
 
   const handleEditUser = (user) => {
@@ -273,7 +283,20 @@ const Admin = ({ users, setUsers }) => {
                 </tbody>
               </table>
               <button className="add-user-btn" onClick={handleNewUser}>Add New User</button>
+              <div className="pagination-controls">
+              <Pagination
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                color="primary"
+              />
             </div>
+            <Typography variant="body1" style={{ marginLeft: '16px' }}>
+    Page {currentPage} of {totalPages}
+  </Typography>
+            </div>
+            
             <div className="right-new">
               <div className="map-wrapper col-12 col-md-6">
                 <div className="google-map">

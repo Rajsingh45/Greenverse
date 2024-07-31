@@ -16,6 +16,7 @@ import GraphPage from './GraphPage';
 import ContactUs from './ContactUs';
 import UserDetail from './UserDetail';
 import ToggleMode from './ToggleMode';
+import NewUserForm from './components/NewUser';
 // import TestThemeComponent from './TestThemeComponent'; // Ensure this is the correct path
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin" element={<DashboardPage />} />
+              <Route path="/admin/new-user" element={<NewUserForm />} />
               <Route path="/change-password" element={<ChangePassword />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
