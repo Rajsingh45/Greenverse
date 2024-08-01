@@ -1,41 +1,20 @@
 const User = require('../models/USER');
 const Admin = require('../models/ADMIN');
+const moment = require('moment');
+const mongoose = require('mongoose');
+const subscribeToTopics = require('../services/mqttMongoIntegration');
 
-// const addUser = async (req, res) => {
-//     const { name, email, noofdevices, espTopics } = req.body;
+const formatDateAWS = (date) => {
+    return moment(date).format('YYYY-MM-DD HH:mm:00');
+};
 
-//     try {
-//         const existingUser = await Admin.findOne({ email });
-//         if (existingUser) {
-//             return res.status(400).json({ message: 'Email already exists' });
-//         }
-
-//         const newUser = new Admin({
-//             name,
-//             email,
-//             noofdevices,
-//             espTopics,
-//             role: 'user',
-//             dateAdded: formatDateAWS(new Date())
-//         });
-//         await newUser.save();
-//         // Connect to MongoDB
-//         const db = mongoose.connection.db;
-//         // Create collections for each topic specified in espTopics
-//         for (const topic of espTopics) {
-//             await createCollection(db, topic);
-//         }
-//         // Subscribe to new topics
-//         await subscribeToTopics(); // Ensure subscription to new topics
-//         // Verify data stored correctly
-//         const storedUser = await Admin.findOne({ email });
-//         console.log('Stored user:', storedUser);
-//         res.status(201).json({ message: 'User added successfully', user: newUser });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Something went wrong' });
-//     }
-// };
+const createCollection = async (db, topic) => {
+    const collectionExists = await db.listCollections({ name: topic }).hasNext();
+    if (!collectionExists) {
+        await db.createCollection(topic);
+        console.log(`Collection created for topic: ${topic}`);
+    }
+};
 
 const addUser = async (req, res) => {
     const { name, email, noofdevices, espTopics } = req.body;
@@ -46,9 +25,26 @@ const addUser = async (req, res) => {
             return res.status(400).json({ message: 'Email already exists' });
         }
 
-        const newUser = new Admin({ name, email, noofdevices, espTopics, role: 'user', dateAdded: formatDate(new Date()) });
+        const newUser = new Admin({
+            name,
+            email,
+            noofdevices,
+            espTopics,
+            role: 'user',
+            dateAdded: formatDateAWS(new Date())
+        });
         await newUser.save();
-
+        // Connect to MongoDB
+        const db = mongoose.connection.db;
+        // Create collections for each topic specified in espTopics
+        for (const topic of espTopics) {
+            await createCollection(db, topic);
+        }
+        // Subscribe to new topics
+        await subscribeToTopics(); // Ensure subscription to new topics
+        // Verify data stored correctly
+        const storedUser = await Admin.findOne({ email });
+        console.log('Stored user:', storedUser);
         res.status(201).json({ message: 'User added successfully', user: newUser });
     } catch (error) {
         console.error(error);
@@ -56,34 +52,19 @@ const addUser = async (req, res) => {
     }
 };
 
-// const updateUserDevices = async (req, res) => {
-//     const { name, noofdevices, espTopics, email } = req.body;
+// const addUser = async (req, res) => {
+//     const { name, email, noofdevices, espTopics } = req.body;
 
 //     try {
 //         const existingUser = await Admin.findOne({ email });
-//         if (!existingUser) {
-//             return res.status(400).json({ message: 'User not found' });
+//         if (existingUser) {
+//             return res.status(400).json({ message: 'Email already exists' });
 //         }
 
-//         // Update user details
-//         existingUser.espTopics = espTopics; 
-//         existingUser.noofdevices = noofdevices;
-//         existingUser.name = name;
+//         const newUser = new Admin({ name, email, noofdevices, espTopics, role: 'user', dateAdded: formatDate(new Date()) });
+//         await newUser.save();
 
-//         await existingUser.save();
-
-//         // Connect to MongoDB
-//         const db = mongoose.connection.db;
-
-//         // Create collections for each topic specified in espTopics
-//         for (const topic of espTopics) {
-//             await createCollection(db, topic);
-//         }
-
-//         // Subscribe to new topics
-//         await subscribeToTopics(email); // Ensure subscription to new topics
-
-//         res.json({ message: 'Number of devices updated successfully', user: existingUser });
+//         res.status(201).json({ message: 'User added successfully', user: newUser });
 //     } catch (error) {
 //         console.error(error);
 //         res.status(500).json({ message: 'Something went wrong' });
@@ -99,11 +80,23 @@ const updateUserDevices = async (req, res) => {
             return res.status(400).json({ message: 'User not found' });
         }
 
+        // Update user details
         existingUser.espTopics = espTopics; 
         existingUser.noofdevices = noofdevices;
         existingUser.name = name;
 
         await existingUser.save();
+
+        // Connect to MongoDB
+        const db = mongoose.connection.db;
+
+        // Create collections for each topic specified in espTopics
+        for (const topic of espTopics) {
+            await createCollection(db, topic);
+        }
+
+        // Subscribe to new topics
+        await subscribeToTopics(email); // Ensure subscription to new topics
 
         res.json({ message: 'Number of devices updated successfully', user: existingUser });
     } catch (error) {
@@ -111,6 +104,28 @@ const updateUserDevices = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
+// const updateUserDevices = async (req, res) => {
+//     const { name, noofdevices, espTopics, email } = req.body;
+
+//     try {
+//         const existingUser = await Admin.findOne({ email });
+//         if (!existingUser) {
+//             return res.status(400).json({ message: 'User not found' });
+//         }
+
+//         existingUser.espTopics = espTopics; 
+//         existingUser.noofdevices = noofdevices;
+//         existingUser.name = name;
+
+//         await existingUser.save();
+
+//         res.json({ message: 'Number of devices updated successfully', user: existingUser });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Something went wrong' });
+//     }
+// };
 
 
 const formatDate = (date) => {
