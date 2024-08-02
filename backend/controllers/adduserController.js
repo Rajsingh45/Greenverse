@@ -136,10 +136,31 @@ const formatDate = (date) => {
 };
 
 
+// const getAllUsers = async (req, res) => {
+//     try {
+//         const users = await Admin.find();
+//         res.status(200).json(users);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Something went wrong' });
+//     }
+// };
+
 const getAllUsers = async (req, res) => {
     try {
-        const users = await Admin.find();
-        res.status(200).json(users);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const name = req.query.name || '';
+
+        const searchQuery = name ? { name: new RegExp(name, 'i') } : {};
+
+        const users = await Admin.find(searchQuery).skip(skip).limit(limit);
+
+        const total = await Admin.countDocuments(searchQuery);
+
+        const fullUserList = await Admin.find(searchQuery);
+        res.status(200).json({ users, total: Number(total), fullUserList });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });

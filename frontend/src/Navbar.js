@@ -4,7 +4,7 @@ import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
-import newlogo from './images/new-logo.png'
+import newlogo from './images/new-logo.png';
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -83,7 +83,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
   }, []);
 
   const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
+    setDropdownVisible(prev => !prev);
   };
 
   const handleChangePassword = () => {
@@ -105,18 +105,16 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
 
   return (
     <div className="navbar sticky-top">
-      <img src={newlogo} alt='Error' className='newlogo' />
+      <img src={newlogo} alt='Logo' className='newlogo' />
       <span className="user-greeting">Hi Admin!</span>
 
       <div className="navbar-links">
         <a href="/admin" className="navbar-link">Home</a>
         <a href="/about-us" className="navbar-link">About</a>
-        {/* <a href="/contact-us" className="navbar-link">Contact Us</a> */}
       </div>
 
       <div className="profile-icon-container">
         <div className='search-container'>
-
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -131,12 +129,18 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
           </Search>
         </div>
 
-        {/* <button className="contact-button" onClick={handleContact}>Contact Us</button> */}
-
         {profilePic ? (
-          <img src={profilePic} alt="Profile" className="profile-icon" onClick={toggleDropdown} />
+          <img
+            src={profilePic}
+            alt="Profile"
+            className="profile-icon"
+            onClick={toggleDropdown}
+          />
         ) : (
-          <FaUserCircle className="profile-icon" onClick={toggleDropdown} />
+          <FaUserCircle
+            className="profile-icon"
+            onClick={toggleDropdown}
+          />
         )}
 
         {dropdownVisible && (

@@ -17,8 +17,14 @@ const DashboardPage = () => {
           }
         });
         const data = await response.json();
-        setUsers(data);
-        setFilteredUsers(data);
+
+        // Ensure only the `users` array is processed
+        if (Array.isArray(data.users)) {
+          setUsers(data.users);
+          setFilteredUsers(data.users);
+        } else {
+          console.error('Data.users is not an array:', data.users);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -41,7 +47,7 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      {/* <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> */}
       <Admin users={filteredUsers} setUsers={setUsers} />
     </div>
   );

@@ -3,11 +3,11 @@ import './Admin.css';
 import Navbar from '../Navbar.js';
 import NewUserForm from './NewUser';
 import EditUserForm from './EditUser';
-import { Menu, MenuItem, IconButton, TextField, Button , Pagination,Typography } from '@mui/material';
+import { Menu, MenuItem, IconButton, TextField, Button, Pagination } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 
-const Admin = ({ users, setUsers }) => {
+const Admin = ({ users = [], setUsers }) => {
   const [showNewUserForm, setShowNewUserForm] = useState(false);
   const [showEditUserForm, setShowEditUserForm] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -15,42 +15,51 @@ const Admin = ({ users, setUsers }) => {
   const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
   const [mapUrl, setMapUrl] = useState('');
-  const navigate = useNavigate();
-  const usersPerPage = 3;
-  const [currentPage, setCurrentPage] = useState(1); // New state for current page
+  const [fetchedUsers, setFetchedUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const usersPerPage = 5;
+  const navigate = useNavigate();
+  const [fullUserList, setFullUserList] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/admin/users?page=${currentPage}&limit=${usersPerPage}`, {
+        const response = await fetch(`http://localhost:5000/admin/users?page=${currentPage}&limit=${usersPerPage}&name=${searchQuery}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        const data = await response.json();
-        console.log('Fetched users:', data);
 
-        if (data.total) {
-          setUsers(data || []);
-          setTotalPages(Math.ceil(data.total / usersPerPage));
-        } else {
-          console.error('Total count not found in response:', data);
-          setUsers([]);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        setFetchedUsers(data.users || []);
+        setFullUserList(data.fullUserList || []); // Assuming `fullUserList` is sent by the backend
+        setTotalUsers(data.total || 0);
+        const numOfPages = Math.ceil(data.total / usersPerPage);
+        setTotalPages(numOfPages);
+
+        // Reset page number if currentPage exceeds the number of pages after search
+        if (currentPage > numOfPages) {
+          setCurrentPage(1);
         }
       } catch (error) {
         console.error('Error fetching users:', error);
-        setUsers([]);
       }
     };
 
     fetchUsers();
-  }, [currentPage,setUsers]);
+  }, [currentPage, usersPerPage, searchQuery]);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   const handleNewUser = () => {
     setShowNewUserForm(true);
@@ -59,7 +68,7 @@ const Admin = ({ users, setUsers }) => {
   };
 
   const handleUserAdded = (newUser) => {
-    setUsers((prevUsers) => [...prevUsers, newUser]);
+    setUsers(prevUsers => Array.isArray(prevUsers) ? [...prevUsers, newUser] : [newUser]);
     setShowNewUserForm(false);
     navigate('/admin');
   };
@@ -70,7 +79,6 @@ const Admin = ({ users, setUsers }) => {
   };
 
   const handleRenameUser = (user) => {
-    console.log('Renaming user:', user);
     setRenamingUserEmail(user.email);
     setNewName(user.name);
     setAnchorEl(null);
@@ -82,7 +90,6 @@ const Admin = ({ users, setUsers }) => {
 
   const handleRenameSubmit = async () => {
     if (renamingUserEmail) {
-      console.log('Renaming user:', renamingUserEmail, newName);
       const token = localStorage.getItem('token');
       try {
         const response = await fetch('http://localhost:5000/admin/rename', {
@@ -101,12 +108,11 @@ const Admin = ({ users, setUsers }) => {
           );
           setUsers(updatedUsers);
           alert('Name updated successfully.');
+          window.location.reload();
         } else {
-          console.error('Error updating name:', data);
           alert('Failed to update name.');
         }
       } catch (error) {
-        console.error('Error updating name:', error);
         alert('An error occurred while updating the name.');
       }
 
@@ -117,9 +123,11 @@ const Admin = ({ users, setUsers }) => {
 
   const handleUserUpdated = (updatedUser) => {
     setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.email === updatedUser.email ? updatedUser : user
-      )
+      Array.isArray(prevUsers)
+        ? prevUsers.map(user =>
+            user.email === updatedUser.email ? updatedUser : user
+          )
+        : [updatedUser]
     );
     setShowEditUserForm(false);
   };
@@ -142,13 +150,9 @@ const Admin = ({ users, setUsers }) => {
           throw new Error('Failed to delete user');
         }
 
-        const data = await response.json();
-        console.log(data.message); // User deleted successfully
-
-        setUsers((prevUsers) => prevUsers.filter(user => user.email !== userEmail));
+        setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
         setAnchorEl(null);
       } catch (error) {
-        console.error('Error deleting user:', error);
         alert('Error deleting user');
       }
     }
@@ -181,8 +185,6 @@ const Admin = ({ users, setUsers }) => {
 
       const avgLat = locations.reduce((sum, loc) => sum + loc.lat, 0) / locations.length;
       const avgLng = locations.reduce((sum, loc) => sum + loc.lng, 0) / locations.length;
-      console.log(avgLat)
-      console.log(avgLng)
 
       const baseURL = 'https://www.google.com/maps/embed?';
       const params = new URLSearchParams({
@@ -202,14 +204,29 @@ const Admin = ({ users, setUsers }) => {
 
   const handleNameClick = (user, event) => {
     if (renamingUserEmail === user.email) {
-      event.stopPropagation(); // Prevent navigation
+      event.stopPropagation();
     } else {
       navigate(`/user/${user.email}`);
     }
   };
 
+  // Conditional rendering based on search query
+  const filteredUsers = searchQuery
+    ? fullUserList.filter(user =>
+        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : fullUserList;
+
+    const formatDate = (dateString) => {
+      const options = { day: '2-digit', month: 'short', year: 'numeric' };
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-GB', options);
+    };
+    
+
   return (
     <>
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="container">
         {showNewUserForm ? (
           <NewUserForm onUserAdded={handleUserAdded} />
@@ -229,11 +246,11 @@ const Admin = ({ users, setUsers }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage).map(user => (
                     <tr key={user.email}>
                       <td
                         style={{ color: 'blue', cursor: 'pointer' }}
-                        onClick={(event) => handleNameClick(user, event)}
+                        onClick={event => handleNameClick(user, event)}
                       >
                         {renamingUserEmail === user.email ? (
                           <>
@@ -256,13 +273,13 @@ const Admin = ({ users, setUsers }) => {
                         )}
                       </td>
                       <td>{user.email}</td>
-                      <td>{user.dateAdded}</td>
+                      <td>{formatDate(user.dateAdded)}</td>
                       <td>{user.noofdevices}</td>
                       <td>
                         <IconButton
                           aria-controls="simple-menu"
                           aria-haspopup="true"
-                          onClick={(event) => handleMenuOpen(event, user)}
+                          onClick={event => handleMenuOpen(event, user)}
                         >
                           <MoreVert />
                         </IconButton>
@@ -284,19 +301,16 @@ const Admin = ({ users, setUsers }) => {
               </table>
               <button className="add-user-btn" onClick={handleNewUser}>Add New User</button>
               <div className="pagination-controls">
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-                variant="outlined"
-                color="primary"
-              />
+                <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  color="primary"
+                />
+              </div>
             </div>
-            <Typography variant="body1" style={{ marginLeft: '16px' }}>
-    Page {currentPage} of {totalPages}
-  </Typography>
-            </div>
-            
+
             <div className="right-new">
               <div className="map-wrapper col-12 col-md-6">
                 <div className="google-map">

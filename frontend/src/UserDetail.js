@@ -10,9 +10,16 @@ import device5 from './images/device5.png';
 import device6 from './images/device6.png';
 import Layout from './Layout';
 
-const UserDetail = ( devices = 0) => {
+const UserDetail = () => {
   const { email } = useParams();
-//   const [deviceCount, setDeviceCount] = useState(0);
+  const [deviceCount, setDeviceCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const imagesPerPage = 6;
+  const images = [device1, device2, device3, device4, device5, device6];
+  const [totalPages, setTotalPages] = useState(1);
+  const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     const fetchUserDevices = async () => {
@@ -23,9 +30,9 @@ const UserDetail = ( devices = 0) => {
             'Authorization': `Bearer ${token}`
           }
         });
-        const { devices } = response.data;  // Ensure this matches the backend response structure
-        console.log('Fetched devices count:', devices);
+        const { devices } = response.data; // Ensure this matches the backend response structure
         setDeviceCount(devices);
+        setTotalPages(Math.ceil(devices / imagesPerPage));
       } catch (error) {
         console.error('Error fetching user devices:', error);
       }
@@ -33,14 +40,6 @@ const UserDetail = ( devices = 0) => {
 
     fetchUserDevices();
   }, [email]);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const imagesPerPage = 6;
-  const images = [device1, device2, device3, device4, device5, device6];
-
-  // const totalPages = Math.ceil(devices / imagesPerPage);
-  const [totalPages, setTotalPages] = useState(1);
-  const [deviceCount, setDeviceCount] = useState(0);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -55,9 +54,7 @@ const UserDetail = ( devices = 0) => {
   };
 
   const handleNameClick = (deviceId) => {
-    // if (!isReadOnly) {
-      window.location.href = `/device/${deviceId}`;
-    // }
+    window.location.href = `/device/${deviceId}`;
   };
 
   const renderDeviceCards = () => {
@@ -70,7 +67,7 @@ const UserDetail = ( devices = 0) => {
         <div className="gallery-item" key={i}>
           <div className="image-container">
             <img src={image} alt={`Device ${i + 1}`} />
-            <div className={`device-name-card `} onClick={() => handleNameClick(i + 1)}>
+            <div className="device-name-card" onClick={() => handleNameClick(i + 1)}>
               <p className="device-text">Device {i + 1}</p>
             </div>
           </div>
@@ -79,10 +76,6 @@ const UserDetail = ( devices = 0) => {
     }
     return cards;
   };
-
-  const [users, setUsers] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -94,8 +87,12 @@ const UserDetail = ( devices = 0) => {
           }
         });
         const data = await response.json();
-        setUsers(data);
-        setFilteredUsers(data);
+        if (Array.isArray(data.users)) {
+          setUsers(data.users);
+          setFilteredUsers(data.users);
+        } else {
+          console.error('Unexpected data format:', data);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -118,7 +115,6 @@ const UserDetail = ( devices = 0) => {
 
   return (
     <div className="dashboard">
-      {/* <Navbar profilePic={profilePic} /> */}
       <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <div className="dash">
         <div className="gallery">

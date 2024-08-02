@@ -4,7 +4,7 @@
   background: #d9ffcc;
 }
 
-.left, .right-new{
+.left, .right-new {
   padding: 2rem;
 }
 
@@ -50,8 +50,6 @@
 }
 
 .right-new {
-  /* width: 40%; */
-  /* background: url('../images/background.png') no-repeat center center; */
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -86,10 +84,14 @@ iframe {
   text-align: center;
 }
 
-.save-button{
+.save-button {
   margin-left: 20px !important;
   margin-top: 10px !important;
   background-color: green !important;
+}
+
+.css-1y7coo4-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected {
+   color: white !important;
 }
 
 @media (max-width: 768px) {
@@ -153,11 +155,10 @@ iframe {
 .pagination-controls {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align pagination to the right */
+  justify-content: flex-end;
   margin-top: 20px;
 }
 
-/* Pagination component styling */
 .MuiPagination-root {
   display: flex;
   align-items: center;
@@ -167,13 +168,11 @@ iframe {
   padding: 5px 10px;
 }
 
-/* Pagination button styling */
 .MuiPagination-ul {
   display: flex;
-  gap: 5px; /* Space between page numbers */
+  gap: 5px;
 }
 
-/* Page button */
 .MuiPaginationItem-root {
   border-radius: 5px;
   padding: 8px 12px;
@@ -182,20 +181,17 @@ iframe {
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Hover and focus states */
 .MuiPaginationItem-root:hover,
 .MuiPaginationItem-root.Mui-selected {
-  background-color: #3f51b5; /* Primary color for hover/selected state */
+  background-color: #3f51b5 !important;
   color: #fff;
 }
 
-/* Disabled button styling */
 .MuiPaginationItem-root.Mui-disabled {
   color: #ccc;
   cursor: not-allowed;
 }
 
-/* Typography styling for page number info */
 .MuiTypography-body1 {
   margin-left: 16px;
   font-size: 14px;

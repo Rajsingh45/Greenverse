@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { getDataByDateTime } = require('../controllers/dataController');
 const { MongoClient } = require('mongodb');
-const DataModel = require('../models/DataModel');
 
 router.get('/data', async (req, res) => {
   const { date, time } = req.query;
