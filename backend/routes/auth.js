@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, rememberMe, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
+const { register, login, rememberMe, changePassword,checkEmailExists, searchDevices, requestOTP, verifyOTP, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/authMiddleware'); // Import the middleware
 const upload = require('../middleware/uploadMiddleware');
 
@@ -21,5 +21,5 @@ router.post('/upload', authMiddleware, upload.single('profilePicture'), uploadPr
 router.put('/rename', authMiddleware, renameUser); 
 router.get('/profile-picture', authMiddleware, getProfilePicture);
 
-
+router.get('/search',authMiddleware, searchDevices);
 module.exports = router;

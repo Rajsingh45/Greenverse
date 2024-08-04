@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import newlogo from './images/new-logo.png'
+import newlogo from './images/new-logo.png';
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -40,12 +40,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = () => {
+const Navbar = ({ setSearchQuery }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [userName, setUserName] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchQuery, setSearchQueryLocal] = useState('');
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -117,31 +116,10 @@ const Navbar = () => {
     navigate('/user-info');
   };
 
-  const handleSearchChange = async (event) => {
+  const handleSearchChange = (event) => {
     const query = event.target.value;
-    setSearchQuery(query);
-
-    if (query.length >= 1) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/admin/search-user?name=${query}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setSearchResults(data);
-        } else {
-          console.error('Failed to search users');
-        }
-      } catch (error) {
-        console.error('Error searching users:', error);
-      }
-    } else {
-      setSearchResults([]);
-    }
+    setSearchQueryLocal(query);
+    setSearchQuery(query); // Update the parent component's search query
   };
 
   return (
@@ -157,21 +135,6 @@ const Navbar = () => {
 
       <div className="profile-icon-container">
         <div className='search-container'>
-          {/* <Search showInput={showSearchInput}>
-            <SearchIconWrapper onClick={handleSearchIconClick}>
-              <SearchIcon />
-            </SearchIconWrapper>
-            {showSearchInput && (
-              <StyledInputBase
-                placeholder="Search by device…"
-                inputProps={{ 'aria-label': 'search' }}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className='device-name'
-              />
-            )}
-          </Search> */}
-
           <Search>
             <SearchIconWrapper>
               <SearchIcon />

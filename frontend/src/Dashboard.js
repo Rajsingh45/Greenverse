@@ -21,6 +21,7 @@ const Dashboard = ({ isReadOnly = false }) => {
   const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
   const [deviceCount, setDeviceCount] = useState(0);
   const [deviceNames, setDeviceNames] = useState([]); // State for storing device names
+  const [searchQuery, setSearchQuery] = useState(''); // Add state for search query
 
   // Function to handle profile picture change
   const handleProfilePicChange = (file) => {
@@ -47,9 +48,7 @@ const Dashboard = ({ isReadOnly = false }) => {
     const fetchDeviceData = async () => {
       try {
         const token = localStorage.getItem('token');
-        // const email = localStorage.getItem('userDetails.email'); 
-        // console.log(email)
-        
+
         // Fetch the total number of devices
         const countResponse = await axios.get('http://localhost:5000/admin/devices', {
           headers: {
@@ -58,13 +57,12 @@ const Dashboard = ({ isReadOnly = false }) => {
         });
         const { noofdevices } = countResponse.data;
         setDeviceCount(noofdevices);
-        
+
         const namesResponse = await axios.get(`http://localhost:5000/admin/device-names`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        // body: JSON.stringify({ email: namesResponse.email})
         setDeviceNames(namesResponse.data.deviceNames || []);
       } catch (error) {
         console.error('Error fetching device data:', error);
@@ -74,14 +72,24 @@ const Dashboard = ({ isReadOnly = false }) => {
     fetchDeviceData();
   }, [email]);
 
+  useEffect(() => {
+    const filteredDevices = deviceNames.filter(deviceName =>
+      deviceName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setDeviceCount(filteredDevices.length);
+    setTotalPages(Math.ceil(filteredDevices.length / imagesPerPage));
+  }, [searchQuery, deviceNames]);
 
   const renderDeviceCards = () => {
     const startIndex = (currentPage - 1) * imagesPerPage;
     const endIndex = startIndex + imagesPerPage;
     const cards = [];
-    for (let i = startIndex; i < endIndex && i < deviceCount; i++) {
+    const filteredDeviceNames = deviceNames.filter(deviceName =>
+      deviceName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    for (let i = startIndex; i < endIndex && i < filteredDeviceNames.length; i++) {
       const image = images[i % images.length];
-      const deviceName = deviceNames[i] || `Device ${i + 1}`; // Fallback to static name if not available
+      const deviceName = filteredDeviceNames[i] || `Device ${i + 1}`; // Fallback to static name if not available
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
@@ -99,14 +107,12 @@ const Dashboard = ({ isReadOnly = false }) => {
   const handleNameClick = (deviceName) => {
     if (!isReadOnly) {
       window.location.href = `/device/${deviceName}`;
-      console.log(deviceName)
     }
   };
 
-
   return (
     <div className="dashboard">
-      <UserNavbar profilePic={profilePic} />
+      <UserNavbar profilePic={profilePic} setSearchQuery={setSearchQuery} />
       <div className="dash">
         <div className="gallery">
           {renderDeviceCards()}

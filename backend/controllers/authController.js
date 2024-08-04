@@ -327,4 +327,36 @@ const getProfilePicture = async (req, res) => {
     }
 };
 
-module.exports = { register, login, rememberMe , changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+const searchDevices = async (req, res) => {
+    const { name } = req.query;
+  
+    try {
+      if (!name) {
+        return res.status(400).json({ message: 'Search query is required' });
+      }
+  
+      // Get the user's email from the authenticated request (using the decoded token)
+      const userEmail = req.user.email;
+  
+      // Find the user by email and search their ESP topics for the given name
+      const user = await Admin.findOne({
+        email: userEmail,
+        espTopics: { $regex: name, $options: 'i' } // Case-insensitive search
+      });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'No matching devices found' });
+      }
+  
+      // Filter the ESP topics that match the search name
+      const deviceNames = user.espTopics.filter(topic => topic.toLowerCase().includes(name.toLowerCase()));
+  
+      res.json({ deviceNames });
+    } catch (error) {
+      console.error('Error searching devices:', error);
+      res.status(500).json({ message: 'Something went wrong' });
+    }
+  };
+  
+
+module.exports = { register, login, rememberMe ,searchDevices, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
