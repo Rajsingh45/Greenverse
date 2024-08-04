@@ -9,16 +9,18 @@ import device4 from './images/device4.png';
 import device5 from './images/device5.png';
 import device6 from './images/device6.png';
 import UserNavbar from './UserNavbar';
+import { useParams } from 'react-router-dom';
 
-const Dashboard = ({ isReadOnly = false, devices = 0 }) => {
+const Dashboard = ({ isReadOnly = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const { email } = useParams();
   const imagesPerPage = 6;
   const images = [device1, device2, device3, device4, device5, device6];
 
-  // const totalPages = Math.ceil(devices / imagesPerPage);
   const [totalPages, setTotalPages] = useState(1);
   const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
   const [deviceCount, setDeviceCount] = useState(0);
+  const [deviceNames, setDeviceNames] = useState([]); // State for storing device names
 
   // Function to handle profile picture change
   const handleProfilePicChange = (file) => {
@@ -42,31 +44,36 @@ const Dashboard = ({ isReadOnly = false, devices = 0 }) => {
   };
 
   useEffect(() => {
-    const fetchDeviceCount = async () => {
+    const fetchDeviceData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/admin/devices', {
+        // const email = localStorage.getItem('userDetails.email'); 
+        // console.log(email)
+        
+        // Fetch the total number of devices
+        const countResponse = await axios.get('http://localhost:5000/admin/devices', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        const { noofdevices } = response.data;
+        const { noofdevices } = countResponse.data;
         setDeviceCount(noofdevices);
-        const totalPages = Math.ceil(noofdevices / imagesPerPage);
-        setTotalPages(totalPages);
+        
+        const namesResponse = await axios.get(`http://localhost:5000/admin/device-names`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        // body: JSON.stringify({ email: namesResponse.email})
+        setDeviceNames(namesResponse.data.deviceNames || []);
       } catch (error) {
-        console.error('Error fetching device count:', error);
+        console.error('Error fetching device data:', error);
       }
     };
 
-    fetchDeviceCount();
-  }, []);
+    fetchDeviceData();
+  }, [email]);
 
-  const handleNameClick = (deviceId) => {
-    if (!isReadOnly) {
-      window.location.href = `/device/${deviceId}`;
-    }
-  };
 
   const renderDeviceCards = () => {
     const startIndex = (currentPage - 1) * imagesPerPage;
@@ -74,12 +81,13 @@ const Dashboard = ({ isReadOnly = false, devices = 0 }) => {
     const cards = [];
     for (let i = startIndex; i < endIndex && i < deviceCount; i++) {
       const image = images[i % images.length];
+      const deviceName = deviceNames[i] || `Device ${i + 1}`; // Fallback to static name if not available
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
             <img src={image} alt={`Device ${i + 1}`} />
-            <div className={`device-name-card ${isReadOnly ? 'readonly' : ''}`} onClick={() => handleNameClick(i + 1)}>
-              <p className="device-text">Device {i + 1}</p>
+            <div className={`device-name-card ${isReadOnly ? 'readonly' : ''}`} onClick={() => handleNameClick(deviceName)}>
+              <p className="device-text">{deviceName}</p>
             </div>
           </div>
         </div>
@@ -87,6 +95,14 @@ const Dashboard = ({ isReadOnly = false, devices = 0 }) => {
     }
     return cards;
   };
+
+  const handleNameClick = (deviceName) => {
+    if (!isReadOnly) {
+      window.location.href = `/device/${deviceName}`;
+      console.log(deviceName)
+    }
+  };
+
 
   return (
     <div className="dashboard">

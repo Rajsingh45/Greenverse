@@ -3,6 +3,8 @@ const { MongoClient } = require('mongodb');
 const fs = require('fs');
 const moment = require('moment-timezone');
 require('dotenv').config();
+const express = require('express');
+const router = express.Router();
 
 const mongoURL = process.env.MONGODB_URL;
 const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com';
@@ -15,7 +17,7 @@ const lastStoredTimestamps = {};
 function getFormattedMinute() {
     const now = new Date();
     now.setSeconds(0, 0);
-    return moment(now).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:00');
+    return moment(now).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function connectMQTT() {
@@ -101,8 +103,3 @@ async function subscribeToTopics() {
 }
 
 module.exports = subscribeToTopics;
-
-// Initialize the subscriptions when the script runs
-subscribeToTopics().catch(err => {
-    console.error('Failed to subscribe to topics:', err);
-});

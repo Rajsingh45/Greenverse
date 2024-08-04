@@ -37,8 +37,8 @@ function App() {
               <Route path="/set-password" element={<SetPassword />} />
               <Route path="/edit-user" element={<EditUser />} />
               <Route path="/user-info" element={<UserInfo />} />
-              <Route path="/device/:deviceId" element={<DeviceDetail />} />
-              <Route path="/graph/:deviceId" element={<GraphPage />} />
+              <Route path="/device/:deviceName" element={<DeviceDetail />} />
+              <Route path="/graph/:deviceName" element={<GraphPage />} />
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/user/:email" element={<UserDetail />} />
             </Routes>

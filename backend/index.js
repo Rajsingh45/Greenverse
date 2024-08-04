@@ -5,6 +5,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const mqttMongoIntegration = require('./services/mqttMongoIntegration');
 const dataRoutes = require('./routes/dataRoutes');
+const moment = require('moment-timezone');
+const { MongoClient } = require('mongodb');
+const mongoURL = process.env.MONGODB_URL
+const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+const dbName = 'Airbuddi';
 
 require('dotenv').config();
 
@@ -22,7 +27,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-const mongoURL = process.env.MONGODB_URL
 
 mongoose.connect(mongoURL,
 )
@@ -49,6 +53,32 @@ app.get('/locations', (req, res) => {
       // Add more locations here
   ];
   res.json(locations);
+});
+
+app.get('/api/device-data/:espTopic', async (req, res) => {
+  const { espTopic } = req.params;
+  const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:00');
+  mqttMongoIntegration();
+
+  try {
+      await mongoClient.connect();
+      const db = mongoClient.db(dbName);
+      const adminCollection = db.collection('admins');
+      
+      // Check if the ESP topic is in the admin collection
+      const adminDoc = await adminCollection.findOne({ espTopics: espTopic });
+      console.log(adminDoc)
+      if (!adminDoc) {
+          return res.status(404).json({ error: 'ESP topic not found' });
+      }
+
+      const deviceCollection = db.collection(espTopic);
+      // console.log(deviceCollection)
+      const data = await deviceCollection.find({ dateTime: now }).toArray();
+      res.json(data);
+  } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch data' });
+  }
 });
 
 const PORT = process.env.PORT;
