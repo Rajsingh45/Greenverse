@@ -14,8 +14,12 @@ const NewUserForm = ({ onUserAdded }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setEspTopics(Array(Number(devices)).fill(''));
-  }, [devices]);
+    if (name && devices) {
+      setEspTopics(Array.from({ length: Number(devices) }, (_, i) => `${name}${i + 1}`));
+    } else {
+      setEspTopics([]);
+    }
+  }, [name, devices]);
 
   const isEmailValid = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -76,13 +80,13 @@ const NewUserForm = ({ onUserAdded }) => {
       alert('Please ensure all topics are unique');
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage');
       }
-  
+
       const response = await fetch('http://localhost:5000/admin/adduser', {
         method: 'POST',
         headers: {
@@ -96,19 +100,19 @@ const NewUserForm = ({ onUserAdded }) => {
           espTopics
         })
       });
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-  
+
       const data = await response.json();
       console.log('User added successfully:', data);
-  
+
       const currentDate = new Date();
       const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
       console.log(`User added on: ${formattedDate}`);
       navigate('/admin');
-  
+
       onUserAdded({
         id: Date.now(),
         name,
