@@ -133,30 +133,33 @@ const Admin = ({ users = [], setUsers }) => {
   };
 
   const handleDeleteUser = async (userEmail) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this user?');
+    const confirmDelete = window.confirm('Are you sure you want to delete this user? This action will also delete all associated ESP topics.');
     if (confirmDelete) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/deleteuser', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ email: userEmail })
-        });
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:5000/admin/deleteuser', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ email: userEmail })
+            });
 
-        if (!response.ok) {
-          throw new Error('Failed to delete user');
+            if (!response.ok) {
+                throw new Error('Failed to delete user');
+            }
+
+            const data = await response.json();
+            console.log('User deleted successfully:', data);
+            setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
+            setAnchorEl(null);
+        } catch (error) {
+            alert('Error deleting user');
         }
-
-        setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
-        setAnchorEl(null);
-      } catch (error) {
-        alert('Error deleting user');
-      }
     }
-  };
+};
+
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);

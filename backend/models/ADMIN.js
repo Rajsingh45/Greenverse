@@ -21,15 +21,7 @@ const AdminSchema = new mongoose.Schema({
         required: true
     },
     espTopics: { 
-        type: [String],
-        // validate: {
-            // validator: function (v) {
-            //     // const espTopicRegex = /^esp32\/pub\d+$/;
-            //     return v.every(topic => espTopicRegex.test(topic));
-            // },
-            // message: props => `${props.value} contains an invalid topic! Please provide valid esp/pub{number} topics.`
-        // },
-        // default: []
+        type: [String]
     },
     dateAdded: { 
         type: String, 

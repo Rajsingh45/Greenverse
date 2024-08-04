@@ -11,14 +11,14 @@ const EditUserForm = ({ onUserUpdated }) => {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [devices, setDevices] = useState(user.noofdevices);
-  const [espTopics, setEspTopics] = useState(user.espTopics || []); // Changed from deviceIPs
+  const [espTopics, setEspTopics] = useState(user.espTopics || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
   const [newTopic, setNewTopic] = useState('');
   const [isAddingTopic, setIsAddingTopic] = useState(false);
 
   useEffect(() => {
-    setEspTopics(user.espTopics || []); // Changed from deviceIPs
+    setEspTopics(user.espTopics || []);
   }, [user.espTopics]);
 
   const handleMenuClick = (event, index) => {
@@ -31,16 +31,46 @@ const EditUserForm = ({ onUserUpdated }) => {
     setSelectedTopicIndex(null);
   };
 
-  const handleDeleteTopic = () => {
+  const handleDeleteTopic = async () => {
     if (selectedTopicIndex !== null) {
-      const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
-      setEspTopics(newEspTopics);
-      setDevices(newEspTopics.length);
-      handleMenuClose();
+      const topicToDelete = espTopics[selectedTopicIndex];
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found in localStorage');
+        }
+
+        const response = await fetch('http://localhost:5000/admin/deletetopic', {
+          method: 'Delete',  // Use POST as defined in the backend
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ name, topic: topicToDelete })
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Topic deleted successfully:', data);
+
+        const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+        setEspTopics(newEspTopics);
+        setDevices(newEspTopics.length);
+        handleMenuClose();
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
   const handleAddTopicClick = () => {
+    // Get the next sequential topic number
+    const lastTopicNumber = espTopics.length > 0 ? 
+      Math.max(...espTopics.map(topic => parseInt(topic.replace(/[^\d]/g, ''), 10))) : 0;
+    setNewTopic(`${name}${lastTopicNumber + 1}`);
     setIsAddingTopic(true);
   };
 
@@ -85,7 +115,7 @@ const EditUserForm = ({ onUserUpdated }) => {
           name,
           email,
           noofdevices: Number(devices),
-          espTopics // Changed from deviceIPs
+          espTopics
         })
       });
 
@@ -100,7 +130,7 @@ const EditUserForm = ({ onUserUpdated }) => {
         id: user._id,
         name,
         noofdevices: Number(devices),
-        espTopics // Changed from deviceIPs
+        espTopics
       });
 
       navigate('/admin');
@@ -156,23 +186,23 @@ const EditUserForm = ({ onUserUpdated }) => {
             </tbody>
           </table>
           <div className="button-container">
-            <div className="add-ip-container"> {/* Keeping class name as it is */}
+            <div className="add-ip-container">
               {isAddingTopic ? (
                 <>
                   <input
                     type="text"
-                    value={newTopic} // Renamed from newIP
-                    onChange={(e) => setNewTopic(e.target.value)} // Renamed from setNewIP
-                    placeholder="Enter new IP address"
+                    value={newTopic}
+                    onChange={(e) => setNewTopic(e.target.value)}
+                    placeholder="Enter new AWS topic"
                     className="textboxs"
                   />
-                  <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button> {/* Keeping class name as it is */}
+                  <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button>
                 </>
               ) : (
                 <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button> 
               )}
             </div>
-            <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button> {/* Keeping class name as it is */}
+            <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button>
           </div>
         </div>
       </div>

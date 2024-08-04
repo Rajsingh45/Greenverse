@@ -214,21 +214,81 @@ const renameUser = async (req, res) => {
     }
 };
 
+
 const deleteUser = async (req, res) => {
     const { email } = req.body;
 
     try {
+        // Find and delete the user
         const existingUser = await Admin.findOneAndDelete({ email });
         if (!existingUser) {
             return res.status(400).json({ message: 'User not found' });
         }
 
-        res.json({ message: 'User deleted successfully' });
+        // Delete collections associated with the user's ESP topics
+        const espTopics = existingUser.espTopics || [];
+        for (const topic of espTopics) {
+            const collectionName = topic;
+            const collection = mongoose.connection.db.collection(collectionName);
+
+            if (collection) {
+                await collection.drop();
+                console.log(`Collection ${collectionName} dropped`);
+            } else {
+                console.log(`Collection ${collectionName} does not exist`);
+            }
+        }
+
+        res.json({ message: 'User and their ESP topics deleted successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
+
+const deleteTopic = async (req, res) => {
+  const { topic } = req.body;
+
+  if (!topic) {
+    console.log('Topic is required');
+    return res.status(400).json({ error: 'Topic is required' });
+  }
+
+  try {
+    // Find the admin who has this topic
+    const user = await Admin.findOne({ espTopics: topic });
+
+    if (!user) {
+      console.log('Admin not found');
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    // Remove the topic from the admin's espTopics array
+    user.espTopics = user.espTopics.filter((t) => t !== topic);
+    user.noofdevices = user.espTopics.length;
+    await user.save();
+
+    // Drop the collection associated with the topic
+    const collectionName = topic;
+    const db = mongoose.connection.db;
+
+    // Check if the collection exists
+    const collections = await db.listCollections({ name: collectionName }).toArray();
+    if (collections.length > 0) {
+      await db.dropCollection(collectionName);
+      console.log(`Collection ${collectionName} dropped`);
+    } else {
+      console.log(`Collection ${collectionName} does not exist`);
+    }
+
+    res.status(200).json({ message: 'Topic and associated collection deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting topic:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 
 const searchUserByName = async (req, res) => {
     const { name } = req.query;
@@ -262,5 +322,21 @@ const getUserDevicesByEmail = async (req, res) => {
     }
 };
 
-module.exports = { addUser, getAllUsers, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser, renameUser, searchUserByName, getUserDevicesByEmail};
+const getDeviceNames = async (req, res) => {
+    // const { email } = req.query;
+
+    try {
+        const user = await Admin.findOne({ email:req.user.email  });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const deviceNames = user.espTopics;
+        res.status(200).json({ deviceNames });
+    } catch (error) {
+        console.error('Error fetching device names:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+module.exports = {getDeviceNames, addUser, getAllUsers, deleteTopic, updateUserDevices, getDevicesNumber, checkAdminEmailExists, deleteUser, renameUser, searchUserByName, getUserDevicesByEmail};
 
