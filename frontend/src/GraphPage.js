@@ -35,12 +35,12 @@ ChartJS.register(
 
 const GraphPage = () => {
     const location = useLocation();
-    const { startDate, endDate, parameter,deviceName } = location.state;
+    const { startDate, endDate, parameter, deviceName } = location.state;
     const [chartData, setChartData] = useState({
         labels: [],
         datasets: [
             {
-                label: 'Air Quality Index',
+                label: parameter,
                 data: [],
                 borderColor: 'rgba(75,192,192,1)',
                 fill: false
@@ -92,25 +92,23 @@ const GraphPage = () => {
 
     const fetchData = async () => {
         try {
-            // Format startDate and endDate to the required format
             const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
             const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
-         
-            // Include parameter in the query string
+
             const response = await fetch(`http://localhost:5000/api/device-data-by-daterange/${deviceName}?startDate=${formattedStartDate}&endDate=${formattedEndDate}&parameter=${parameter}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-         
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-         
+
             const data = await response.json();
             console.log('Fetched data:', data);
-         
+
             if (!Array.isArray(data)) {
                 console.warn('Data is not in expected format');
                 setChartData({
@@ -126,7 +124,7 @@ const GraphPage = () => {
                 });
                 return;
             }
-         
+
             if (data.length === 0) {
                 console.warn('No data available for the selected date range.');
                 setChartData({
@@ -142,12 +140,10 @@ const GraphPage = () => {
                 });
                 return;
             }
-         
-            // Extract and format data
+
             const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
             const values = data.map(entry => entry[parameter]);
-         
-            // Update chart data
+
             setChartData({
                 labels: labels,
                 datasets: [
@@ -174,23 +170,25 @@ const GraphPage = () => {
             });
         }
     };
-    
-    
-    
 
     useEffect(() => {
         fetchData();
-    }, [startDate, endDate, parameter]);
+    }, [startDate, endDate, parameter, deviceName]);
 
     const getTicks = () => {
         const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
-        return duration <= 7 ? 'minute' : 'day';
+        if (duration <= 7) {
+            return { unit: 'minute', stepSize: 10 };
+        } else if (duration <= 30) {
+            return { unit: 'day', stepSize: 1 };
+        } else {
+            return { unit: 'week', stepSize: 1 };
+        }
     };
-
+    
+    const { unit, stepSize } = getTicks();
     const formatTick = (tick) => {
-        const date = dayjs(tick).format('DD-MM-YYYY');
-        const time = dayjs(tick).format('HH:mm');
-        return `${date}\n${time}`;
+        return dayjs(tick).format(getTicks() === 'minute' ? 'DD-MM-YYYY HH:mm' : 'DD-MM-YYYY');
     };
 
     const handleDownload = (type) => {
@@ -231,7 +229,7 @@ const GraphPage = () => {
 
     const handleDownloadExcel = () => {
         const worksheet = XLSX.utils.json_to_sheet(chartData.datasets[0].data.map((value, index) => ({
-            Date: chartData.labels[index],
+            Date: dayjs(chartData.labels[index]).format('YYYY-MM-DD HH:mm:ss'),
             Value: value
         })));
         const workbook = XLSX.utils.book_new();
@@ -245,7 +243,7 @@ const GraphPage = () => {
         const doc = new jsPDF();
         doc.text('Air Quality Index Data', 10, 10);
         chartData.labels.forEach((label, index) => {
-            doc.text(`${label}: ${chartData.datasets[0].data[index]}`, 10, 20 + index * 10);
+            doc.text(`${dayjs(label).format('YYYY-MM-DD HH:mm:ss')}: ${chartData.datasets[0].data[index]}`, 10, 20 + index * 10);
         });
         doc.save('chart.doc');
     };
@@ -285,32 +283,53 @@ const GraphPage = () => {
                         </div>
                     </div>
                     <Line
-                        data={chartData}
-                        options={{
-                            scales: {
-                                x: {
-                                    type: 'time',
-                                    time: {
-                                        unit: getTicks(),
-                                    },
-                                    title: {
-                                        display: true,
-                                        text: 'Date and Time'
-                                    },
-                                    ticks: {
-                                        callback: formatTick
-                                    }
-                                },
-                                y: {
-                                    title: {
-                                        display: true,
-                                        text: parameter
-                                    }
-                                }
-                            }
-                        }}
-                    />
+    data={chartData}
+    options={{
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: unit,
+                    stepSize: stepSize,
+                    tooltipFormat: 'dd-MM-yyyy HH:mm',
+                    displayFormats: {
+                        minute: 'dd-MM-yyyy HH:mm',
+                        day: 'dd-MM-yyyy',
+                        week: 'dd-MM-yyyy',
+                        month: 'dd-MM-yyyy', // Add month for larger ranges
+                        quarter: 'dd-MM-yyyy', // Add quarter for even larger ranges
+                        year: 'dd-MM-yyyy' // Add year for very large ranges
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Date'
+                },
+                ticks: {
+                    autoSkip: true, // Automatically skips labels to avoid overlap
+                    // maxRotation: 0, // Prevents rotation of labels
+                    // minRotation: 0 // Ensures labels are not rotated
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: parameter
+                }
+            }
+        }
+    }}
+/>
+
                 </div>
+                {/* <div className="filtered-users">
+                    <h3>Filtered Users</h3>
+                    <ul>
+                        {filteredUsers.map(user => (
+                            <li key={user._id}>{user.name} - {user.email}</li>
+                        ))}
+                    </ul>
+                </div> */}
             </div>
         </>
     );
