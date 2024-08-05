@@ -40,7 +40,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = ({ setSearchQuery }) => {
+const Navbar = ({ setSearchQuery, searchDisabled }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [userName, setUserName] = useState('');
@@ -132,9 +132,9 @@ const Navbar = ({ setSearchQuery }) => {
         <a href="/about-us" className="navbar-link">About</a>
         <a href="/contact-us" className="navbar-link">Contact Us</a>
       </div>
-
-      <div className="profile-icon-container">
-        <div className='search-container'>
+      
+      <div className={`profile-icon-container ${searchDisabled ? 'search-disabled' : ''}`}>
+      <div className={`search-container ${searchDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />

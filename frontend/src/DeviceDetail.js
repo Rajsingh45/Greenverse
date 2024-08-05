@@ -128,7 +128,7 @@ const DeviceDetailPage = () => {
 
     return (
         <>
-            {isAdmin ? <Layout /> : <UserNavbar />}
+            {isAdmin ? <Layout /> : <UserNavbar searchDisabled={true} />}
             <div className="device-detail-page">
                 <div className="table-section">
                     <div className="calendar-icon-container">

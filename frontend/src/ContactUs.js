@@ -45,7 +45,7 @@ const ContactUs = () => {
 
   return (
     <>
-    <UserNavbar/>
+   <UserNavbar searchDisabled={true}/>
     <div className="contact-us">
           <h2>Contact Us</h2>
           <form onSubmit={handleSubmit}>

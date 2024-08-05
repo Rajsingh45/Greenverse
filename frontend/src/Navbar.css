@@ -17,7 +17,7 @@
   position: absolute;
   right: 20px;
   top: 20px;
-  cursor: pointer;
+  /* cursor: pointer; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -270,4 +270,10 @@ width: 100%;
 
 .css-1iz4iln {
   padding: 0px !important;
+}
+
+.search-container.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
 }

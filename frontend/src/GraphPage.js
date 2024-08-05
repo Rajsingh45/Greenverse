@@ -268,7 +268,7 @@ const GraphPage = () => {
 
     return (
         <>
-            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar />}
+            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true}/>}
             <div className="graph-page-wrapper">
                 <div className="chart-section">
                     <div className="dropdown-container" ref={dropdownRef}>

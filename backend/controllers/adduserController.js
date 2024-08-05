@@ -315,7 +315,12 @@ const getUserDevicesByEmail = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json({ devices: user.noofdevices });
+
+        // Assuming user.noofdevices is the count and user.espTopics contains the device names
+        const devices = user.noofdevices;
+        const deviceNames = user.espTopics || []; // Ensure espTopics is an array of device names
+
+        res.status(200).json({ devices, deviceNames });
     } catch (error) {
         console.error('Error fetching user devices:', error);
         res.status(500).json({ message: 'Server error' });

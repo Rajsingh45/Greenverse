@@ -39,7 +39,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = ({ searchQuery, setSearchQuery }) => {
+const Navbar = ({ searchQuery, setSearchQuery, searchDisabled }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const dropdownRef = useRef(null);
@@ -87,16 +87,16 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
   };
 
   const handleChangePassword = () => {
-    window.location.href = './change-password';
+    window.location.href = '/change-password';
   };
 
   const handleUserInfo = () => {
-    window.location.href = './user-info';
+    window.location.href = '/user-info';
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = './';
+    window.location.href = '/';
   };
 
   const handleSearchChange = (event) => {
@@ -114,7 +114,7 @@ const Navbar = ({ searchQuery, setSearchQuery }) => {
       </div>
 
       <div className="profile-icon-container">
-        <div className='search-container'>
+      <div className={`search-container ${searchDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />

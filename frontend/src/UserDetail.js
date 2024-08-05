@@ -20,24 +20,27 @@ const UserDetail = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [deviceNames, setDeviceNames] = useState([]); 
 
   useEffect(() => {
     const fetchUserDevices = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:5000/admin/user/devices?email=${email}`, {
+        const response = await axios.get('http://localhost:5000/admin/user/devices', {
+          params: { email },
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        const { devices } = response.data; // Ensure this matches the backend response structure
+        const { devices, deviceNames } = response.data; // Update to match backend response
         setDeviceCount(devices);
-        setTotalPages(Math.ceil(devices / imagesPerPage));
+        setDeviceNames(deviceNames || []);
+        setTotalPages(Math.ceil(deviceNames.length / imagesPerPage));
       } catch (error) {
         console.error('Error fetching user devices:', error);
       }
     };
-
+  
     fetchUserDevices();
   }, [email]);
 
@@ -53,28 +56,29 @@ const UserDetail = () => {
     }
   };
 
-  const handleNameClick = (deviceId) => {
-    window.location.href = `/device/${deviceId}`;
-  };
-
   const renderDeviceCards = () => {
     const startIndex = (currentPage - 1) * imagesPerPage;
     const endIndex = startIndex + imagesPerPage;
     const cards = [];
-    for (let i = startIndex; i < endIndex && i < deviceCount; i++) {
+    for (let i = startIndex; i < endIndex && i < deviceNames.length; i++) {
       const image = images[i % images.length];
+      const deviceName = deviceNames[i] || `Device ${i + 1}`; // Use deviceNames from API
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
             <img src={image} alt={`Device ${i + 1}`} />
-            <div className="device-name-card" onClick={() => handleNameClick(i + 1)}>
-              <p className="device-text">Device {i + 1}</p>
+            <div className="device-name-card" onClick={() => handleNameClick(deviceName)}>
+              <p className="device-text">{deviceName}</p>
             </div>
           </div>
         </div>
       );
     }
     return cards;
+  };
+
+  const handleNameClick = (deviceName) => {
+    window.location.href = `/device/${deviceName}`;
   };
 
   useEffect(() => {
