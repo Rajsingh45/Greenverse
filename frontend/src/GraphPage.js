@@ -35,7 +35,7 @@ ChartJS.register(
 
 const GraphPage = () => {
     const location = useLocation();
-    const { startDate, endDate, parameter } = location.state;
+    const { startDate, endDate, parameter,deviceName } = location.state;
     const [chartData, setChartData] = useState({
         labels: [],
         datasets: [
@@ -92,23 +92,25 @@ const GraphPage = () => {
 
     const fetchData = async () => {
         try {
-            const startDateTime = `${startDate}`;
-            const endDateTime = `${endDate}`;
-    
-            const response = await fetch(`http://localhost:5000/api/datas?parameter=${parameter}`, {
+            // Format startDate and endDate to the required format
+            const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
+            const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
+         
+            // Include parameter in the query string
+            const response = await fetch(`http://localhost:5000/api/device-data-by-daterange/${deviceName}?startDate=${formattedStartDate}&endDate=${formattedEndDate}&parameter=${parameter}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-    
+         
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-    
+         
             const data = await response.json();
             console.log('Fetched data:', data);
-    
+         
             if (!Array.isArray(data)) {
                 console.warn('Data is not in expected format');
                 setChartData({
@@ -124,7 +126,7 @@ const GraphPage = () => {
                 });
                 return;
             }
-    
+         
             if (data.length === 0) {
                 console.warn('No data available for the selected date range.');
                 setChartData({
@@ -140,11 +142,11 @@ const GraphPage = () => {
                 });
                 return;
             }
-    
+         
             // Extract and format data
             const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
             const values = data.map(entry => entry[parameter]);
-    
+         
             // Update chart data
             setChartData({
                 labels: labels,
@@ -172,6 +174,7 @@ const GraphPage = () => {
             });
         }
     };
+    
     
     
 

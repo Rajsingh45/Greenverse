@@ -21,6 +21,9 @@ const DeviceDetailPage = () => {
     const [fetching, setFetching] = useState(true);
     const [latestDateTime, setLatestDateTime] = useState(dayjs().format('YYYY-MM-DD HH:mm:ss'));
     const [isFiltered, setIsFiltered] = useState(false);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [selectedOption, setSelectedOption] = useState('');
 
     useEffect(() => {
         const fetchLiveData = async () => {
@@ -58,7 +61,7 @@ const DeviceDetailPage = () => {
                 const newDateTime = dayjs().subtract(1, 'second').format('YYYY-MM-DD HH:mm:ss');
                 setLatestDateTime(newDateTime);
             }
-        }, 2000);
+        }, 1000);
 
         return () => clearInterval(intervalId);
     }, [deviceName, latestDateTime, fetching, calendarDate, isFiltered]);
@@ -82,6 +85,36 @@ const DeviceDetailPage = () => {
         setDatePickerOpen(true);
         setIsFiltered(false);
         setFetching(true);
+    };
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        if (date > endDate) {
+            setEndDate(date);
+        }
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+        if (date < startDate) {
+            setStartDate(date);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!startDate || !endDate || !selectedOption) {
+            setError('All fields must be filled.');
+        } else {
+            setError('');
+            navigate(`/graph/${deviceName}`, {
+                state: {
+                    startDate: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss'),
+                    endDate: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss'),
+                    parameter: selectedOption,
+                    deviceName:deviceName
+                }
+            });
+        }
     };
 
     const filterFutureTimes = (time) => {
@@ -141,19 +174,53 @@ const DeviceDetailPage = () => {
                 <div className="filter-section">
                     <h3>Filter by Date and Time</h3>
                     <div className="date-picker">
-                        <label>Select Date and Time:</label>
+                        <label>From:</label>
                         <DatePicker
-                            selected={calendarDate}
-                            onChange={handleDateSelection}
+                            selected={startDate}
+                            onChange={handleStartDateChange}
                             showTimeSelect
                             timeIntervals={1}
                             timeFormat="HH:mm"
                             dateFormat="yyyy-MM-dd HH:mm"
                             className='date-picker-input'
+                            maxDate={maxDate}
                             filterTime={filterFutureTimes}
                         />
                     </div>
+                    <div className="date-picker">
+                        <label>To:</label>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={handleEndDateChange}
+                            showTimeSelect
+                            timeIntervals={1}
+                            timeFormat="HH:mm"
+                            dateFormat="yyyy-MM-dd HH:mm"
+                            className='date-picker-input'
+                            maxDate={maxDate}
+                            filterTime={filterFutureTimes}
+                        />
+                    </div>
+                    <div className="dropdown-section">
+                        <label>Select Parameter:</label>
+                        <select
+                            value={selectedOption}
+                            onChange={(e) => setSelectedOption(e.target.value)}
+                        >
+                            <option value="" disabled>Select an option</option>
+                            {parameterOptions.map((item, index) => (
+                                <option key={index} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                     {error && <div className="error-message">{error}</div>}
+                    <div>
+                        <button type="button" className="graph-button" onClick={handleSubmit}>
+                            Show Graph
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

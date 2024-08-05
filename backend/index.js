@@ -102,5 +102,53 @@ app.get('/api/device-data-by-datetime/:espTopic/:datetime', async (req, res) => 
   }
 });
 
+app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
+  const { espTopic } = req.params;
+  const { startDate, endDate, parameter } = req.query;
+
+  try {
+    await mongoClient.connect();
+    const db = mongoClient.db(dbName);
+    const deviceCollection = db.collection(espTopic);
+
+    // Directly use the provided dates in the format 'YYYY-MM-DD HH:mm:ss'
+    const start = startDate;
+    const end = endDate;
+
+    // console.log(`Start Date: ${start}`);
+    // console.log(`End Date: ${end}`);
+
+    // Fetch data for the specified date range
+    const data = await deviceCollection.find({
+      dateTime: {
+        $gte: start,
+        $lte: end
+      }
+    }).toArray();
+
+    if (data.length > 0) {
+      // Check if parameter exists in the documents and map the data accordingly
+      const filteredData = data.map(entry => {
+        if (entry.hasOwnProperty(parameter)) {
+          return {
+            dateTime: entry.dateTime,
+            [parameter]: entry[parameter] // Include only the specified parameter
+          };
+        } else {
+          console.warn(`Parameter "${parameter}" not found in document.`);
+          return null;
+        }
+      }).filter(entry => entry !== null);
+
+      res.json(filteredData);
+    } else {
+      res.status(404).json({ error: 'No data found for the specified date range' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
