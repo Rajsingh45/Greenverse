@@ -57,7 +57,7 @@ app.get('/locations', (req, res) => {
 
 app.get('/api/device-data/:espTopic', async (req, res) => {
   const { espTopic } = req.params;
-  const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:00');
+  const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
   mqttMongoIntegration();
 
   try {
@@ -76,6 +76,27 @@ app.get('/api/device-data/:espTopic', async (req, res) => {
       // console.log(deviceCollection)
       const data = await deviceCollection.find({ dateTime: now }).toArray();
       res.json(data);
+  } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+app.get('/api/device-data-by-datetime/:espTopic/:datetime', async (req, res) => {
+  const { espTopic, datetime } = req.params;
+
+  try {
+      await mongoClient.connect();
+      const db = mongoClient.db(dbName);
+      const deviceCollection = db.collection(espTopic);
+
+      // Ensure the datetime format is valid and matches the format in your database
+      const data = await deviceCollection.find({ dateTime: datetime }).toArray();
+
+      if (data.length > 0) {
+          res.json(data);
+      } else {
+          res.status(404).json({ error: 'No data found for the specified datetime' });
+      }
   } catch (err) {
       res.status(500).json({ error: 'Failed to fetch data' });
   }

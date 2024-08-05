@@ -14,10 +14,8 @@ const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifie
 let mqttClient;
 const lastStoredTimestamps = {};
 
-function getFormattedMinute() {
-    const now = new Date();
-    now.setSeconds(0, 0);
-    return moment(now).tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+function getFormattedSecond() {
+    return moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 }
 
 async function connectMQTT() {
@@ -36,26 +34,26 @@ async function connectMQTT() {
     });
 
     mqttClient.on('message', async (topic, message) => {
-        // console.log(`Message received on topic ${topic}: ${message.toString()}`);
         try {
             const messageData = JSON.parse(message.toString());
-            const currentMinute = getFormattedMinute();
+            const currentSecond = getFormattedSecond();
 
-            if (!lastStoredTimestamps[topic] || currentMinute > lastStoredTimestamps[topic]) {
-                lastStoredTimestamps[topic] = currentMinute;
+            // Check if data is already stored for this second
+            if (!lastStoredTimestamps[topic] || currentSecond > lastStoredTimestamps[topic]) {
+                lastStoredTimestamps[topic] = currentSecond;
 
                 const db = mongoClient.db(dbName);
                 const collection = db.collection(topic);
                 const result = await collection.insertOne({
                     ...messageData,
-                    dateTime: currentMinute
+                    dateTime: currentSecond
                 });
 
                 if (result.insertedCount > 0) {
                     console.log('Data inserted:', result.insertedCount);
                 }
             } else {
-                // console.log(`Data for topic ${topic} is already stored for minute ${currentMinute}`);
+                // Data for topic already stored for this second
             }
         } catch (err) {
             console.error('Failed to process message:', err.message);
@@ -81,7 +79,7 @@ async function subscribeToTopics() {
         const collections = await db.listCollections().toArray();
         const espTopics = collections.map(col => col.name).filter(name => /^.*\d$/.test(name));
 
-        // console.log(`Subscribing to topics: ${espTopics.join(', ')}`);
+        // console.log(Subscribing to topics: ${espTopics.join(', ')});
 
         if (espTopics.length === 0) {
             console.error('No topics found to subscribe.');
@@ -101,5 +99,9 @@ async function subscribeToTopics() {
         console.error('Failed to connect to MongoDB or MQTT broker:', err.message);
     }
 }
+
+subscribeToTopics().catch(err => {
+    console.error('Failed to subscribe to topics:', err);
+});
 
 module.exports = subscribeToTopics;

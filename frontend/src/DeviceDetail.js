@@ -13,22 +13,25 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 const DeviceDetailPage = () => {
     const { deviceName } = useParams();
     const navigate = useNavigate();
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [selectedOption, setSelectedOption] = useState('');
-    const [error, setError] = useState('');
+    const [calendarDate, setCalendarDate] = useState(new Date());
     const [liveData, setLiveData] = useState(null);
     const [parameterOptions, setParameterOptions] = useState([]);
-    const [calendarDate, setCalendarDate] = useState(new Date());
-    const [maxDate, setMaxDate] = useState(new Date());
     const [datePickerOpen, setDatePickerOpen] = useState(true);
+    const [error, setError] = useState('');
+    const [fetching, setFetching] = useState(true);
+    const [latestDateTime, setLatestDateTime] = useState(dayjs().format('YYYY-MM-DD HH:mm:ss'));
+    const [isFiltered, setIsFiltered] = useState(false);
 
     useEffect(() => {
         const fetchLiveData = async () => {
             try {
-                const formattedDate = dayjs(calendarDate).format('YYYY-MM-DD');
-                const formattedTime = dayjs(calendarDate).format('HH:mm:ss');
-                const response = await fetch(`http://localhost:5000/api/device-data/${deviceName}`);
+                let fetchDateTime = latestDateTime;
+
+                if (isFiltered) {
+                    fetchDateTime = dayjs(calendarDate).format('YYYY-MM-DD HH:mm:ss');
+                }
+
+                const response = await fetch(`http://localhost:5000/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
                 const result = await response.json();
 
                 if (result.length > 0) {
@@ -42,15 +45,23 @@ const DeviceDetailPage = () => {
                 }
             } catch (error) {
                 console.error('Error fetching live data:', error);
+                setError('Error fetching live data');
             }
         };
 
-        fetchLiveData();
+        if (fetching) {
+            fetchLiveData();
+        }
 
-        return () => {
-            // Cleanup logic if needed
-        };
-    }, [deviceName, calendarDate]);
+        const intervalId = setInterval(() => {
+            if (!isFiltered && fetching) {
+                const newDateTime = dayjs().subtract(1, 'second').format('YYYY-MM-DD HH:mm:ss');
+                setLatestDateTime(newDateTime);
+            }
+        }, 2000);
+
+        return () => clearInterval(intervalId);
+    }, [deviceName, latestDateTime, fetching, calendarDate, isFiltered]);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -60,43 +71,17 @@ const DeviceDetailPage = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const handleStartDateChange = (date) => {
-        setStartDate(date);
-        if (date > endDate) {
-            setEndDate(date);
-        }
-    };
-
-    const handleEndDateChange = (date) => {
-        setEndDate(date);
-        if (date < startDate) {
-            setStartDate(date);
-        }
-    };
-
-    const handleSubmit = () => {
-        if (!startDate || !endDate || !selectedOption) {
-            setError('All fields must be filled.');
-        } else {
-            setError('');
-            navigate(`/graph/${deviceName}`, {
-                state: {
-                    startDate: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss'),
-                    endDate: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss'),
-                    parameter: selectedOption
-                }
-            });
-        }
-    };
-
     const handleDateSelection = (date) => {
         setCalendarDate(date);
-        // No need to call fetchDataAndParameters here as it is already handled in useEffect
+        setIsFiltered(true);
+        setFetching(true);
     };
 
     const handleIconClick = () => {
         setCalendarDate(dayjs().toDate());
         setDatePickerOpen(true);
+        setIsFiltered(false);
+        setFetching(true);
     };
 
     const filterFutureTimes = (time) => {
@@ -104,6 +89,7 @@ const DeviceDetailPage = () => {
         return time.getTime() <= now.getTime();
     };
 
+    const [maxDate, setMaxDate] = useState(new Date());
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
     const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
 
@@ -155,53 +141,19 @@ const DeviceDetailPage = () => {
                 <div className="filter-section">
                     <h3>Filter by Date and Time</h3>
                     <div className="date-picker">
-                        <label>From:</label>
+                        <label>Select Date and Time:</label>
                         <DatePicker
-                            selected={startDate}
-                            onChange={handleStartDateChange}
+                            selected={calendarDate}
+                            onChange={handleDateSelection}
                             showTimeSelect
                             timeIntervals={1}
                             timeFormat="HH:mm"
                             dateFormat="yyyy-MM-dd HH:mm"
                             className='date-picker-input'
-                            maxDate={maxDate}
                             filterTime={filterFutureTimes}
                         />
-                    </div>
-                    <div className="date-picker">
-                        <label>To:</label>
-                        <DatePicker
-                            selected={endDate}
-                            onChange={handleEndDateChange}
-                            showTimeSelect
-                            timeIntervals={1}
-                            timeFormat="HH:mm"
-                            dateFormat="yyyy-MM-dd HH:mm"
-                            className='date-picker-input'
-                            maxDate={maxDate}
-                            filterTime={filterFutureTimes}
-                        />
-                    </div>
-                    <div className="dropdown-section">
-                        <label>Select Parameter:</label>
-                        <select
-                            value={selectedOption}
-                            onChange={(e) => setSelectedOption(e.target.value)}
-                        >
-                            <option value="" disabled>Select an option</option>
-                            {parameterOptions.map((item, index) => (
-                                <option key={index} value={item}>
-                                    {item}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                     {error && <div className="error-message">{error}</div>}
-                    <div>
-                        <button type="button" className="graph-button" onClick={handleSubmit}>
-                            Show Graph
-                        </button>
-                    </div>
                 </div>
             </div>
         </>

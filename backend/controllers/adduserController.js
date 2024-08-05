@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const subscribeToTopics = require('../services/mqttMongoIntegration');
 
 const formatDateAWS = (date) => {
-    return moment(date).format('YYYY-MM-DD HH:mm:00');
+    return moment(date).format('YYYY-MM-DD HH:mm:ss');
 };
 
 const createCollection = async (db, topic) => {
