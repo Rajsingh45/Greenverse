@@ -9,8 +9,15 @@ import UserNavbar from './UserNavbar';
 import Layout from './Layout';
 import IconButton from '@mui/material/IconButton';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 
 const DeviceDetailPage = () => {
+    const [downloadStartDate, setDownloadStartDate] = useState(new Date());
+const [downloadEndDate, setDownloadEndDate] = useState(new Date());
+const [downloadParameter, setDownloadParameter] = useState('');
+
     const { deviceName } = useParams();
     const navigate = useNavigate();
     const [calendarDate, setCalendarDate] = useState(new Date());
@@ -122,6 +129,39 @@ const DeviceDetailPage = () => {
         return time.getTime() <= now.getTime();
     };
 
+    const handleDownload = async () => {
+        if (!downloadStartDate || !downloadEndDate) {
+            setError('Both start and end dates must be filled.');
+            return;
+        }
+    
+        setError('');
+    
+        try {
+            const response = await fetch(`http://localhost:5000/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
+            const data = await response.json();
+    
+            // Process data into CSV format
+            const csvContent = [
+                "dateTime," + Object.keys(data[0] || {}).filter(key => key !== 'dateTime').join(','),
+                ...data.map(row => {
+                    return [
+                        row.dateTime,
+                        ...Object.keys(row).filter(key => key !== 'dateTime').map(key => row[key])
+                    ].join(',');
+                })
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, `${deviceName}_data_${dayjs(downloadStartDate).format('YYYY-MM-DD')}_${dayjs(downloadEndDate).format('YYYY-MM-DD')}.csv`);
+        } catch (error) {
+            console.error('Error downloading data:', error);
+            setError('Error downloading data');
+        }
+    };
+    
+    
+
     const [maxDate, setMaxDate] = useState(new Date());
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
     const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
@@ -221,7 +261,42 @@ const DeviceDetailPage = () => {
                             Show Graph
                         </button>
                     </div>
+                    <div className="download-section">
+    <h3>Download Data for All Parameters</h3>
+    <div className="date-picker">
+        <label>From:</label>
+        <DatePicker
+            selected={downloadStartDate}
+            onChange={date => setDownloadStartDate(date)}
+            showTimeSelect
+            timeIntervals={1}
+            timeFormat="HH:mm"
+            dateFormat="yyyy-MM-dd HH:mm"
+            className='date-picker-input'
+            maxDate={new Date()}
+        />
+    </div>
+    <div className="date-picker">
+        <label>To:</label>
+        <DatePicker
+            selected={downloadEndDate}
+            onChange={date => setDownloadEndDate(date)}
+            showTimeSelect
+            timeIntervals={1}
+            timeFormat="HH:mm"
+            dateFormat="yyyy-MM-dd HH:mm"
+            className='date-picker-input'
+            maxDate={new Date()}
+        />
+    </div>
+    
+    <button type="button" className="download-button" onClick={handleDownload}>
+        Download Data
+    </button>
+</div>
                 </div>
+                
+
             </div>
         </>
     );

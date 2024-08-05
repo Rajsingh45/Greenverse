@@ -88,6 +88,20 @@
     width: 100%;
 }
 
+.download-button{
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    /* margin-left: 10%; */
+    width: 100%;
+}
+
 .graph-button:hover {
     background-color: #0056b3;
 }
@@ -201,3 +215,33 @@
 .date-picker .react-datepicker__month-container,.date-pickers .react-datepicker__month-container {
     border-radius: 0 0 8px 8px;
 }
+
+.download-section {
+    margin-top: 20%;
+}
+
+.download-section h3 {
+    margin-bottom: 10px;
+}
+
+.download-section .date-picker {
+    margin-bottom: 10px;
+    width: 100%; 
+}
+
+.download-section .date-picker label {
+    margin-right: 10px;
+}
+
+.download-section .date-picker-input {
+    width: 100%;
+}
+
+.download-button {
+    background-color: #28a745;
+}
+
+.download-button:hover {
+    background-color: #218838;
+}
+

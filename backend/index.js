@@ -149,6 +149,34 @@ app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
   }
 });
 
+// Add this route to your Express.js server code
+
+app.get('/api/download-device-data/:espTopic', async (req, res) => {
+  const { espTopic } = req.params;
+  const { startDate, endDate } = req.query;
+
+  try {
+    await mongoClient.connect();
+    const db = mongoClient.db(dbName);
+    const deviceCollection = db.collection(espTopic);
+
+    // Fetch data for the specified date range
+    const data = await deviceCollection.find({
+      dateTime: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).toArray();
+
+    if (data.length > 0) {
+      res.json(data);
+    } else {
+      res.status(404).json({ error: 'No data found for the specified date range' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
