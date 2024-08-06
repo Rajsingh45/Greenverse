@@ -15,20 +15,26 @@ const register = async (req, res) => {
         if (role === 'admin') {
             const adminUser = await User.findOne({ role: 'admin' });
             if (adminUser) {
-                return res.status(400).json({ error: 'Admin user already exists' });
+                return res.status(400).json({ error: 'Admin already exists' });
             }
         }
 
         // Check if the name already exists
         const existingName = await User.findOne({ name });
         if (existingName) {
-            return res.status(400).json({ message: 'Name already exists' });
+            return res.status(400).json({ message: 'Username already exists' });
         }
 
         // Check if the email already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+
+        // Check if the contact number already exists
+        const existingContact = await User.findOne({ contactNumber });
+        if (existingContact) {
+            return res.status(400).json({ message: 'Contact number already registered' });
         }
 
         // Hash the password and create a new user
@@ -44,7 +50,6 @@ const register = async (req, res) => {
 };
 
 
-
 const generateRememberMeToken = () => {
     return crypto.randomBytes(32).toString('hex');
 };
@@ -55,7 +60,7 @@ const login = async (req, res) => {
     try {
         const user = await User.findOne({ email }).select('+rememberMeToken +rememberMeTokenExpiry');
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User Not Registered' });
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, user.password);

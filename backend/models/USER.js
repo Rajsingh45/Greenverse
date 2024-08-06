@@ -11,16 +11,33 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         match: [/\S+@\S+\.\S+/, 'Please fill a valid email address']
     },
-    password: { type: String, required: true },
+    password: {
+        type: String,
+        required: true
+    },
     contactNumber: {
         type: String,
-        // required: true,
+        required: true,
+        unique: true,
         match: [/^\d{10}$/, 'Please fill a valid contact number']
     },
-    profilePicture: { type: String, default: '' },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' },
-    rememberMeToken: { type: String, select: false },
-    rememberMeTokenExpiry: { type: Date, select: false }
+    profilePicture: {
+        type: String,
+        default: ''
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    },
+    rememberMeToken: {
+        type: String,
+        select: false
+    },
+    rememberMeTokenExpiry: {
+        type: Date,
+        select: false
+    }
 });
 
 module.exports = mongoose.model('User', UserSchema);
