@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, rememberMe, changePassword,checkEmailExists, searchDevices, requestOTP, verifyOTP, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
+const { register, login,checkNameAvailability, rememberMe, changePassword,checkEmailExists, searchDevices, requestOTP, verifyOTP, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/authMiddleware'); // Import the middleware
 const upload = require('../middleware/uploadMiddleware');
 
 router.post('/register', register);
+
+router.get('/check-name', checkNameAvailability);
 router.post('/login', login);
 router.get('/remember-me', rememberMe);
 
