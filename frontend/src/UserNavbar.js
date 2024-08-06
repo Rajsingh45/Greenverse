@@ -131,6 +131,7 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
         <a href="/dashboard" className="navbar-link">Home</a>
         <a href="/about-us" className="navbar-link">About</a>
         <a href="/contact-us" className="navbar-link">Contact Us</a>
+        <a href="/api-generation" className="navbar-link">Maps</a>
       </div>
       
       <div className={`profile-icon-container ${searchDisabled ? 'search-disabled' : ''}`}>

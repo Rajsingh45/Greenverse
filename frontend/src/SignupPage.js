@@ -1,17 +1,41 @@
-import React, { useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './signup.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SignupPage = () => {
     const navigate = useNavigate(); 
 
     const [userDetails, setUserDetails] = useState({
-        name:"",
+        name: "",
         email: "",
-        password: ""
+        password: "",
+        contactNumber: ""
     });
 
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (userDetails.name) {
+            checkNameAvailability(userDetails.name);
+        }
+    }, [userDetails.name]);
+
+    const checkNameAvailability = async (name) => {
+        try {
+            const response = await fetch(`http://localhost:5000/auth/check-name?name=${name}`);
+            if (response.status === 400) {
+                const data = await response.json();
+                setError(data.message);
+            } else {
+                setError('');
+            }
+        } catch (err) {
+            console.error('Error during name check:', err);
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -26,9 +50,9 @@ const SignupPage = () => {
         text: "Dummy Msg"
     });
 
-    const handleLogin=()=>{
+    const handleLogin = () => {
         navigate("/")
-    }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -38,15 +62,17 @@ const SignupPage = () => {
             setError('Invalid email format');
             return;
         }
-    
-        const nameRegex = /^[A-Za-z\s]+$/;
-        if (!nameRegex.test(userDetails.name)) {
-            setError('Name cannot contain numbers');
+
+        const contactNumberRegex = /^\d{10}$/;
+        if (!contactNumberRegex.test(userDetails.contactNumber)) {
+            setError('Invalid contact number');
             return;
         }
-    
-        setError('');
-    
+
+        if (error) {
+            return;
+        }
+
         fetch("http://localhost:5000/auth/register", {
             method: "POST",
             body: JSON.stringify(userDetails),
@@ -68,7 +94,8 @@ const SignupPage = () => {
             setUserDetails({
                 name: "",
                 email: "",
-                password: ""
+                password: "",
+                contactNumber: ""
             });
     
             setMessage({ type: "success", text: data.message });
@@ -83,11 +110,15 @@ const SignupPage = () => {
             console.error('Error during signup:', err);
         });
     };
+
+    const toggleShowPassword = () => {
+        setShowPassword(!showPassword);
+    };
     
     return (
         <div className="container">
             <div className="left-panel-new">
-            <div className="help-link-new">Need Help?</div>
+                <div className="help-link-new">Need Help?</div>
                 <h1 className='account'>Create Account</h1>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleSubmit}>
@@ -95,7 +126,7 @@ const SignupPage = () => {
                         <input
                             type="text"
                             name="name"
-                            placeholder="Name"
+                            placeholder="Username"
                             value={userDetails.name}
                             onChange={handleInputChange}
                             required
@@ -113,16 +144,28 @@ const SignupPage = () => {
                     </div>
                     <div className="input-group">
                         <input
-                            type="password"
+                            type="text"
+                            name="contactNumber"
+                            placeholder="Contact Number"
+                            value={userDetails.contactNumber}
+                            onChange={handleInputChange}
+                            required
+                        />
+                    </div>
+                    <div className="input-group">
+                        <input
+                            type={showPassword ? "text" : "password"}
                             name="password"
                             placeholder="Password"
                             value={userDetails.password}
                             onChange={handleInputChange}
                             required
                         />
-                        <button type="submit" className="signup-btn-new">SIGN UP</button>
+                        <span className="password-toggle" onClick={toggleShowPassword}>
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                        </span>
                     </div>
-                    
+                    <button type="submit" className="signup-btn-new">SIGN UP</button>
                 </form>
             </div>
             <div className="right-panel-new">
@@ -132,7 +175,6 @@ const SignupPage = () => {
             </div>
         </div>
     );
-
 }
 
 export default SignupPage;

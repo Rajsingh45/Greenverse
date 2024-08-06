@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { UserContext } from "./UserContext";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import logo from './images/logo.png';
 
 const LoginPage = () => {
@@ -12,6 +12,7 @@ const LoginPage = () => {
     });
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
+    const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
     const navigate = useNavigate();
     const loggedData = useContext(UserContext);
 
@@ -107,7 +108,6 @@ const LoginPage = () => {
 
                     if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
                         navigate("/admin");
-                        // localStorage.setItem('adminCredentials', JSON.stringify(data));
                         localStorage.setItem('adminCredentials', JSON.stringify(userDetails));
                     } else {
                         navigate("/dashboard");
@@ -142,8 +142,20 @@ const LoginPage = () => {
                         <div className="input-group">
                             <input type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
                         </div>
-                        <div className="input-group change">
-                            <input type="password" name="password" placeholder="Password" value={userDetails.password} onChange={handleInput} />
+                        <div className="input-group password-group">
+                            <input 
+                                type={passwordVisible ? "text" : "password"} 
+                                name="password" 
+                                placeholder="Password" 
+                                value={userDetails.password} 
+                                onChange={handleInput} 
+                            />
+                            <span 
+                                className="password-toggle-icon" 
+                                onClick={() => setPasswordVisible(!passwordVisible)}
+                            >
+                                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                            </span>
                         </div>
                         <div className="remember-container">
                             <label className="remember-me-label">
@@ -152,7 +164,6 @@ const LoginPage = () => {
                             </label>
                             <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
                         </div>
-                        
                         <button type="submit" className="signin-btn">SIGN IN</button>
                     </form>
                 </div>

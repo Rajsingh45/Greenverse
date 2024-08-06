@@ -152,6 +152,7 @@ const Admin = ({ users = [], setUsers }) => {
 
             const data = await response.json();
             console.log('User deleted successfully:', data);
+            window.location.reload();
             setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
             setAnchorEl(null);
         } catch (error) {
