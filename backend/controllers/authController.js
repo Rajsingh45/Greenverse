@@ -153,7 +153,6 @@ const checkEmailExists = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-
 const transporter = nodemailer.createTransport({
     service: 'gmail', // You can use any email service
     auth: {
@@ -162,11 +161,74 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// authController.js
+
 const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000); // Generate a 6 digit OTP
 };
 
-const requestOTP = async (req, res) => {
+// const otpStore = {}; // Store OTPs temporarily
+
+const requestSignupOTP = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        const otp = generateOTP();
+        otpStore[email] = { otp, expiresAt: Date.now() + (10 * 60 * 1000) }; // Store OTP with expiration time
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Email Verification OTP',
+            text: `Your OTP for email verification is ${otp}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ message: 'Error sending email' });
+            }
+            res.status(200).json({ message: 'OTP sent successfully' });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+// authController.js
+
+const verifySignupOTP = async (req, res) => {
+    const { email, otp, name, password, contactNumber } = req.body;
+
+    try {
+        const otpData = otpStore[email];
+        if (!otpData) {
+            return res.status(402).json({ message: 'OTP not requested or expired' });
+        }
+
+        if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
+            return res.status(401).json({ message: 'Invalid or expired OTP' });
+        }
+
+        // OTP is valid, create the user here
+        const newUser = new User({ name, email, password, contactNumber });
+        await newUser.save();
+
+        res.status(200).json({ message: 'OTP verified successfully, user created' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+// Existing forgot password OTP function
+
+const requestForgotPasswordOTP = async (req, res) => {
     const { email } = req.body;
 
     try {
@@ -198,7 +260,7 @@ const requestOTP = async (req, res) => {
     }
 };
 
-const verifyOTP = async (req, res) => {
+const verifyForgotPasswordOTP = async (req, res) => {
     const { email, otp } = req.body;
 
     try {
@@ -252,6 +314,63 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
+// const requestSignupOTP = async (req, res) => {
+//     const { email } = req.body;
+
+//     try {
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({ message: 'User already exists' });
+//         }
+
+//         const otp = generateOTP();
+//         otpStore[email] = { otp, expiresAt: Date.now() + (10 * 60 * 1000) }; // Store OTP with expiration time
+
+//         const mailOptions = {
+//             from: process.env.EMAIL_USER,
+//             to: email,
+//             subject: 'Email Verification OTP',
+//             text: `Your OTP for email verification is ${otp}`
+//         };
+
+//         transporter.sendMail(mailOptions, (error, info) => {
+//             if (error) {
+//                 console.error(error);
+//                 return res.status(500).json({ message: 'Error sending email' });
+//             }
+//             res.status(200).json({ message: 'OTP sent successfully' });
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Something went wrong' });
+//     }
+// };
+
+// const verifySignupOTP = async (req, res) => {
+//     const { email, otp, name, password, contactNumber } = req.body;
+
+//     try {
+//         const otpData = otpStore[email];
+//         if (!otpData) {
+//             return res.status(402).json({ message: 'OTP not requested or expired' });
+//         }
+
+//         if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
+//             return res.status(401).json({ message: 'Invalid or expired OTP' });
+//         }
+
+//         // Register the user
+//         const newUser = new User({ name, email, password, contactNumber });
+//         await newUser.save();
+
+//         res.status(200).json({ message: 'OTP verified and user registered successfully' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Something went wrong' });
+//     }
+// };
+
 
 const getAllUsers = async (req, res) => {
     try {
@@ -385,4 +504,7 @@ const searchDevices = async (req, res) => {
     }
 };
 
-module.exports = { register,    checkNameAvailability,    login, rememberMe ,searchDevices, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+module.exports = { register,    checkNameAvailability,    requestSignupOTP,
+    verifySignupOTP,
+    requestForgotPasswordOTP,
+    verifyForgotPasswordOTP, login, rememberMe ,searchDevices, changePassword,checkEmailExists, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};

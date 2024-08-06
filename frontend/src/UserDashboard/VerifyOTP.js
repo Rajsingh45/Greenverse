@@ -16,7 +16,7 @@ const VerifyOTP = () => {
       setOtp(value);
     }
   };
-
+// fkefkekfmkef
   const handleOtpSubmit = async () => {
     if (otp.length !== 6) {
       setOtpError('OTP must be 6 digits');
@@ -27,7 +27,7 @@ const VerifyOTP = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/auth/verifyotp', {
+      const response = await fetch('http://localhost:5000/auth/verifyforgotpasswordotp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

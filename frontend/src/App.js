@@ -16,7 +16,8 @@ import GraphPage from './UserDashboard/GraphPage';
 import ContactUs from './UserDashboard/ContactUs';
 import UserDetail from './AdminDashboard/UserDetail';
 import NewUserForm from './AdminDashboard/NewUser';
-import Maps from './UserDashboard/Maps'
+import Maps from './UserDashboard/Maps';
+import VerifyOtpPage from './VerifyOtpPage.js'
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/user/:email" element={<UserDetail />} />
               <Route path="/api-generation" element={<Maps />} />
+              <Route path="/verifysignupotp" element={< VerifyOtpPage/>} />
+
             </Routes>
           </Router>
       </UserContextProvider>

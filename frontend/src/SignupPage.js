@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SignupPage = () => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     const [userDetails, setUserDetails] = useState({
         name: "",
@@ -45,76 +45,55 @@ const SignupPage = () => {
         }));
     };
 
-    const [message, setMessage] = useState({
-        type: "invisible-msg",
-        text: "Dummy Msg"
-    });
-
     const handleLogin = () => {
-        navigate("/")
+        navigate("/");
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log(userDetails);
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(userDetails.email)) {
-            setError('Invalid email format');
-            return;
-        }
+// SignupPage.js
+// SignupPage.js
 
-        const contactNumberRegex = /^\d{10}$/;
-        if (!contactNumberRegex.test(userDetails.contactNumber)) {
-            setError('Invalid contact number');
-            return;
-        }
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userDetails.email)) {
+        setError('Invalid email format');
+        return;
+    }
 
-        if (error) {
-            return;
-        }
+    const contactNumberRegex = /^\d{10}$/;
+    if (!contactNumberRegex.test(userDetails.contactNumber)) {
+        setError('Invalid contact number');
+        return;
+    }
 
-        fetch("http://localhost:5000/auth/register", {
+    if (error) {
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:5000/auth/requestsignupotp", {
             method: "POST",
-            body: JSON.stringify(userDetails),
+            body: JSON.stringify({ email: userDetails.email }),
             headers: {
                 "Content-Type": "application/json"
             }
-        })
-        .then((response) => {
-            if (response.status === 400) {
-                return response.json().then(data => {
-                    setError(data.message || "User already exists");
-                    throw new Error(data.message || "User already exists");
-                });
-            }
-    
-            return response.json();
-        })
-        .then((data) => {
-            setUserDetails({
-                name: "",
-                email: "",
-                password: "",
-                contactNumber: ""
-            });
-    
-            setMessage({ type: "success", text: data.message });
-            setTimeout(() => {
-                setMessage({ type: "invisible-msg", text: "Dummy Msg" });
-            }, 5000);
-    
-            navigate('/');
-    
-        })
-        .catch((err) => {
-            console.error('Error during signup:', err);
         });
-    };
+
+        if (response.status === 200) {
+            navigate('/verifysignupotp', { state: { userDetails } });
+        } else {
+            const data = await response.json();
+            setError(data.message || "Failed to send OTP");
+        }
+    } catch (err) {
+        console.error('Error during OTP request:', err);
+    }
+};
 
     const toggleShowPassword = () => {
         setShowPassword(!showPassword);
     };
-    
+
     return (
         <div className="container">
             <div className="left-panel-new">
@@ -165,7 +144,7 @@ const SignupPage = () => {
                             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                         </span>
                     </div>
-                    <button type="submit" className="signup-btn-new">SIGN UP</button>
+                    <button type="submit" className="signup-btn-new">Next</button>
                 </form>
             </div>
             <div className="right-panel-new">

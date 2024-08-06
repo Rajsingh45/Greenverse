@@ -1,0 +1,86 @@
+.otp-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.otp-box {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.otp-box h2 {
+    margin-bottom: 1rem;
+    color: #333333;
+}
+
+.otp-box p {
+    margin-bottom: 2rem;
+    color: #666666;
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.otp-inputs input {
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+    font-size: 1.5rem;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.verify-btn, .resend-btn, .back-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.verify-btn {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.verify-btn:hover {
+    background-color: #0056b3;
+}
+
+.resend-btn {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+.resend-btn:disabled {
+    background-color: #cccccc;
+}
+
+.back-btn {
+    background-color: #f8f9fa;
+    color: #333333;
+}
+
+.back-btn:hover {
+    background-color: #e2e6ea;
+}
+
+.error-message {
+    color: #ff0000;
+    margin-bottom: 1rem;
+}

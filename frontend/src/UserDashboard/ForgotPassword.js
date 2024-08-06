@@ -27,7 +27,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/auth/requestotp', {
+      const response = await fetch('http://localhost:5000/auth/requestforgotpasswordotp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

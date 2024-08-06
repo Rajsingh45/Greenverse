@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { register, login,checkNameAvailability, rememberMe, changePassword,checkEmailExists, searchDevices, requestOTP, verifyOTP, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
+const { register, login,checkNameAvailability,    requestSignupOTP,
+    verifySignupOTP,
+    requestForgotPasswordOTP,
+    verifyForgotPasswordOTP, rememberMe, changePassword,checkEmailExists, searchDevices, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/authMiddleware'); // Import the middleware
 const upload = require('../middleware/uploadMiddleware');
 
@@ -13,9 +16,17 @@ router.get('/remember-me', rememberMe);
 router.put('/changepassword', authMiddleware, changePassword);
 router.post('/checkemail',checkEmailExists)
 
-router.post('/requestotp', requestOTP); // Add this line
-router.post('/verifyotp', verifyOTP); // Add this line
+// router.post('/requestotp', requestOTP); // Add this line
+// router.post('/verifyotp', verifyOTP); // Add this line
 router.post('/resetpassword', resetPassword); // Add this line
+
+// router.post('/requestsignupotp', requestSignupOTP); // New route for signup OTP
+// router.post('/verifysignupotp', verifySignupOTP);
+
+router.post('/requestsignupotp', requestSignupOTP);
+router.post('/verifysignupotp', verifySignupOTP);
+router.post('/requestforgotpasswordotp', requestForgotPasswordOTP);
+router.post('/verifyforgotpasswordotp', verifyForgotPasswordOTP);
 
 router.get('/users', authMiddleware, getAllUsers)
 
