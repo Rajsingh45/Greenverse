@@ -3,7 +3,6 @@ import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
 import Dashboard from './UserDashboard/Dashboard';
 import UserContextProvider from './UserContext';
-import Admin from './AdminDashboard/Admin';
 import ChangePassword from './UserDashboard/ChangePassword';
 import ForgotPassword from './UserDashboard/ForgotPassword';
 import VerifyOTP from './UserDashboard/VerifyOTP';

@@ -21,29 +21,46 @@ const UserDetail = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [deviceNames, setDeviceNames] = useState([]); 
-
+  
   useEffect(() => {
-    const fetchUserDevices = async () => {
+    const fetchDevices = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/admin/user/devices', {
-          params: { email },
+        const endpoint = searchQuery 
+        ? 'http://localhost:5000/admin/device-names' 
+        :
+           'http://localhost:5000/admin/user/devices';
+          
+        const response = await axios.get(endpoint, {
+          params: searchQuery ? { name: searchQuery } : { email },
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        const { devices, deviceNames } = response.data; // Update to match backend response
-        setDeviceCount(devices);
+        
+        const { deviceNames } = response.data;
         setDeviceNames(deviceNames || []);
         setTotalPages(Math.ceil(deviceNames.length / imagesPerPage));
       } catch (error) {
-        console.error('Error fetching user devices:', error);
+        console.error('Error fetching devices:', error);
       }
     };
   
-    fetchUserDevices();
-  }, [email]);
+    fetchDevices();
+  }, [searchQuery, email]); 
 
+  const [filteredDeviceNames, setFilteredDeviceNames] = useState([]);
+
+  useEffect(() => {
+    const filteredDevices = deviceNames.filter(deviceName =>
+      deviceName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredDeviceNames(filteredDevices);
+    setDeviceCount(filteredDevices.length);
+    setTotalPages(Math.ceil(filteredDevices.length / imagesPerPage));
+    setCurrentPage(1); // Reset to the first page on new search
+  }, [searchQuery, deviceNames]);
+  
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -57,12 +74,15 @@ const UserDetail = () => {
   };
 
   const renderDeviceCards = () => {
+    if (filteredDeviceNames.length === 0) {
+      return <div className="no-devices-message"><b>No devices found!</b></div>;
+    }
     const startIndex = (currentPage - 1) * imagesPerPage;
     const endIndex = startIndex + imagesPerPage;
     const cards = [];
-    for (let i = startIndex; i < endIndex && i < deviceNames.length; i++) {
+    for (let i = startIndex; i < endIndex && i < filteredDeviceNames.length; i++) {
       const image = images[i % images.length];
-      const deviceName = deviceNames[i] || `Device ${i + 1}`; // Use deviceNames from API
+      const deviceName = filteredDeviceNames[i]; 
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">
@@ -76,6 +96,7 @@ const UserDetail = () => {
     }
     return cards;
   };
+  
 
   const handleNameClick = (deviceName) => {
     window.location.href = `/device/${deviceName}`;
@@ -133,7 +154,7 @@ const UserDetail = () => {
             <FaArrowLeft />
           </button>
           <span className="page-number">
-            {currentPage} / {totalPages}
+          {filteredDeviceNames.length > 0 ? `${currentPage} / ${totalPages}` : '0 / 1'}
           </span>
           <button
             className="pagination-button"

@@ -74,6 +74,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
 
     fetchProfilePic();
   }, []);
+  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -105,14 +106,16 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
     window.location.href = '/';
   };
 
-  const handleSearchChange = (event) => {
-    if (!searchInputDisabled) {
-    setSearchQuery(event.target.value);
-    }
+  const handleSearchChange = async (event) => {
+    if (searchInputDisabled) return;
+  
+    const query = event.target.value; // Define query here
+    setSearchQuery(query);
   };
 
   const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
-  const searchInputDisabled = isUserDetailPage || searchDisabled;
+  const isAdminPage = location.pathname === '/admin';
+  const searchInputDisabled = !(isUserDetailPage || isAdminPage);
 
   return (
     <div className="navbar sticky-top">
