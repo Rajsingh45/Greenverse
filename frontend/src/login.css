@@ -1,239 +1,306 @@
 * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-  
-  .title{
-    color: white !important;
-    font-size: 40px !important;
-  }
-  
-  .personal-details{
-    font-size: 35px;
-    font-family: Alata;
-  }
-  
-  .container {
-    display: flex;
-    min-height: 100vh;
-    background: linear-gradient(to right, #d9ffcc, #ccffd9);
-  }
-  
-  .left-panel, .right-panel {
-    padding: 2rem;
-  }
+  box-sizing: border-box;
+}
 
-  .left-panel {
-    width: 40%;
-    background: url('./images/background.png') no-repeat center center;
-    background-size: cover;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    position: relative;
-  }
-  
-  .left-panel::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.title{
+  color: white !important;
+  font-size: 40px !important;
+}
+
+.personal-details{
+  font-size: 35px;
+  font-family: Alata;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+  background: linear-gradient(to right, #d9ffcc, #ccffd9);
+}
+
+.left-panel, .right-panel {
+  padding: 2rem;
+}
+
+.left-panel {
+  width: 40%;
+  background: url('./images/background.png') no-repeat center center;
+  background-size: cover;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.left-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 
 .photo{
-  width: 200px;
-  height: 200px;
+width: 200px;
+height: 200px;
 }
-  
-  .left-panel * {
-    position: relative; 
-    z-index: 1;
-  }
-  
-  .signup-btn {
-    background-color: white;
-    color: #27ae60;
-    border: none;
-    padding: 1rem 2rem;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    border-radius: 30px;
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .right-panel {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
-  
-  .help-link {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
-    cursor: pointer;
-    color: #27ae60;
-  }
-  
-  .form-container {
-    width: 100%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .avatar-icon {
-    font-size: 8rem;
-    color: green;
-  }
-  
-  .input-group {
-    width: 100%;
-    margin-bottom: 2rem;
-    margin-top: 1rem;
-  }
-  
-  .input-group input {
-    width: 100%;
-    padding: 2rem;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    font-size: 1.5rem;
-    display: block;
-    margin: 0 auto; 
-    height: 3rem;
-  }
 
-  .error-message{
-    font-size: 18px;
-    color: red;
-  }
-  
-  .signin-btn {
-    width: 50%;
-    padding: 1rem;
-    border-radius: 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    display: block;
-    margin: 2rem auto;
-    background-color: orange;
-    border-color: orange;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .form-container .input-group:nth-child(2) {
-    margin-top: 1rem; 
-  }
-  
-  .forgot-pass{
-   text-align: right; 
-   width: 100%;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    cursor: pointer;
-    color: green;
-  }
+.left-panel * {
+  position: relative; 
+  z-index: 1;
+}
 
-  .remember-container {
-    display: flex;
-    align-items: center;
-    margin-top: 0 !important;
-    width: 100%;
+.signup-btn {
+  background-color: white;
+  color: #27ae60;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  border-radius: 30px;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right-panel {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.help-link {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  cursor: pointer;
+  color: #27ae60;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-icon {
+  font-size: 8rem;
+  color: green;
+}
+
+.input-group {
+  width: 100%;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 1.5rem;
+  display: block;
+  margin: 0 auto; 
+  height: 3rem;
+}
+
+.error-message{
+  font-size: 18px;
+  color: red;
+}
+
+.signin-btn {
+  width: 50%;
+  padding: 1rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto;
+  background-color: orange;
+  border-color: orange;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container .input-group:nth-child(2) {
+  margin-top: 1rem; 
+}
+
+.forgot-pass{
+ text-align: right; 
+ width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  color: green;
+}
+
+.remember-container {
+  display: flex;
+  align-items: center;
+  margin-top: 0 !important;
+  width: 100%;
 }
 
 .change{
-  margin-bottom: 10px !important;
+margin-bottom: 10px !important;
 }
 
+.password-group {
+position: relative;
+}
+
+.password-toggle-icon {
+position: absolute;
+right: 20px;
+top: 55%;
+transform: translateY(-50%);
+cursor: pointer;
+font-size: 1.5rem;
+color: #ccc;
+}
+
+.password-group input {
+padding-right: 40px; /* Adjust padding to make space for the icon */
+}
+
+
 .remember-me-label {
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    cursor: pointer;
-    width: 100%;
-    color: green;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  cursor: pointer;
+  width: 100%;
+  color: green;
 }
 
 .remember-me {
-    appearance: none;
-    width: 23px;
-    height: 23px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    margin-right: 10px;
-    position: relative;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+  appearance: none;
+  width: 23px;
+  height: 23px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .remember-me:checked {
-    border-color: green;
-    background-color: green;
+  border-color: green;
+  background-color: green;
 }
 
 .remember-me:checked::before {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 6px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    transition: transform 0.3s ease;
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
 }
 
-  @media (max-width: 767px) {
-    .container {
-      flex-direction: row;
-      flex-wrap: wrap; 
-    }
-    .left-panel, .right-panel {
-      width: 50%; 
-    }
-    .help-link {
-      align-self: flex-end;
-      margin-bottom: 1rem;
-    }
+@media (max-width: 767px) {
+  .container {
+    flex-direction: row;
+    flex-wrap: wrap; 
   }
-  
-  @media (max-width: 675px) {
-    .input-group input{
-      font-size: 1rem;
-      width: 80%;
-    padding: 2rem;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    display: block;
-    margin: 0 auto; 
-    height: 2.5rem;
-    }
-  
+  .left-panel, .right-panel {
+    width: 50%; 
+  }
+  .help-link {
+    align-self: flex-end;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 675px) {
+  .input-group input{
+    font-size: 1rem;
+    width: 80%;
+  padding: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  display: block;
+  margin: 0 auto; 
+  height: 2.5rem;
+  }
+
+.signin-btn {
+  width: 50%;
+  padding: 1rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto;
+  background-color: orange;
+  border-color: orange;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-icon {
+  font-size: 5rem;
+}
+
+.signup-btn{
+  width: 100%;
+  padding: 1rem;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+}
+
+@media (max-width: 465px) {
+  .title{
+    font-size: 25px !important;
+  }
+  .input-group input{
+    font-size: 0.8rem;
+    width: 100%;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  display: block;
+  margin: 0 auto; 
+  height: 2.5rem;
+  }
+
   .signin-btn {
-    width: 50%;
+    width: 100%;
     padding: 1rem;
     border-radius: 30px;
-    font-size: 0.8rem;
+    font-size: 0.5rem;
     cursor: pointer;
     display: block;
     margin: 2rem auto;
@@ -243,16 +310,21 @@
     justify-content: center;
     align-items: center;
   }
-  
+
   .avatar-icon {
     font-size: 5rem;
   }
-  
+
+  .personal-details{
+    font-size: 25px;
+    font-family: Alata;
+  }
+
   .signup-btn{
     width: 100%;
     padding: 1rem;
     border-radius: 30px;
-    font-size: 0.8rem;
+    font-size: 0.5rem;
     cursor: pointer;
     display: block;
     margin: 2rem auto;
@@ -260,66 +332,11 @@
     justify-content: center;
     align-items: center;
   }
+  
+}
+
+@media (max-width: 319px) {
+  .left-panel, .right-panel {
+    width: 100%; 
   }
-  
-  @media (max-width: 465px) {
-    .title{
-      font-size: 25px !important;
-    }
-    .input-group input{
-      font-size: 0.8rem;
-      width: 100%;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-    display: block;
-    margin: 0 auto; 
-    height: 2.5rem;
-    }
-  
-    .signin-btn {
-      width: 100%;
-      padding: 1rem;
-      border-radius: 30px;
-      font-size: 0.5rem;
-      cursor: pointer;
-      display: block;
-      margin: 2rem auto;
-      background-color: orange;
-      border-color: orange;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  
-    .avatar-icon {
-      font-size: 5rem;
-    }
-  
-    .personal-details{
-      font-size: 25px;
-      font-family: Alata;
-    }
-  
-    .signup-btn{
-      width: 100%;
-      padding: 1rem;
-      border-radius: 30px;
-      font-size: 0.5rem;
-      cursor: pointer;
-      display: block;
-      margin: 2rem auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    
-  }
-  
-  @media (max-width: 319px) {
-    .left-panel, .right-panel {
-      width: 100%; 
-    }
-  }
-  
-  
+}

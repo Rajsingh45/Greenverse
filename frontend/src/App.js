@@ -16,7 +16,7 @@ import GraphPage from './UserDashboard/GraphPage';
 import ContactUs from './UserDashboard/ContactUs';
 import UserDetail from './AdminDashboard/UserDetail';
 import NewUserForm from './AdminDashboard/NewUser';
-// import TestThemeComponent from './TestThemeComponent'; // Ensure this is the correct path
+import Maps from './UserDashboard/Maps'
 
 function App() {
   return (
@@ -39,6 +39,7 @@ function App() {
               <Route path="/graph/:deviceName" element={<GraphPage />} />
               <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/user/:email" element={<UserDetail />} />
+              <Route path="/api-generation" element={<Maps />} />
             </Routes>
           </Router>
       </UserContextProvider>

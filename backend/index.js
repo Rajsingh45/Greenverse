@@ -89,7 +89,6 @@ app.get('/api/device-data-by-datetime/:espTopic/:datetime', async (req, res) => 
       const db = mongoClient.db(dbName);
       const deviceCollection = db.collection(espTopic);
 
-      // Ensure the datetime format is valid and matches the format in your database
       const data = await deviceCollection.find({ dateTime: datetime }).toArray();
 
       if (data.length > 0) {
@@ -111,14 +110,9 @@ app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
     const db = mongoClient.db(dbName);
     const deviceCollection = db.collection(espTopic);
 
-    // Directly use the provided dates in the format 'YYYY-MM-DD HH:mm:ss'
     const start = startDate;
     const end = endDate;
 
-    // console.log(`Start Date: ${start}`);
-    // console.log(`End Date: ${end}`);
-
-    // Fetch data for the specified date range
     const data = await deviceCollection.find({
       dateTime: {
         $gte: start,
@@ -127,12 +121,11 @@ app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
     }).toArray();
 
     if (data.length > 0) {
-      // Check if parameter exists in the documents and map the data accordingly
       const filteredData = data.map(entry => {
         if (entry.hasOwnProperty(parameter)) {
           return {
             dateTime: entry.dateTime,
-            [parameter]: entry[parameter] // Include only the specified parameter
+            [parameter]: entry[parameter] 
           };
         } else {
           console.warn(`Parameter "${parameter}" not found in document.`);
@@ -148,8 +141,6 @@ app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
-
-// Add this route to your Express.js server code
 
 app.get('/api/download-device-data/:espTopic', async (req, res) => {
   const { espTopic } = req.params;
