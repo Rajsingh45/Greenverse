@@ -5,7 +5,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
 import newlogo from './images/new-logo.png';
+import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
+// Styled components for the Navbar
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -39,10 +42,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = ({ searchQuery, setSearchQuery, searchDisabled }) => {
+const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const dropdownRef = useRef(null);
+  const location = useLocation();
+  const { email: currentUserEmail } = useParams();
+  console.log(currentUserEmail)
 
   useEffect(() => {
     const fetchProfilePic = async () => {
@@ -100,8 +106,13 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled }) => {
   };
 
   const handleSearchChange = (event) => {
+    if (!searchInputDisabled) {
     setSearchQuery(event.target.value);
+    }
   };
+
+  const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
+  const searchInputDisabled = isUserDetailPage || searchDisabled;
 
   return (
     <div className="navbar sticky-top">
@@ -114,18 +125,19 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled }) => {
       </div>
 
       <div className="profile-icon-container">
-      <div className={`search-container ${searchDisabled ? 'disabled' : ''}`}>
+        <div className={`search-container ${searchInputDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search by user name…"
-              inputProps={{ 'aria-label': 'search' }}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className='device-name'
-            />
+  placeholder={isUserDetailPage ? "Search by device…" : "Search by user name…"}
+  inputProps={{ 'aria-label': 'search' }}
+  value={searchQuery}
+  onChange={handleSearchChange}
+  className='device-name'
+  disabled={searchInputDisabled}
+/>
           </Search>
         </div>
 

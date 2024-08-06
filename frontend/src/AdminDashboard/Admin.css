@@ -1,15 +1,16 @@
 .container {
   display: flex;
   min-height: 100vh;
-  background: #d9ffcc;
-}
-
-.left, .right-new {
-  padding: 2rem;
+  background: #ccffd9;
 }
 
 .left {
-  width: 60%;
+  padding: 2rem;
+  margin-left: 10%;
+}
+
+.left {
+  width: 80%;
   background: #ccffd9;
   display: flex;
   flex-direction: column;
@@ -47,15 +48,6 @@
 .add-user-btn:hover {
   transform: scale(1.05);
   background-color: orange;
-}
-
-.right-new {
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: white;
 }
 
 .google-map {
@@ -99,7 +91,7 @@ iframe {
     flex-direction: row;
   }
 
-  .left, .right-new {
+  .left{
     width: 50%;
     padding: 1rem;
   }
@@ -132,7 +124,7 @@ iframe {
     flex-direction: column;
   }
 
-  .left, .right-new {
+  .left {
     width: 100%;
     padding: 1rem;
   }

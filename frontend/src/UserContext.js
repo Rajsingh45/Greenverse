@@ -5,6 +5,8 @@ export const UserContext = createContext();
 const UserContextProvider = ({ children }) => {
     const [loggedUser, setLoggedUser] = useState(null);
     const [users, setUsers] = useState([]);
+    const [userEmail, setUserEmail] = useState('');
+    const currentUserEmail=null
 
     const handleUserUpdated = (updatedUser) => {
         setUsers((prevUsers) =>
@@ -13,7 +15,7 @@ const UserContextProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ loggedUser, setLoggedUser, users, handleUserUpdated }}>
+        <UserContext.Provider value={{ loggedUser, setLoggedUser, users, handleUserUpdated,userEmail, setUserEmail ,currentUserEmail}}>
             {children}
         </UserContext.Provider>
     );

@@ -9,13 +9,11 @@ const MapsPage = () => {
   const navigate = useNavigate();
 
   const handleLoadMap = () => {
-    // Remove any previous map script
     const existingScript = document.getElementById('google-maps-script');
     if (existingScript) {
       document.head.removeChild(existingScript);
     }
 
-    // Load the Google Maps API asynchronously
     const script = document.createElement('script');
     script.id = 'google-maps-script';
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
@@ -49,7 +47,6 @@ const MapsPage = () => {
     };
 
     script.onload = () => {
-      // Handle script load success
       if (!window.google || !window.google.maps) {
         window.alert('Failed to load Google Maps API. Please check your API key.');
       }

@@ -172,49 +172,60 @@ const Admin = ({ users = [], setUsers }) => {
     setMenuUser(null);
   };
 
-  const initMap = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/locations', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const locations = await response.json();
+  // const initMap = async () => {
+  //   try {
+  //     const response = await fetch('http://localhost:5000/locations', {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  //     const locations = await response.json();
 
-      if (!locations.length) {
-        console.error('No locations found.');
-        return;
-      }
+  //     if (!locations.length) {
+  //       console.error('No locations found.');
+  //       return;
+  //     }
 
-      const avgLat = locations.reduce((sum, loc) => sum + loc.lat, 0) / locations.length;
-      const avgLng = locations.reduce((sum, loc) => sum + loc.lng, 0) / locations.length;
+  //     const avgLat = locations.reduce((sum, loc) => sum + loc.lat, 0) / locations.length;
+  //     const avgLng = locations.reduce((sum, loc) => sum + loc.lng, 0) / locations.length;
 
-      const baseURL = 'https://www.google.com/maps/embed?';
-      const params = new URLSearchParams({
-        center: `${avgLat},${avgLng}`,
-        markers: locations.map(loc => `${loc.lat},${loc.lng}`).join('|')
-      });
+  //     const baseURL = 'https://www.google.com/maps/embed?';
+  //     const params = new URLSearchParams({
+  //       center: `${avgLat},${avgLng}`,
+  //       markers: locations.map(loc => `${loc.lat},${loc.lng}`).join('|')
+  //     });
 
-      setMapUrl(`${baseURL}${params.toString()}`);
-    } catch (error) {
-      console.error('Error fetching map locations:', error);
-    }
-  };
+  //     setMapUrl(`${baseURL}${params.toString()}`);
+  //   } catch (error) {
+  //     console.error('Error fetching map locations:', error);
+  //   }
+  // };
 
-  useEffect(() => {
-    initMap();
-  }, []);
+  // useEffect(() => {
+  //   initMap();
+  // }, []);
 
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  // const currentUserEmail=user.email
+  // console.log(currentUserEmail)
   const handleNameClick = (user, event) => {
+
     if (renamingUserEmail === user.email) {
       event.stopPropagation();
     } else {
+      setCurrentUserEmail(user.email)
+      console.log(currentUserEmail)
       navigate(`/user/${user.email}`);
     }
   };
 
-  // Conditional rendering based on search query
+  useEffect(() => {
+    if (currentUserEmail) {
+      console.log("Current User Email:", currentUserEmail);
+    }
+  }, [currentUserEmail]);
+
   const filteredUsers = searchQuery
     ? fullUserList.filter(user =>
         user.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -227,10 +238,11 @@ const Admin = ({ users = [], setUsers }) => {
       return date.toLocaleDateString('en-GB', options);
     };
     
+    console.log(currentUserEmail)
 
   return (
     <>
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} currentUserEmail={currentUserEmail} onUserNameClick={handleNameClick}/>
       <div className="container">
         {showNewUserForm ? (
           <NewUserForm onUserAdded={handleUserAdded} />
@@ -240,7 +252,7 @@ const Admin = ({ users = [], setUsers }) => {
           <>
             <div className="left">
               <table className="user-table">
-                <thead>
+                <thead className='heads-form'>
                   <tr>
                     <th>Users</th>
                     <th>Email</th>
@@ -315,19 +327,7 @@ const Admin = ({ users = [], setUsers }) => {
               </div>
             </div>
 
-            <div className="right-new">
-              <div className="map-wrapper col-12 col-md-6">
-                <div className="google-map">
-                  <iframe
-                    title="Google Map"
-                    frameBorder="0"
-                    style={{ border: 0 }}
-                    src={mapUrl}
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              </div>
-            </div>
+            
           </>
         )}
       </div>

@@ -157,7 +157,7 @@ height: 200px;
 .remember-container {
   display: flex;
   align-items: center;
-  margin-top: 0 !important;
+  margin-top: -20px !important;
   width: 100%;
 }
 
