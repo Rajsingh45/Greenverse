@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Admin from './components/Admin';
-import Layout from './Layout';
+import Admin from './AdminDashboard/Admin';
 
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);

@@ -1,29 +1,27 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
-import Dashboard from './Dashboard';
+import Dashboard from './UserDashboard/Dashboard';
 import UserContextProvider from './UserContext';
-import Admin from './components/Admin';
-import ChangePassword from './ChangePassword';
-import ForgotPassword from './ForgotPassword';
-import VerifyOTP from './VerifyOTP';
-import SetPassword from './SetPassword';
-import EditUser from './components/EditUser';
-import UserInfo from './UserInfo';
+import Admin from './AdminDashboard/Admin';
+import ChangePassword from './UserDashboard/ChangePassword';
+import ForgotPassword from './UserDashboard/ForgotPassword';
+import VerifyOTP from './UserDashboard/VerifyOTP';
+import SetPassword from './UserDashboard/SetPassword';
+import EditUser from './AdminDashboard/EditUser';
+import UserInfo from './UserDashboard/UserInfo';
 import DashboardPage from './ParentComponent';
-import DeviceDetail from './DeviceDetail';
-import GraphPage from './GraphPage';
-import ContactUs from './ContactUs';
-import UserDetail from './UserDetail';
-import ToggleMode from './ToggleMode';
-import NewUserForm from './components/NewUser';
+import DeviceDetail from './UserDashboard/DeviceDetail';
+import GraphPage from './UserDashboard/GraphPage';
+import ContactUs from './UserDashboard/ContactUs';
+import UserDetail from './AdminDashboard/UserDetail';
+import NewUserForm from './AdminDashboard/NewUser';
 // import TestThemeComponent from './TestThemeComponent'; // Ensure this is the correct path
 
 function App() {
   return (
     <div className="App">
       <UserContextProvider>
-        <ToggleMode>
           <Router>
             <Routes>
               <Route path="/" element={<LoginPage />} />
@@ -43,7 +41,6 @@ function App() {
               <Route path="/user/:email" element={<UserDetail />} />
             </Routes>
           </Router>
-        </ToggleMode>
       </UserContextProvider>
     </div>
   );

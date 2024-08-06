@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
-import device1 from './images/device1.png';
-import device2 from './images/device2.png';
-import device3 from './images/device3.png';
-import device4 from './images/device4.png';
-import device5 from './images/device5.png';
-import device6 from './images/device6.png';
-import Layout from './Layout';
+import device1 from '../images/device1.png';
+import device2 from '../images/device2.png';
+import device3 from '../images/device3.png';
+import device4 from '../images/device4.png';
+import device5 from '../images/device5.png';
+import device6 from '../images/device6.png';
+import Layout from '../Layout';
 
 const UserDetail = () => {
   const { email } = useParams();

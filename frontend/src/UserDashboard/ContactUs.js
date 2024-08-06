@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import axios from 'axios';
-import UserNavbar from './UserNavbar'
+import UserNavbar from '../UserNavbar'
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });

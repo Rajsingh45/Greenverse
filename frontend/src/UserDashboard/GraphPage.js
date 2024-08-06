@@ -19,8 +19,8 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { FaChevronDown } from 'react-icons/fa';
 import './GraphPage.css';
-import UserNavbar from './UserNavbar';
-import Layout from './Layout';
+import UserNavbar from '../UserNavbar';
+import Layout from '../Layout';
 
 ChartJS.register(
     LineElement,

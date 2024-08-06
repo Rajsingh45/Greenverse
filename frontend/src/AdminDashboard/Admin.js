@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Admin.css';
 import Navbar from '../Navbar.js';
-import NewUserForm from './NewUser';
-import EditUserForm from './EditUser';
+import NewUserForm from './NewUser.js';
+import EditUserForm from './EditUser.js';
 import { Menu, MenuItem, IconButton, TextField, Button, Pagination } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
