@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const otpStore = {}; // In-memory store for OTPs
 
 const register = async (req, res) => {
-    const { email, password, name, role } = req.body;
+    const { email, password, name, contactNumber, role } = req.body;
 
     try {
         // Check if an admin user already exists
@@ -19,7 +19,13 @@ const register = async (req, res) => {
             }
         }
 
-        // Check if the user already exists
+        // Check if the name already exists
+        const existingName = await User.findOne({ name });
+        if (existingName) {
+            return res.status(400).json({ message: 'Name already exists' });
+        }
+
+        // Check if the email already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
@@ -27,7 +33,7 @@ const register = async (req, res) => {
 
         // Hash the password and create a new user
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ email, password: hashedPassword, name, role: role || 'user' });
+        const newUser = new User({ email, password: hashedPassword, name, contactNumber, role: role || 'user' });
         await newUser.save();
 
         res.status(201).json({ message: role === 'user' ? 'User registered successfully' : 'Admin registered successfully' });
@@ -36,6 +42,7 @@ const register = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
 
 
 const generateRememberMeToken = () => {
@@ -358,5 +365,19 @@ const searchDevices = async (req, res) => {
     }
   };
   
+  const checkNameAvailability = async (req, res) => {
+    const { name } = req.query;
 
-module.exports = { register, login, rememberMe ,searchDevices, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+    try {
+        const existingUser = await User.findOne({ name });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
+        res.status(200).json({ message: 'Username is available' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+module.exports = { register,    checkNameAvailability,    login, rememberMe ,searchDevices, changePassword,checkEmailExists, requestOTP, verifyOTP, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
