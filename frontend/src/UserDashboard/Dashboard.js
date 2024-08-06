@@ -78,6 +78,7 @@ const Dashboard = ({ isReadOnly = false }) => {
     );
     setDeviceCount(filteredDevices.length);
     setTotalPages(Math.ceil(filteredDevices.length / imagesPerPage));
+    setCurrentPage(1); // Reset to the first page on new search
   }, [searchQuery, deviceNames]);
 
   const renderDeviceCards = () => {
@@ -115,7 +116,11 @@ const Dashboard = ({ isReadOnly = false }) => {
       <UserNavbar profilePic={profilePic} setSearchQuery={setSearchQuery} />
       <div className="dash">
         <div className="gallery">
-          {renderDeviceCards()}
+          {deviceCount > 0 ? (
+            renderDeviceCards()
+          ) : (
+            <div className="no-devices-message"><b>No such device found!</b></div>
+          )}
         </div>
         <div className="pagination">
           <button
@@ -126,7 +131,7 @@ const Dashboard = ({ isReadOnly = false }) => {
             <FaArrowLeft />
           </button>
           <span className="page-number">
-            {currentPage} / {totalPages}
+            {totalPages > 0 ? `${currentPage} / ${totalPages}` : '0 / 1'}
           </span>
           <button
             className="pagination-button"
