@@ -14,7 +14,7 @@ const dbName = 'Airbuddi';
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
-const aqiRoutes = require('./routes/aqi');
+// const aqiRoutes = require('./routes/aqi');
 const adminRoutes = require('./routes/admin'); // Add this line
 const contactRoutes = require('./routes/contact');
 
@@ -39,8 +39,7 @@ mongoose.connect(mongoURL,
   });
 
 
-app.use('/auth', authRoutes);
-app.use('/aqi', aqiRoutes);  
+app.use('/auth', authRoutes); 
 app.use('/admin',adminRoutes);
 app.use('/', contactRoutes);
 
