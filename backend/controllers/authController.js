@@ -215,9 +215,14 @@ const verifySignupOTP = async (req, res) => {
             return res.status(401).json({ message: 'Invalid or expired OTP' });
         }
 
-        // OTP is valid, create the user here
-        const newUser = new User({ name, email, password, contactNumber });
+        // OTP is valid, hash the password before saving the user
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const newUser = new User({ name, email, password: hashedPassword, contactNumber });
         await newUser.save();
+
+        // Optionally, clear the OTP from the store after successful verification
+        delete otpStore[email];
 
         res.status(200).json({ message: 'OTP verified successfully, user created' });
     } catch (error) {
