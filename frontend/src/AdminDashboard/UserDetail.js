@@ -58,7 +58,7 @@ const UserDetail = () => {
     setFilteredDeviceNames(filteredDevices);
     setDeviceCount(filteredDevices.length);
     setTotalPages(Math.ceil(filteredDevices.length / imagesPerPage));
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
   }, [searchQuery, deviceNames]);
   
   const handlePrevPage = () => {

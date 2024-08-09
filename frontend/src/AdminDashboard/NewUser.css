@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: row;
     /* height: 100vh; */
-    width: 100vw;
+    /* width: 100vw; */
   }
   
   .left-screen {
@@ -89,8 +89,6 @@
 .save-btn:hover:not(:disabled) {
   background-color: #1b5e20;
 }
-
-
 
 @media (max-width:767px){
 .box{

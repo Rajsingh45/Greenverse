@@ -40,12 +40,11 @@ const Admin = ({ users = [], setUsers }) => {
 
         const data = await response.json();
         setFetchedUsers(data.users || []);
-        setFullUserList(data.fullUserList || []); // Assuming `fullUserList` is sent by the backend
+        setFullUserList(data.fullUserList || []);
         setTotalUsers(data.total || 0);
         const numOfPages = Math.ceil(data.total / usersPerPage);
         setTotalPages(numOfPages);
 
-        // Reset page number if currentPage exceeds the number of pages after search
         if (currentPage > numOfPages) {
           setCurrentPage(1);
         }
@@ -161,7 +160,6 @@ const Admin = ({ users = [], setUsers }) => {
     }
 };
 
-
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
     setMenuUser(user);
@@ -172,43 +170,8 @@ const Admin = ({ users = [], setUsers }) => {
     setMenuUser(null);
   };
 
-  // const initMap = async () => {
-  //   try {
-  //     const response = await fetch('http://localhost:5000/locations', {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  //     const locations = await response.json();
-
-  //     if (!locations.length) {
-  //       console.error('No locations found.');
-  //       return;
-  //     }
-
-  //     const avgLat = locations.reduce((sum, loc) => sum + loc.lat, 0) / locations.length;
-  //     const avgLng = locations.reduce((sum, loc) => sum + loc.lng, 0) / locations.length;
-
-  //     const baseURL = 'https://www.google.com/maps/embed?';
-  //     const params = new URLSearchParams({
-  //       center: `${avgLat},${avgLng}`,
-  //       markers: locations.map(loc => `${loc.lat},${loc.lng}`).join('|')
-  //     });
-
-  //     setMapUrl(`${baseURL}${params.toString()}`);
-  //   } catch (error) {
-  //     console.error('Error fetching map locations:', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   initMap();
-  // }, []);
-
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
-  // const currentUserEmail=user.email
-  // console.log(currentUserEmail)
+
   const handleNameClick = (user, event) => {
 
     if (renamingUserEmail === user.email) {
@@ -243,7 +206,7 @@ const Admin = ({ users = [], setUsers }) => {
   return (
     <>
       <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} currentUserEmail={currentUserEmail} onUserNameClick={handleNameClick}/>
-      <div className="container">
+      <div className="containers container">
         {showNewUserForm ? (
           <NewUserForm onUserAdded={handleUserAdded} />
         ) : showEditUserForm ? (

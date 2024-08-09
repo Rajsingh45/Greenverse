@@ -17,7 +17,6 @@ const DashboardPage = () => {
         });
         const data = await response.json();
 
-        // Ensure only the `users` array is processed
         if (Array.isArray(data.users)) {
           setUsers(data.users);
           setFilteredUsers(data.users);

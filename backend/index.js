@@ -46,15 +46,6 @@ app.use('/', contactRoutes);
 
 app.use('/api', dataRoutes); 
 
-app.get('/locations', (req, res) => {
-  const locations = [
-      { lat: 19.0760, lng: 72.8777, label: 'Mumbai-New' },
-      // { lat: 19.1247, lng: 72.8234, label: 'B' }
-      // Add more locations here
-  ];
-  res.json(locations);
-});
-
 app.get('/api/device-data/:espTopic', async (req, res) => {
   const { espTopic } = req.params;
   const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
@@ -65,7 +56,6 @@ app.get('/api/device-data/:espTopic', async (req, res) => {
       const db = mongoClient.db(dbName);
       const adminCollection = db.collection('admins');
       
-      // Check if the ESP topic is in the admin collection
       const adminDoc = await adminCollection.findOne({ espTopics: espTopic });
       console.log(adminDoc)
       if (!adminDoc) {
@@ -73,7 +63,6 @@ app.get('/api/device-data/:espTopic', async (req, res) => {
       }
 
       const deviceCollection = db.collection(espTopic);
-      // console.log(deviceCollection)
       const data = await deviceCollection.find({ dateTime: now }).toArray();
       res.json(data);
   } catch (err) {
@@ -151,7 +140,6 @@ app.get('/api/download-device-data/:espTopic', async (req, res) => {
     const db = mongoClient.db(dbName);
     const deviceCollection = db.collection(espTopic);
 
-    // Fetch data for the specified date range
     const data = await deviceCollection.find({
       dateTime: {
         $gte: startDate,
@@ -168,6 +156,27 @@ app.get('/api/download-device-data/:espTopic', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch data' });
   }
 });
+
+app.get('/api/device-data-parameter/:espTopic', async (req, res) => {
+  const { espTopic } = req.params;
+
+  try {
+    await mongoClient.connect();
+    const db = mongoClient.db(dbName);
+    const deviceCollection = db.collection(espTopic);
+
+    const data = await deviceCollection.find({}, { projection: { 'Gas Resistance': 1, _id: 0 } }).toArray();
+
+    if (data.length > 0) {
+      res.json(data);
+    } else {
+      res.status(404).json({ error: 'No data found for the "gas resistance" parameter' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

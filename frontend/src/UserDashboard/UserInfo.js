@@ -22,7 +22,7 @@ const UserProfile = () => {
         });
 
         const data = await response.json();
-        if (data && data.email && data.name) {
+        if (data && data.email && data.name && data.contactNumber) {
           setUser(data);
 
           const profilePicResponse = await fetch('http://localhost:5000/auth/profile-picture', {
@@ -141,6 +141,17 @@ const UserProfile = () => {
         onClick={openModal}
       />
       <Typography variant="h4" className="title-profile">User Profile</Typography>
+      
+      <div className="profile-field">
+        <TextField
+          label="Name"
+          value={user.name || ''}
+          onChange={handleNameChange}
+          InputProps={{ readOnly: !isEditingName }}
+          variant="outlined"
+          fullWidth
+        />
+      </div>
       <div className="profile-field">
         <TextField
           label="Email"
@@ -152,10 +163,9 @@ const UserProfile = () => {
       </div>
       <div className="profile-field">
         <TextField
-          label="Name"
-          value={user.name || ''}
-          onChange={handleNameChange}
-          InputProps={{ readOnly: !isEditingName }}
+          label="Contact Number"
+          value={user.contactNumber || ''}
+          InputProps={{ readOnly: true }}
           variant="outlined"
           fullWidth
         />

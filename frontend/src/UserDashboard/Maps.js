@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import GoogleMapReact from 'google-map-react';
 import './Maps.css';
 
 const MapsPage = () => {
   const [apiKey, setApiKey] = useState('');
   const [mapCenter, setMapCenter] = useState({ lat: 51.505, lng: -0.09 });
   const [markers, setMarkers] = useState([]);
-  const navigate = useNavigate();
+
+  const AnyReactComponent = ({ text }) => <div>{text}</div>;
+
+  const defaultProps = {
+    center: {
+      lat: 10.99835602,
+      lng: 77.01502627
+    },
+    zoom: 11
+  };
 
   const handleLoadMap = () => {
-    const existingScript = document.getElementById('google-maps-script');
-    if (existingScript) {
-      document.head.removeChild(existingScript);
-    }
-
     const script = document.createElement('script');
     script.id = 'google-maps-script';
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
@@ -53,20 +57,32 @@ const MapsPage = () => {
     };
   };
 
+  const addMarkers = () => {
+    setMarkers([
+      { position: { lat: 19.076, lng: 72.8777 }, message: 'Mumbai' },
+      { position: { lat: 28.6139, lng: 77.2090 }, message: 'Delhi' }
+    ]);
+  };
+
   return (
-    <div className="maps-page">
-      <h1 className="maps-title">Maps Page</h1>
-      <div className="maps-inputs">
-        <input
-          type="text"
-          className="maps-input"
-          placeholder="Enter API key"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-        />
-        <button className="maps-button" onClick={handleLoadMap}>Load Map</button>
-      </div>
-      <div id="map" className="maps-container"></div>
+    <div style={{ height: '100vh', width: '100%' }}>
+      <GoogleMapReact
+        bootstrapURLKeys={{ key: apiKey }}
+        defaultCenter={defaultProps.center}
+        defaultZoom={defaultProps.zoom}
+        onGoogleApiLoaded={({ map, maps }) => {
+          addMarkers();
+        }}
+      >
+        {markers.map((marker, index) => (
+          <AnyReactComponent
+            key={index}
+            lat={marker.position.lat}
+            lng={marker.position.lng}
+            text={marker.message}
+          />
+        ))}
+      </GoogleMapReact>
     </div>
   );
 };

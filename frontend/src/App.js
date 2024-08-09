@@ -17,6 +17,7 @@ import UserDetail from './AdminDashboard/UserDetail';
 import NewUserForm from './AdminDashboard/NewUser';
 import Maps from './UserDashboard/Maps';
 import VerifyOtpPage from './VerifyOtpPage.js'
+import About from './About.js'
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
               <Route path="/user/:email" element={<UserDetail />} />
               <Route path="/api-generation" element={<Maps />} />
               <Route path="/verifysignupotp" element={< VerifyOtpPage/>} />
-
+              <Route path="/about-us" element={< About/>} />
             </Routes>
           </Router>
       </UserContextProvider>

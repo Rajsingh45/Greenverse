@@ -141,7 +141,6 @@ const [downloadParameter, setDownloadParameter] = useState('');
             const response = await fetch(`http://localhost:5000/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
             const data = await response.json();
     
-            // Process data into CSV format
             const csvContent = [
                 "dateTime," + Object.keys(data[0] || {}).filter(key => key !== 'dateTime').join(','),
                 ...data.map(row => {

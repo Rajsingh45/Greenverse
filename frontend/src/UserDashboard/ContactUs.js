@@ -15,7 +15,7 @@ const ContactUs = () => {
     try {
       const response = await axios.post('http://localhost:5000/contact', formData);
       window.alert('Your query has been submitted successfully.');
-      setFormData({ name: '', phone: '', email: `${formData.email}`, message: '' }); // Reset form data
+      setFormData({ name: '', phone: '', email: `${formData.email}`, message: '' });
     } catch (error) {
       console.error('Error submitting contact form:', error);
       window.alert('There was an error submitting your query. Please try again later.');

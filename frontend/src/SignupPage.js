@@ -49,9 +49,6 @@ const SignupPage = () => {
         navigate("/");
     };
 
-// SignupPage.js
-// SignupPage.js
-
 const handleSubmit = async (e) => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -63,6 +60,9 @@ const handleSubmit = async (e) => {
     const contactNumberRegex = /^\d{10}$/;
     if (!contactNumberRegex.test(userDetails.contactNumber)) {
         setError('Invalid contact number');
+        setTimeout(() => {
+          setError('');
+        }, 5000);
         return;
     }
 

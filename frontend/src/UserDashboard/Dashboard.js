@@ -18,12 +18,11 @@ const Dashboard = ({ isReadOnly = false }) => {
   const images = [device1, device2, device3, device4, device5, device6];
 
   const [totalPages, setTotalPages] = useState(1);
-  const [profilePic, setProfilePic] = useState(null); // Initialize profilePic state
+  const [profilePic, setProfilePic] = useState(null); 
   const [deviceCount, setDeviceCount] = useState(0);
-  const [deviceNames, setDeviceNames] = useState([]); // State for storing device names
-  const [searchQuery, setSearchQuery] = useState(''); // Add state for search query
+  const [deviceNames, setDeviceNames] = useState([]); 
+  const [searchQuery, setSearchQuery] = useState(''); 
 
-  // Function to handle profile picture change
   const handleProfilePicChange = (file) => {
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
       setProfilePic(URL.createObjectURL(file));
@@ -49,7 +48,6 @@ const Dashboard = ({ isReadOnly = false }) => {
       try {
         const token = localStorage.getItem('token');
 
-        // Fetch the total number of devices
         const countResponse = await axios.get('http://localhost:5000/admin/devices', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -78,7 +76,7 @@ const Dashboard = ({ isReadOnly = false }) => {
     );
     setDeviceCount(filteredDevices.length);
     setTotalPages(Math.ceil(filteredDevices.length / imagesPerPage));
-    setCurrentPage(1); // Reset to the first page on new search
+    setCurrentPage(1);
   }, [searchQuery, deviceNames]);
 
   const renderDeviceCards = () => {
@@ -90,7 +88,7 @@ const Dashboard = ({ isReadOnly = false }) => {
     );
     for (let i = startIndex; i < endIndex && i < filteredDeviceNames.length; i++) {
       const image = images[i % images.length];
-      const deviceName = filteredDeviceNames[i] || `Device ${i + 1}`; // Fallback to static name if not available
+      const deviceName = filteredDeviceNames[i] || `Device ${i + 1}`; 
       cards.push(
         <div className="gallery-item" key={i}>
           <div className="image-container">

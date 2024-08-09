@@ -8,7 +8,7 @@ const VerifyOTP = () => {
   const [error, setError] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const email = location.state?.email; // Corrected destructuring
+  const email = location.state?.email;
 
   const handleOtpChange = (e) => {
     const { value } = e.target;
@@ -16,7 +16,7 @@ const VerifyOTP = () => {
       setOtp(value);
     }
   };
-// fkefkekfmkef
+  
   const handleOtpSubmit = async () => {
     if (otp.length !== 6) {
       setOtpError('OTP must be 6 digits');
@@ -40,7 +40,6 @@ const VerifyOTP = () => {
         throw new Error(message || 'Failed to verify OTP');
       }
 
-      // navigate('/set-password', { state: { email } });
       navigate('/set-password', { state: { email, otp } });
 
     } catch (error) {

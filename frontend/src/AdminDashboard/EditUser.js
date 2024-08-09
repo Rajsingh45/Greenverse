@@ -41,7 +41,7 @@ const EditUserForm = ({ onUserUpdated }) => {
         }
 
         const response = await fetch('http://localhost:5000/admin/deletetopic', {
-          method: 'Delete',  // Use POST as defined in the backend
+          method: 'Delete',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
@@ -67,7 +67,6 @@ const EditUserForm = ({ onUserUpdated }) => {
   };
 
   const handleAddTopicClick = () => {
-    // Get the next sequential topic number
     const lastTopicNumber = espTopics.length > 0 ? 
       Math.max(...espTopics.map(topic => parseInt(topic.replace(/[^\d]/g, ''), 10))) : 0;
     setNewTopic(`${name}${lastTopicNumber + 1}`);

@@ -1,0 +1,241 @@
+
+.about {
+    padding: 20px;
+    background-color: #f4f4f4;
+    color: #333;
+  }
+  
+  .about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .about-header {
+    text-align: center;
+  }
+  
+  .about-title {
+    font-size: 3rem;
+    color: #2c3e50;
+    margin-top: auto;
+  }
+
+  .about-achievements {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  .about-achievements .section-title {
+    font-size: 2rem;
+    color: #e74c3c;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .achievements-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .achievements-list li {
+    font-size: 1.1rem;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .achievements-list li:last-child {
+    border-bottom: none;
+  }
+  
+  .about-origin, .about-mission, .about-achievements, .about-partners {
+    margin-bottom: 40px;
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+    color: #3498db;
+    margin-bottom: 10px;
+    margin-left: 30px;
+  }
+  
+  .section-text {
+    font-size: 20px;
+    text-align: justify;
+    line-height: 1.6;
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+  
+  .origin-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .origin-contents {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    flex-direction: row-reverse; 
+  }
+  
+  .origin-text {
+    flex: 1 1 60%;
+    margin-right: 20px;
+  }
+
+  .origin-texts {
+    flex: 1 1 60%;
+    margin-left: 20px;
+  }
+  
+  .origin-photo {
+    flex: 1 1 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .origin-photo img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  .achievements-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .achievements-list li {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  
+  .about-partners {
+    text-align: center;
+  }
+  
+  .first-para{
+    text-align: justify;
+    font-size: 20px;
+  }
+  
+  .about-partners .section-text {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: #555; /* Subtle text color */
+  }
+
+  .last-para{
+    font-size: 24px !important;
+    text-align: center;
+  }
+  
+  .partners-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between images */
+    justify-content: center; /* Center align the photos */
+  }
+  
+  .partner-photo {
+    flex: 1 1 calc(33.333% - 20px); /* Three photos per row with space adjustment */
+    max-width: 300px; /* Adjust based on your design */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 25px;
+    margin-bottom: 25px;
+
+  }
+  
+  .partner-photo {
+    /* flex: 1 1 calc(25.333% - 20px); */
+    max-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative; /* Needed for absolute positioning of image */
+    height: 150px; /* Fixed height for consistency */
+  }
+  
+  .partner-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit:contain; 
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .about-title {
+      font-size: 2rem;
+    }
+  
+    .section-title {
+      font-size: 1.5rem;
+    }
+  
+    .section-text {
+      font-size: 0.9rem;
+    }
+  
+    .origin-content {
+      flex-direction: column;
+    }
+  
+    .origin-text {
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
+  
+    .origin-photo {
+      flex: 1 1 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .about-title {
+      font-size: 1.5rem;
+    }
+  
+    .section-title {
+      font-size: 1.25rem;
+    }
+  
+    .section-text {
+      font-size: 0.8rem;
+    }
+  
+    .origin-photo img {
+      width: 100%;
+    }
+  }
+
+  @media(max-width:435px){
+    .key-achieve{
+      text-align: center !important;
+      font-size: 25px !important;
+    }
+  }
+  
+  @media (max-width: 320px) {
+    .about-title {
+      font-size: 1.2rem;
+    }
+  
+    .section-title {
+      font-size: 1rem;
+    }
+  
+    .section-text {
+      font-size: 0.7rem;
+    }
+  }
+  

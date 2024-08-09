@@ -26,7 +26,7 @@ const ChangePasswordPage = () => {
             setError('Invalid email format');
             setTimeout(() => {
                 setError('');
-            }, 5000); // Clear error after 5 seconds
+            }, 5000);
             return;
         }
 
@@ -42,7 +42,7 @@ const ChangePasswordPage = () => {
                 setError("Email not found in database");
                 setTimeout(() => {
                     setError('');
-                }, 5000); // Clear error after 5 seconds
+                }, 5000);
                 return Promise.reject("Email not found in database");
             }
             return response.json();
@@ -72,7 +72,7 @@ const ChangePasswordPage = () => {
                 setSuccess("Password changed successfully");
                 setTimeout(() => {
                     setSuccess('');
-                }, 5000); // Clear success message after 5 seconds
+                }, 5000);
                 setPasswordDetails({
                     email: "",
                     oldPassword: "",

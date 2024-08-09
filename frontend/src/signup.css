@@ -66,6 +66,7 @@ body {
   justify-content: center;
   align-items: center;
   color: white;
+  font-size: 18px;
 }
 
 .right-panel-new {
@@ -131,7 +132,7 @@ body {
 }
 
 .error-message{
-  font-size: 18px;
+  font-size: 18px !important;
   color: red;
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaBars, FaTimes  } from 'react-icons/fa';
 import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
@@ -8,7 +8,6 @@ import newlogo from './images/new-logo.png';
 import { useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
-// Styled components for the Navbar
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -43,12 +42,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
+  const [menuVisible, setMenuVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const dropdownRef = useRef(null);
   const location = useLocation();
   const { email: currentUserEmail } = useParams();
-  console.log(currentUserEmail)
+  const [placeholderText, setPlaceholderText] = useState('Search by user name…');
+  
+  const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
 
   useEffect(() => {
     const fetchProfilePic = async () => {
@@ -74,6 +76,29 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
 
     fetchProfilePic();
   }, []);
+  
+  const toggleMenu = () => {
+    setMenuVisible(prev => !prev);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 560) {
+        setPlaceholderText(''); 
+      } else if (window.innerWidth < 685) {
+        setPlaceholderText('Search');
+      } else {
+        setPlaceholderText(isUserDetailPage ? 'Search by device…' : 'Search by user name…');
+      }
+    };
+  
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+  
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isUserDetailPage]);
   
 
   useEffect(() => {
@@ -113,7 +138,6 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
     setSearchQuery(query);
   };
 
-  const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
   const isAdminPage = location.pathname === '/admin';
   const searchInputDisabled = !(isUserDetailPage || isAdminPage);
 
@@ -122,26 +146,31 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
       <img src={newlogo} alt='Logo' className='newlogo' />
       <span className="user-greeting">Hi Admin!</span>
 
-      <div className="navbar-links">
-        <a href="/admin" className="navbar-link">Home</a>
-        <a href="/about-us" className="navbar-link">About</a>
+      <div className={`navbar-links ${menuVisible ? 'visible' : ''}`}>
+        <a href="/admin" className="navbar-link sect">Home</a>
+        <a href="/about-us" className="navbar-link sect">About</a>
       </div>
 
-      <div className="profile-icon-container">
+      <div className={`profile-icon-container`}>
         <div className={`search-container ${searchInputDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-  placeholder={isUserDetailPage ? "Search by device…" : "Search by user name…"}
+  placeholder={placeholderText}
   inputProps={{ 'aria-label': 'search' }}
   value={searchQuery}
   onChange={handleSearchChange}
   className='device-name'
   disabled={searchInputDisabled}
 />
+
           </Search>
+        </div>
+
+        <div className="hamburger-menu" onClick={toggleMenu}>
+          {menuVisible ? <FaTimes /> : <FaBars />}
         </div>
 
         {profilePic ? (

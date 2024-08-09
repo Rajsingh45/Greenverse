@@ -5,13 +5,12 @@ import './SetPassword.css';
 const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [otp, setOtp] = useState(''); // Add OTP state
+  const [otp, setOtp] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
   const email = location.state?.email;
   
-  // Extract OTP from location state
   const otpFromState = location.state?.otp;
 
   const handlePasswordChange = (e) => {
@@ -42,7 +41,7 @@ const SetPassword = () => {
         },
         body: JSON.stringify({
           email,
-          otp: otpFromState || otp, // Use OTP from state if available
+          otp: otpFromState || otp,
           newPassword,
           confirmPassword,
         }),
@@ -53,7 +52,7 @@ const SetPassword = () => {
         throw new Error(message || 'Failed to update password');
       }
 
-      navigate('/'); // Redirect to login page after successful password update
+      navigate('/');
     } catch (error) {
       console.error('Error updating password:', error);
       setPasswordError('Failed to update password. Please try again.');

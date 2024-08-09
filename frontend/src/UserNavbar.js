@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
@@ -45,6 +45,7 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
   const [profilePic, setProfilePic] = useState(null);
   const [userName, setUserName] = useState('');
   const [searchQuery, setSearchQueryLocal] = useState('');
+  const [menuVisible, setMenuVisible] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -119,7 +120,11 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
   const handleSearchChange = (event) => {
     const query = event.target.value;
     setSearchQueryLocal(query);
-    setSearchQuery(query); // Update the parent component's search query
+    setSearchQuery(query);
+  };
+
+  const toggleMenu = () => {
+    setMenuVisible(!menuVisible);
   };
 
   return (
@@ -127,15 +132,15 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
       <img src={newlogo} alt='Error' className='newlogo' />
       {userName && <span className="user-greeting">Hi {userName}!</span>}
 
-      <div className="navbar-links">
+      <div className={`navbar-links ${menuVisible ? 'visible' : ''}`}>
         <a href="/dashboard" className="navbar-link">Home</a>
         <a href="/about-us" className="navbar-link">About</a>
         <a href="/contact-us" className="navbar-link">Contact Us</a>
         <a href="/api-generation" className="navbar-link">Maps</a>
       </div>
       
-      <div className={`profile-icon-container ${searchDisabled ? 'search-disabled' : ''}`}>
-      <div className={`search-container ${searchDisabled ? 'disabled' : ''}`}>
+      <div className="profile-icon-container">
+        <div className={`search-container ${searchDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -163,6 +168,18 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
             <p onClick={handleLogout}>Logout</p>
           </div>
         )}
+
+        {/* <FaTimes
+          className={`hamburger-close ${menuVisible ? 'visible' : ''}`}
+          onClick={toggleMenu}
+        /> */}
+
+        <div
+          className={`hamburger-menu ${!menuVisible ? 'visible' : ''}`}
+          onClick={toggleMenu}
+        >
+          ☰
+        </div>
       </div>
     </div>
   );

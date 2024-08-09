@@ -13,7 +13,7 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // Import date-fns adapter
+import 'chartjs-adapter-date-fns';
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -52,7 +52,6 @@ const GraphPage = () => {
 
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
     const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
-    console.log("Is Admin:", isAdmin);
 
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -296,9 +295,9 @@ const GraphPage = () => {
                         minute: 'dd-MM-yyyy HH:mm',
                         day: 'dd-MM-yyyy',
                         week: 'dd-MM-yyyy',
-                        month: 'dd-MM-yyyy', // Add month for larger ranges
-                        quarter: 'dd-MM-yyyy', // Add quarter for even larger ranges
-                        year: 'dd-MM-yyyy' // Add year for very large ranges
+                        month: 'dd-MM-yyyy', 
+                        quarter: 'dd-MM-yyyy',
+                        year: 'dd-MM-yyyy' 
                     }
                 },
                 title: {
@@ -306,9 +305,7 @@ const GraphPage = () => {
                     text: 'Date'
                 },
                 ticks: {
-                    autoSkip: true, // Automatically skips labels to avoid overlap
-                    // maxRotation: 0, // Prevents rotation of labels
-                    // minRotation: 0 // Ensures labels are not rotated
+                    autoSkip: true
                 }
             },
             y: {
