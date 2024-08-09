@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import GoogleMapReact from 'google-map-react';
-import './Maps.css';
+import './Maps.css'; // Ensure this is imported
 
 const MapsPage = () => {
   const [apiKey, setApiKey] = useState('');
   const [mapCenter, setMapCenter] = useState({ lat: 51.505, lng: -0.09 });
   const [markers, setMarkers] = useState([]);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
@@ -18,6 +19,11 @@ const MapsPage = () => {
   };
 
   const handleLoadMap = () => {
+    if (!apiKey) {
+      window.alert('Please enter a valid API key.');
+      return;
+    }
+
     const script = document.createElement('script');
     script.id = 'google-maps-script';
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
@@ -53,6 +59,8 @@ const MapsPage = () => {
     script.onload = () => {
       if (!window.google || !window.google.maps) {
         window.alert('Failed to load Google Maps API. Please check your API key.');
+      } else {
+        setMapLoaded(true);
       }
     };
   };
@@ -65,24 +73,26 @@ const MapsPage = () => {
   };
 
   return (
-    <div style={{ height: '100vh', width: '100%' }}>
-      <GoogleMapReact
-        bootstrapURLKeys={{ key: apiKey }}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-        onGoogleApiLoaded={({ map, maps }) => {
-          addMarkers();
-        }}
-      >
-        {markers.map((marker, index) => (
-          <AnyReactComponent
-            key={index}
-            lat={marker.position.lat}
-            lng={marker.position.lng}
-            text={marker.message}
+    <div className="map-container">
+      {!mapLoaded ? (
+        <div className="input-container">
+          <input
+            className="api-key-input"
+            type="text"
+            placeholder="Enter API Key"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
           />
-        ))}
-      </GoogleMapReact>
+          <button
+            className="load-map-button"
+            onClick={handleLoadMap}
+          >
+            Load Map
+          </button>
+        </div>
+      ) : (
+        <div id="map" className="map"></div>
+      )}
     </div>
   );
 };
