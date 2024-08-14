@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GoogleMapReact from 'google-map-react';
-import './Maps.css'; // Ensure this is imported
+import './Maps.css'; 
+import UserNavbar from '../UserNavbar.js';
 
 const MapsPage = () => {
   const [apiKey, setApiKey] = useState('');
@@ -73,6 +74,8 @@ const MapsPage = () => {
   };
 
   return (
+    <>
+    <UserNavbar/>
     <div className="map-container">
       {!mapLoaded ? (
         <div className="input-container">
@@ -94,6 +97,7 @@ const MapsPage = () => {
         <div id="map" className="map"></div>
       )}
     </div>
+    </>
   );
 };
 

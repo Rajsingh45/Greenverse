@@ -45,7 +45,6 @@ const DashboardPage = () => {
 
   return (
     <div>
-      {/* <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> */}
       <Admin users={filteredUsers} setUsers={setUsers} />
     </div>
   );

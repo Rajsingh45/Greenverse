@@ -94,10 +94,14 @@ const handleSubmit = async (e) => {
         setShowPassword(!showPassword);
     };
 
+    const handleNeedHelp = () => {
+        navigate("/need-help");
+    };
+
     return (
         <div className="container">
             <div className="left-panel-new">
-                <div className="help-link-new">Need Help?</div>
+                <div className="help-link-new" onClick={handleNeedHelp}>Need Help?</div>
                 <h1 className='account'>Create Account</h1>
                 {error && <p className="error-message">{error}</p>}
                 <form onSubmit={handleSubmit}>

@@ -28,12 +28,11 @@
 }
 
 .filter-section {
-    width: 30%;
     padding: 10px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .filter-section h3 {
@@ -84,7 +83,7 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    margin-left: 80%;
+    /* margin-left: 80%; */
     width: 100%;
 }
 
@@ -98,7 +97,6 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    /* margin-left: 10%; */
     width: 100%;
 }
 
@@ -121,7 +119,24 @@
     }
 }
 
-@media (max-width: 320px) {
+@media (max-width: 560px){
+    .new-date-picker-input{
+        font-size: 14px !important;
+    }
+} 
+
+@media (max-width: 500px){
+    .new-date-picker-input{
+        font-size: 10px !important;
+    }
+} 
+@media (max-width: 400px){
+    .new-date-picker-input{
+        font-size: 8px !important;
+    }
+} 
+
+@media (max-width: 340px) {
     .device-detail-page {
         padding: 10px;
     }
@@ -217,7 +232,10 @@
 }
 
 .download-section {
-    margin-top: 20%;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .download-section h3 {
@@ -244,4 +262,3 @@
 .download-button:hover {
     background-color: #218838;
 }
-

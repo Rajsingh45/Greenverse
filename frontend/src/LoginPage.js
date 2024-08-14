@@ -12,11 +12,10 @@ const LoginPage = () => {
     });
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
-    const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
+    const [passwordVisible, setPasswordVisible] = useState(false);
     const navigate = useNavigate();
     const loggedData = useContext(UserContext);
 
-    // Load last used credentials on component mount
     useEffect(() => {
         const lastUsedCredentials = JSON.parse(localStorage.getItem('lastUsedCredentials')) || {};
         if (lastUsedCredentials.email && lastUsedCredentials.password) {

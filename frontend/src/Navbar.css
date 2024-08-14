@@ -1,6 +1,5 @@
 .navbar {
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   background-color: #113011; 
   height: 80px; 
@@ -8,7 +7,7 @@
 }
 
 .navbar-title {
-  font-size: 24px; /* Increased font size */
+  font-size: 24px;
   color: #fff;
   font-weight: bold;
 }
@@ -17,7 +16,6 @@
   position: absolute;
   right: 20px;
   top: 20px;
-  /* cursor: pointer; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -179,30 +177,13 @@
   background-color: #0056b3;
 }
 
-/* @media (max-width: 768px) {
-  .navbar {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .profile-icon-container {
-    position: static;
-    margin-top: 10px;
-  }
-
-  .dropdown-menu {
-    top: 60px;
-    right: 20px;
-  }
-} */
-
 .Search {
   position: relative;
   border-radius: 4px;
   background-color: rgba(255, 255, 255, 0.15);
   margin-right: 16px;
   margin-left: 0;
-  width: auto; /* Default width */
+  width: auto;
 }
 
 .Search.showInput {
@@ -213,12 +194,12 @@
   padding: 0 16px;
   height: 100%;
   position: absolute;
-  pointer-events: auto; /* Ensure it can be clicked */
+  pointer-events: auto; 
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer; /* Change cursor to pointer on hover */
-  z-index: 10; /* Ensure it's on top of other elements */
+  cursor: pointer; 
+  z-index: 10;
 }
 
 .device-name{
@@ -357,7 +338,7 @@ width: 100%;
 
   .search-container {
     margin-right: 10px;
-    width: calc(100% - 40px); /* Adjust width to fit within the menu */
+    width: calc(100% - 40px);
   }
 
   .search-container input {
@@ -380,6 +361,10 @@ width: 100%;
 @media(max-width:560px){
   .profile-icon-container{
     width: 40%;
+  }
+
+  .css-nxtrxc-MuiInputBase-root .MuiInputBase-input{
+    padding-left: 10px !important;
   }
 }
 

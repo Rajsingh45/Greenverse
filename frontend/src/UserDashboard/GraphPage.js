@@ -319,14 +319,6 @@ const GraphPage = () => {
 />
 
                 </div>
-                {/* <div className="filtered-users">
-                    <h3>Filtered Users</h3>
-                    <ul>
-                        {filteredUsers.map(user => (
-                            <li key={user._id}>{user.name} - {user.email}</li>
-                        ))}
-                    </ul>
-                </div> */}
             </div>
         </>
     );

@@ -2,8 +2,6 @@
   .container {
     display: flex;
     flex-direction: row;
-    /* height: 100vh; */
-    /* width: 100vw; */
   }
   
   .left-screen {
@@ -99,9 +97,17 @@
 }
 .textboxs{
     width: 40%;
+    font-size: 14px;
 }
 .boxs{
     font-size: 20px;
+}
+}
+
+@media (max-width:563px){
+  .textboxs{
+    width: 40%;
+    font-size: 10px;
 }
 }
 
@@ -111,6 +117,10 @@
 }
 .textbox{
     font-size: 15px;
+}
+.textboxs{
+  width: 60%;
+  font-size: 14px;
 }
 .new-user{
     font-size: 25px;
@@ -130,6 +140,7 @@
     text-align: center;
 }
 .save-btn{
+  margin-top: 55px;
     font-size: 10px;
     width: 50%;
     text-align: center;

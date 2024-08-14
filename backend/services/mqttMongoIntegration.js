@@ -30,7 +30,7 @@ async function connectMQTT() {
     });
 
     mqttClient.on('connect', () => {
-        console.log('Connected to MQTT broker');
+        // console.log('Connected to MQTT broker');
     });
 
     mqttClient.on('message', async (topic, message) => {

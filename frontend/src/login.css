@@ -180,9 +180,8 @@ color: #ccc;
 }
 
 .password-group input {
-padding-right: 40px; /* Adjust padding to make space for the icon */
+padding-right: 40px;
 }
-
 
 .remember-me-label {
   display: flex;
@@ -261,6 +260,7 @@ padding-right: 40px; /* Adjust padding to make space for the icon */
   display: flex;
   justify-content: center;
   align-items: center;
+  outline: none;
 }
 
 .avatar-icon {

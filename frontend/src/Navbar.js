@@ -83,7 +83,13 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 560) {
+      if (window.innerWidth < 395) {
+        setPlaceholderText(''); 
+      }
+      else if (window.innerWidth < 490) {
+        setPlaceholderText('Search'); 
+      }
+      else if (window.innerWidth < 560) {
         setPlaceholderText(''); 
       } else if (window.innerWidth < 685) {
         setPlaceholderText('Search');
@@ -92,7 +98,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
       }
     };
   
-    handleResize(); // Set initial value
+    handleResize();
     window.addEventListener('resize', handleResize);
   
     return () => {
@@ -134,7 +140,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
   const handleSearchChange = async (event) => {
     if (searchInputDisabled) return;
   
-    const query = event.target.value; // Define query here
+    const query = event.target.value;
     setSearchQuery(query);
   };
 

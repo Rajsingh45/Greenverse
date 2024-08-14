@@ -169,11 +169,6 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
           </div>
         )}
 
-        {/* <FaTimes
-          className={`hamburger-close ${menuVisible ? 'visible' : ''}`}
-          onClick={toggleMenu}
-        /> */}
-
         <div
           className={`hamburger-menu ${!menuVisible ? 'visible' : ''}`}
           onClick={toggleMenu}

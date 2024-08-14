@@ -18,6 +18,7 @@ import NewUserForm from './AdminDashboard/NewUser';
 import Maps from './UserDashboard/Maps';
 import VerifyOtpPage from './VerifyOtpPage.js'
 import About from './About.js'
+import NeedHelp from './NeedHelp.js'
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
               <Route path="/api-generation" element={<Maps />} />
               <Route path="/verifysignupotp" element={< VerifyOtpPage/>} />
               <Route path="/about-us" element={< About/>} />
+              <Route path="/need-help" element={< NeedHelp/>} />
             </Routes>
           </Router>
       </UserContextProvider>

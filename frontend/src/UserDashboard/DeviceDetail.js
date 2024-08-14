@@ -15,8 +15,8 @@ import { saveAs } from 'file-saver';
 
 const DeviceDetailPage = () => {
     const [downloadStartDate, setDownloadStartDate] = useState(new Date());
-const [downloadEndDate, setDownloadEndDate] = useState(new Date());
-const [downloadParameter, setDownloadParameter] = useState('');
+    const [downloadEndDate, setDownloadEndDate] = useState(new Date());
+    const [downloadParameter, setDownloadParameter] = useState('');
 
     const { deviceName } = useParams();
     const navigate = useNavigate();
@@ -118,7 +118,7 @@ const [downloadParameter, setDownloadParameter] = useState('');
                     startDate: dayjs(startDate).format('YYYY-MM-DDTHH:mm:ss'),
                     endDate: dayjs(endDate).format('YYYY-MM-DDTHH:mm:ss'),
                     parameter: selectedOption,
-                    deviceName:deviceName
+                    deviceName: deviceName
                 }
             });
         }
@@ -134,13 +134,13 @@ const [downloadParameter, setDownloadParameter] = useState('');
             setError('Both start and end dates must be filled.');
             return;
         }
-    
+
         setError('');
-    
+
         try {
             const response = await fetch(`http://localhost:5000/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
             const data = await response.json();
-    
+
             const csvContent = [
                 "dateTime," + Object.keys(data[0] || {}).filter(key => key !== 'dateTime').join(','),
                 ...data.map(row => {
@@ -158,8 +158,8 @@ const [downloadParameter, setDownloadParameter] = useState('');
             setError('Error downloading data');
         }
     };
-    
-    
+
+
 
     const [maxDate, setMaxDate] = useState(new Date());
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
@@ -183,7 +183,7 @@ const [downloadParameter, setDownloadParameter] = useState('');
                                     timeIntervals={1}
                                     timeFormat="HH:mm"
                                     dateFormat="yyyy-MM-dd HH:mm"
-                                    className='date-picker-input'
+                                    className='date-picker-input new-date-picker-input'
                                     onClickOutside={() => setDatePickerOpen(true)}
                                     maxDate={maxDate}
                                     filterTime={filterFutureTimes}
@@ -261,40 +261,40 @@ const [downloadParameter, setDownloadParameter] = useState('');
                         </button>
                     </div>
                     <div className="download-section">
-    <h3>Download Data for All Parameters</h3>
-    <div className="date-picker">
-        <label>From:</label>
-        <DatePicker
-            selected={downloadStartDate}
-            onChange={date => setDownloadStartDate(date)}
-            showTimeSelect
-            timeIntervals={1}
-            timeFormat="HH:mm"
-            dateFormat="yyyy-MM-dd HH:mm"
-            className='date-picker-input'
-            maxDate={new Date()}
-        />
-    </div>
-    <div className="date-picker">
-        <label>To:</label>
-        <DatePicker
-            selected={downloadEndDate}
-            onChange={date => setDownloadEndDate(date)}
-            showTimeSelect
-            timeIntervals={1}
-            timeFormat="HH:mm"
-            dateFormat="yyyy-MM-dd HH:mm"
-            className='date-picker-input'
-            maxDate={new Date()}
-        />
-    </div>
-    
-    <button type="button" className="download-button" onClick={handleDownload}>
-        Download Data
-    </button>
-</div>
+                        <h3>Download Data for All Parameters</h3>
+                        <div className="date-picker">
+                            <label>From:</label>
+                            <DatePicker
+                                selected={downloadStartDate}
+                                onChange={date => setDownloadStartDate(date)}
+                                showTimeSelect
+                                timeIntervals={1}
+                                timeFormat="HH:mm"
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                className='date-picker-input'
+                                maxDate={new Date()}
+                            />
+                        </div>
+                        <div className="date-picker">
+                            <label>To:</label>
+                            <DatePicker
+                                selected={downloadEndDate}
+                                onChange={date => setDownloadEndDate(date)}
+                                showTimeSelect
+                                timeIntervals={1}
+                                timeFormat="HH:mm"
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                className='date-picker-input'
+                                maxDate={new Date()}
+                            />
+                        </div>
+
+                        <button type="button" className="download-button" onClick={handleDownload}>
+                            Download Data
+                        </button>
+                    </div>
                 </div>
-                
+
 
             </div>
         </>

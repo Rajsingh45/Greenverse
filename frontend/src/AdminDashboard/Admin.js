@@ -200,8 +200,6 @@ const Admin = ({ users = [], setUsers }) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-GB', options);
     };
-    
-    console.log(currentUserEmail)
 
   return (
     <>

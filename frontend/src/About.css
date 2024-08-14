@@ -130,7 +130,7 @@
   .about-partners .section-text {
     font-size: 1.1rem;
     margin-bottom: 30px;
-    color: #555; /* Subtle text color */
+    color: #555;
   }
 
   .last-para{
@@ -141,13 +141,13 @@
   .partners-photos {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; /* Space between images */
-    justify-content: center; /* Center align the photos */
+    gap: 20px; 
+    justify-content: center; 
   }
   
   .partner-photo {
-    flex: 1 1 calc(33.333% - 20px); /* Three photos per row with space adjustment */
-    max-width: 300px; /* Adjust based on your design */
+    flex: 1 1 calc(33.333% - 20px); 
+    max-width: 300px;
     border-radius: 8px;
     overflow: hidden;
     margin-right: 25px;
@@ -156,12 +156,11 @@
   }
   
   .partner-photo {
-    /* flex: 1 1 calc(25.333% - 20px); */
     max-width: 300px;
     border-radius: 8px;
     overflow: hidden;
-    position: relative; /* Needed for absolute positioning of image */
-    height: 150px; /* Fixed height for consistency */
+    position: relative; 
+    height: 150px; 
   }
   
   .partner-photo img {

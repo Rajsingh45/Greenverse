@@ -15,7 +15,7 @@
 }
 
 .gallery-item {
-  width: 30%; /* Adjust width to fit 3 items per row */
+  width: 30%;
   margin: 10px;
   text-align: center;
 }
