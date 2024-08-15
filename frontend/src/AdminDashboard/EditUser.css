@@ -57,6 +57,7 @@
   border: none;
   cursor: pointer;
   margin-top: 10px;
+  margin-left: 23px;
 }
 
 .add-ip-btn:hover, .save-btn:hover {
@@ -64,8 +65,44 @@
 }
 
 .textboxs {
+  flex: 1;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
+}
+
+.textboxsu{
+  width: 60%;
+  font-size: 20px;
+  margin-bottom: -10px;
+  padding: 5px;
+  border: 2px solid #2e7d32;
+  border-radius: 5px;
+}
+
+.submit-button-containeru {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.save-btnu {
+  /* background-color: #007bff; */
+  background-color: #2e7d32;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-btnu:hover {
+  background-color: rgb(6, 245, 6);
+}
+
+.add-ip-container{
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

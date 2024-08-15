@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import './EditUser.css';
+import Navbar from '../Navbar.js';
 
 const EditUserForm = ({ onUserUpdated }) => {
   const location = useLocation();
@@ -139,6 +140,8 @@ const EditUserForm = ({ onUserUpdated }) => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="container-main">
       <div className="header-main">
         <h1 className='new-user-edit'>EDIT AWS Topics</h1>
@@ -193,7 +196,7 @@ const EditUserForm = ({ onUserUpdated }) => {
                     value={newTopic}
                     onChange={(e) => setNewTopic(e.target.value)}
                     placeholder="Enter new AWS topic"
-                    className="textboxs"
+                    className="textboxsu"
                   />
                   <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button>
                 </>
@@ -201,11 +204,16 @@ const EditUserForm = ({ onUserUpdated }) => {
                 <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button> 
               )}
             </div>
-            <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button>
+            {/* <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button> */}
           </div>
         </div>
       </div>
     </div>
+    
+    <div className="submit-button-containeru">
+    <button onClick={handleTopicSubmission} className='save-btnu'>Submit AWS Topics</button>
+  </div>
+  </>
   );
 };
 

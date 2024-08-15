@@ -120,6 +120,10 @@ const LoginPage = () => {
             });
     };
 
+    const handleNeedHelp = () => {
+        navigate("/need-help");
+    };
+
     return (
         <div className="container">
             <div className="left-panel">
@@ -131,7 +135,7 @@ const LoginPage = () => {
                 <button className="signup-btn" onClick={handleSign}>SIGN UP</button>
             </div>
             <div className="right-panel">
-                <div className="help-link">Need Help?</div>
+                <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
                     <div className="avatar">
                         <FaUserCircle className="avatar-icon" />

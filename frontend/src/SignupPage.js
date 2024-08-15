@@ -54,6 +54,7 @@ const handleSubmit = async (e) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userDetails.email)) {
         setError('Invalid email format');
+        setTimeout(() => setError(''), 5000);
         return;
     }
 
@@ -73,20 +74,27 @@ const handleSubmit = async (e) => {
     try {
         const response = await fetch("http://localhost:5000/auth/requestsignupotp", {
             method: "POST",
-            body: JSON.stringify({ email: userDetails.email }),
+            body: JSON.stringify({ 
+                email: userDetails.email,
+                contactNumber: userDetails.contactNumber
+            }),
             headers: {
                 "Content-Type": "application/json"
             }
         });
 
+        const data = await response.json();
+
         if (response.status === 200) {
             navigate('/verifysignupotp', { state: { userDetails } });
         } else {
-            const data = await response.json();
             setError(data.message || "Failed to send OTP");
+            setTimeout(() => setError(''), 5000);
         }
     } catch (err) {
         console.error('Error during OTP request:', err);
+        setError('An error occurred. Please try again.');
+        setTimeout(() => setError(''), 5000);
     }
 };
 
