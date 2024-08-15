@@ -1,30 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
-const User = require('../models/USER');
-const { addUser, getAllUsers,deleteTopic, updateUserDevices,getDeviceNames, getDevicesNumber, checkAdminEmailExists,  searchUserByName ,deleteUser , renameUser,getUserDevicesByEmail} = require('../controllers/adduserController');
-const Admin=require('../models/ADMIN');
+const { authMiddleware } = require('../middleware/authMiddleware');
+const { addUser, getAllUsers, deleteTopic, updateUserDevices, getDeviceNames, getDevicesNumber, checkAdminEmailExists, searchUserByName, deleteUser, renameUser, getUserDevicesByEmail } = require('../controllers/adduserController');
 
-router.get('/devices', authMiddleware,getDevicesNumber)
+router.get('/devices', authMiddleware, getDevicesNumber);
 
-router.post('/adduser', authMiddleware, adminMiddleware, addUser);
+router.post('/adduser', authMiddleware, addUser);
 
-router.post('/checkemail',checkAdminEmailExists)
+router.post('/checkemail', checkAdminEmailExists);
 
 router.put('/updatedevices', updateUserDevices);
 
-router.get('/users', authMiddleware, adminMiddleware, getAllUsers);
+router.get('/users', authMiddleware, getAllUsers);
 
-router.put('/rename', authMiddleware, adminMiddleware, renameUser); // Add this line
+router.put('/rename', authMiddleware, renameUser);
 
-router.delete('/deleteuser', authMiddleware, adminMiddleware, deleteUser); // Add this line
+router.delete('/deleteuser', authMiddleware, deleteUser);
 
-router.delete('/deletetopic', authMiddleware, adminMiddleware, deleteTopic);
+router.delete('/deletetopic', authMiddleware, deleteTopic);
 
-router.get('/search-user', authMiddleware, searchUserByName); // Add this line
+router.get('/search-user', authMiddleware, searchUserByName);
 
-router.get('/user/devices', authMiddleware, adminMiddleware, getUserDevicesByEmail);
+router.get('/user/devices', authMiddleware, getUserDevicesByEmail);
 
-router.get('/device-names',authMiddleware,getDeviceNames);
+router.get('/device-names', authMiddleware, getDeviceNames);
 
 module.exports = router;

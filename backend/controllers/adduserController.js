@@ -30,27 +30,32 @@ const addUser = async (req, res) => {
             email,
             noofdevices,
             espTopics,
-            role: 'user',
             dateAdded: formatDateAWS(new Date())
         });
         await newUser.save();
+
         // Connect to MongoDB
         const db = mongoose.connection.db;
+
         // Create collections for each topic specified in espTopics
         for (const topic of espTopics) {
             await createCollection(db, topic);
         }
+
         // Subscribe to new topics
         await subscribeToTopics(); // Ensure subscription to new topics
+
         // Verify data stored correctly
         const storedUser = await Admin.findOne({ email });
         console.log('Stored user:', storedUser);
+
         res.status(201).json({ message: 'User added successfully', user: newUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
  
 // const addUser = async (req, res) => {
 //     const { name, email, noofdevices, espTopics } = req.body;

@@ -25,11 +25,6 @@ const UserSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    role: {
-        type: String,
-        enum: ['user', 'admin'],
-        default: 'user'
-    },
     rememberMeToken: {
         type: String,
         select: false
@@ -41,6 +36,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', UserSchema);
+
 
 
 // Middleware to remove null or undefined rememberMeToken and rememberMeTokenExpiry

@@ -15,13 +15,8 @@ router.get('/remember-me', rememberMe);
 
 router.put('/changepassword', authMiddleware, changePassword);
 router.post('/checkemail',checkEmailExists)
-
-// router.post('/requestotp', requestOTP); // Add this line
-// router.post('/verifyotp', verifyOTP); // Add this line
 router.post('/resetpassword', resetPassword); // Add this line
 
-// router.post('/requestsignupotp', requestSignupOTP); // New route for signup OTP
-// router.post('/verifysignupotp', verifySignupOTP);
 
 router.post('/requestsignupotp', requestSignupOTP);
 router.post('/verifysignupotp', verifySignupOTP);
