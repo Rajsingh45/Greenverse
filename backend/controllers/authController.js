@@ -8,17 +8,9 @@ const crypto = require('crypto');
 const otpStore = {}; // In-memory store for OTPs
 
 const register = async (req, res) => {
-    const { email, password, name, contactNumber, role } = req.body;
+    const { email, password, name, contactNumber } = req.body;
 
     try {
-        // Check if an admin user already exists
-        if (role === 'admin') {
-            const adminUser = await User.findOne({ role: 'admin' });
-            if (adminUser) {
-                return res.status(400).json({ error: 'Admin already exists' });
-            }
-        }
-
         // Check if the name already exists
         const existingName = await User.findOne({ name });
         if (existingName) {
@@ -39,15 +31,16 @@ const register = async (req, res) => {
 
         // Hash the password and create a new user
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ email, password: hashedPassword, name, contactNumber, role: role || 'user' });
+        const newUser = new User({ email, password: hashedPassword, name, contactNumber });
         await newUser.save();
 
-        res.status(201).json({ message: role === 'user' ? 'User registered successfully' : 'Admin registered successfully' });
+        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
 
 
 const generateRememberMeToken = () => {
@@ -68,7 +61,7 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ email: user.email, id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
 
         if (rememberMe) {
             const rememberMeToken = generateRememberMeToken();
@@ -87,7 +80,7 @@ const login = async (req, res) => {
 
         await user.save();
 
-        res.status(200).json({ token, role: user.role });
+        res.status(200).json({ token });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -107,13 +100,14 @@ const rememberMe = async (req, res) => {
             return res.status(401).json({ message: 'Invalid or expired remember me token' });
         }
 
-        const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
-        res.status(200).json({ token, user: { email: user.email, role: user.role } });
+        const token = jwt.sign({ email: user.email, id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+        res.status(200).json({ token, user: { email: user.email } });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
 
 const changePassword = async (req, res) => {
     const { email, oldPassword, newPassword } = req.body;
@@ -170,14 +164,18 @@ const generateOTP = () => {
 // const otpStore = {}; // Store OTPs temporarily
 
 const requestSignupOTP = async (req, res) => {
-    const { email } = req.body;
+    const { email, contactNumber } = req.body;
 
     try {
-        const user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ message: 'User already exists' });
+        const userByEmail = await User.findOne({ email });
+        if (userByEmail) {
+            return res.status(400).json({ message: 'User with this email already exists' });
         }
 
+        const userByContact = await User.findOne({ contactNumber });
+        if (userByContact) {
+            return res.status(400).json({ message: 'User with this contact number already exists' });
+        }
         const otp = generateOTP();
         otpStore[email] = { otp, expiresAt: Date.now() + (10 * 60 * 1000) }; // Store OTP with expiration time
 
@@ -200,7 +198,7 @@ const requestSignupOTP = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
-// authController.js
+
 
 const verifySignupOTP = async (req, res) => {
     const { email, otp, name, password, contactNumber } = req.body;
