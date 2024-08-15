@@ -2,6 +2,7 @@ const mqtt = require('mqtt');
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
 const moment = require('moment-timezone');
+const cron = require('node-cron');
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
@@ -30,7 +31,7 @@ async function connectMQTT() {
     });
 
     mqttClient.on('connect', () => {
-        // console.log('Connected to MQTT broker');
+        console.log('Connected to MQTT broker');
     });
 
     mqttClient.on('message', async (topic, message) => {
@@ -38,7 +39,6 @@ async function connectMQTT() {
             const messageData = JSON.parse(message.toString());
             const currentSecond = getFormattedSecond();
 
-            // Check if data is already stored for this second
             if (!lastStoredTimestamps[topic] || currentSecond > lastStoredTimestamps[topic]) {
                 lastStoredTimestamps[topic] = currentSecond;
 
@@ -46,14 +46,13 @@ async function connectMQTT() {
                 const collection = db.collection(topic);
                 const result = await collection.insertOne({
                     ...messageData,
-                    dateTime: currentSecond
+                    dateTime: currentSecond,
+                    dataType: 'raw' // Marking as raw data
                 });
 
                 if (result.insertedCount > 0) {
                     console.log('Data inserted:', result.insertedCount);
                 }
-            } else {
-                // Data for topic already stored for this second
             }
         } catch (err) {
             console.error('Failed to process message:', err.message);
@@ -79,7 +78,7 @@ async function subscribeToTopics() {
         const collections = await db.listCollections().toArray();
         const espTopics = collections.map(col => col.name).filter(name => /^.*\d$/.test(name));
 
-        // console.log(Subscribing to topics: ${espTopics.join(', ')});
+        console.log(`Subscribing to topics: ${espTopics.join(', ')}`);
 
         if (espTopics.length === 0) {
             console.error('No topics found to subscribe.');
@@ -99,6 +98,77 @@ async function subscribeToTopics() {
         console.error('Failed to connect to MongoDB or MQTT broker:', err.message);
     }
 }
+
+async function aggregateData(db, topic, range) {
+    const collection = db.collection(topic);
+    const startTime = moment().subtract(range, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+    const endTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Current time
+
+    // Find all raw documents within the specified range
+    const data = await collection.find({
+        dateTime: { $gte: startTime, $lt: endTime },
+        dataType: 'raw' // Only consider raw data for aggregation
+    }).toArray();
+
+    if (data.length === 0) {
+        console.log(`No raw data found for aggregation for ${range} seconds in topic ${topic}.`);
+        return;
+    }
+
+    // Calculate averages
+    const averageData = {
+        dateTime: endTime, // Timestamp the aggregated document as the most recent entry
+        dataType: 'aggregated', // Marking as aggregated data
+        id: data[0].id, // Extract `id` from the first document and move it outside of `parameters`
+        parameters: {}
+    };
+
+    const parameterKeys = Object.keys(data[0]).filter(key => !['dateTime', '_id', 'dataType', 'id'].includes(key));
+    parameterKeys.forEach(key => {
+        averageData.parameters[key] = data.reduce((sum, doc) => sum + parseFloat(doc[key]), 0) / data.length;
+    });
+
+    // Delete the original detailed raw data (the 60 documents)
+    await collection.deleteMany({
+        dateTime: { $gte: startTime, $lt: endTime },
+        dataType: 'raw' // Ensure only raw data is deleted
+    });
+
+    // Insert the new aggregated data without deleting the previous aggregates
+    await collection.insertOne(averageData);
+
+    console.log(`Aggregated data inserted for topic: ${topic} at ${endTime}`);
+}
+
+// Schedule a job to run every 60 seconds for 1-minute aggregation
+cron.schedule('* * * * *', async () => {
+    try {
+        const db = mongoClient.db(dbName);
+        const collections = await db.listCollections().toArray();
+        const espTopics = collections.map(col => col.name).filter(name => /^.*\d$/.test(name));
+
+        for (const topic of espTopics) {
+            await aggregateData(db, topic, 60); // 1-minute range
+        }
+    } catch (err) {
+        console.error('Error during 1-minute aggregation job:', err.message);
+    }
+});
+
+// Schedule a job to run every 2 minutes for 2-minute aggregation
+// cron.schedule('*/2 * * * *', async () => {
+//     try {
+//         const db = mongoClient.db(dbName);
+//         const collections = await db.listCollections().toArray();
+//         const espTopics = collections.map(col => col.name).filter(name => /^.*\d$/.test(name));
+
+//         for (const topic of espTopics) {
+//             await aggregateData(db, topic, 120); // 2-minute range
+//         }
+//     } catch (err) {
+//         console.error('Error during 2-minute aggregation job:', err.message);
+//     }
+// });
 
 subscribeToTopics().catch(err => {
     console.error('Failed to subscribe to topics:', err);

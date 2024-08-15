@@ -56,25 +56,6 @@ const addUser = async (req, res) => {
     }
 };
 
- 
-// const addUser = async (req, res) => {
-//     const { name, email, noofdevices, espTopics } = req.body;
-
-//     try {
-//         const existingUser = await Admin.findOne({ email });
-//         if (existingUser) {
-//             return res.status(400).json({ message: 'Email already exists' });
-//         }
-
-//         const newUser = new Admin({ name, email, noofdevices, espTopics, role: 'user', dateAdded: formatDate(new Date()) });
-//         await newUser.save();
-
-//         res.status(201).json({ message: 'User added successfully', user: newUser });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Something went wrong' });
-//     }
-// };
 
 const updateUserDevices = async (req, res) => {
     const { name, noofdevices, espTopics, email } = req.body;
@@ -110,29 +91,6 @@ const updateUserDevices = async (req, res) => {
     }
 };
 
-// const updateUserDevices = async (req, res) => {
-//     const { name, noofdevices, espTopics, email } = req.body;
-
-//     try {
-//         const existingUser = await Admin.findOne({ email });
-//         if (!existingUser) {
-//             return res.status(400).json({ message: 'User not found' });
-//         }
-
-//         existingUser.espTopics = espTopics; 
-//         existingUser.noofdevices = noofdevices;
-//         existingUser.name = name;
-
-//         await existingUser.save();
-
-//         res.json({ message: 'Number of devices updated successfully', user: existingUser });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Something went wrong' });
-//     }
-// };
-
-
 const formatDate = (date) => {
     const day = date.getDate();
     const month = date.toLocaleString('default', { month: 'short' });
@@ -140,16 +98,6 @@ const formatDate = (date) => {
     return `${day} ${month} ${year}`;
 };
 
-
-// const getAllUsers = async (req, res) => {
-//     try {
-//         const users = await Admin.find();
-//         res.status(200).json(users);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ message: 'Something went wrong' });
-//     }
-// };
 
 const getAllUsers = async (req, res) => {
     try {
