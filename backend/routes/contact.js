@@ -1,11 +1,10 @@
-// backend/routes/contactRoutes.js
 const express = require('express');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 require('dotenv').config(); // Load environment variables from .env file
 
 router.post('/contact', async (req, res) => {
-  const { name, email, phone, message } = req.body;
+  const { name, email, phone, message, isSignedUp } = req.body;
 
   // Create a transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -21,18 +20,31 @@ router.post('/contact', async (req, res) => {
     from: `"Contact Us Form" <${process.env.EMAIL_USER}>`, // sender address
     to: `${process.env.EMAIL_USER}`, // replace with your company email address
     replyTo: email,
-    subject: 'New Contact Us Form Submission', // Subject line
-    text: `You have a new contact form submission from:
-         Name: ${name}
-         Email: ${email}
-         Phone: ${phone}
-         Message: ${message}`,
-  html: `<p>You have a new contact form submission from:</p>
-         <p>Name: ${name}<br>
-         Email: ${email}<br>
-         Phone: ${phone}<br>
-         Message: ${message}</p>
-         <p style="color: red; font-weight: bold;">Note: Click 'Reply' to respond to the user's email address. Remember to remove this note before sending your reply.</p>`,
+    subject: 'New Query from Contact Us Form', // Subject line
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #dddddd; border-radius: 10px; overflow: hidden;">
+        <div style="background-color: #28a745; padding: 20px; text-align: center;">
+          <img src="cid:companyLogo" alt="Company Logo" style="max-height: 50px;">
+          <h1 style="color: #ffffff; margin: 0;">Greenverse Private Limited</h1>
+        </div>
+        <div style="padding: 20px; background-color: #f4f4f4;">
+          <h2 style="color: #333333;"> Query </h2>
+          <p style="font-size: 16px; color: #555555;">
+            You have a new query from:
+          </p>
+          <p style="font-size: 16px; color: #555555;">
+            <strong>Name:</strong> ${name}<br>
+            <strong>Email:</strong> ${email}<br>
+            <strong>Phone:</strong> ${phone}<br>
+            <strong>Message:</strong> ${message}
+          </p>
+          <div style="padding: 15px; text-align: center; border: 1px solid #dddddd; background-color: #ffffff; border-radius: 5px;">
+            <p style="color: #333333; margin: 0;">
+              ${isSignedUp ? 'A signed-in user' : 'A non-signed-in user'} has contacted you. Click 'Reply' to respond to the user's email address.
+            </p>
+          </div>
+        </div>
+      </div>`
   };
 
   // Send mail with defined transport object

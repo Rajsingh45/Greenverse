@@ -1,9 +1,35 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import '../NeedHelp.css';
+import UserNavbar from '../UserNavbar';
 import axios from 'axios';
-import UserNavbar from '../UserNavbar'
 
-const ContactUs = () => {
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
+const ContactUsu = () => {
+  
+  const [profilePic, setProfilePic] = useState(null); 
+  
+  const [searchQuery, setSearchQuery] = useState(''); 
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '', isSignedUp: true }); // Default isSignedUp to true
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/auth/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const userData = response.data;
+        if (userData && userData.email) {
+          setFormData(prevData => ({ ...prevData, email: userData.email }));
+        }
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -12,66 +38,125 @@ const ContactUs = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/contact', formData);
-      window.alert('Your query has been submitted successfully.');
-      setFormData({ name: '', phone: '', email: `${formData.email}`, message: '' });
-    } catch (error) {
-      console.error('Error submitting contact form:', error);
-      window.alert('There was an error submitting your query. Please try again later.');
-    }
-  };
 
-  useEffect(() => {
-  const fetchUserDetails = async () => {
+    // Name validation: only letters and spaces
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(formData.name)) {
+      alert('Please enter a valid name. Only letters and spaces are allowed.');
+      return;
+    }
+
+    // Phone number validation: 10 digits
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
+    }
+
+    // Email validation: proper email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Message validation: minimum 10 characters
+    if (formData.message.length < 10) {
+      alert('Please enter at least 10 characters in the message.');
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/auth/users', {
+      const response = await fetch('http://localhost:5000/contact', {
+        method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}` // Pass the token if available
+        },
+        body: JSON.stringify(formData),
       });
-      const userData = response.data;
-      if (userData && userData.email) {
-        setFormData(prevData => ({ ...prevData, email: userData.email }));
+      if (response.ok) {
+        alert('Your query has been submitted successfully.');
+        setFormData({ name: '', phone: '', email: '', message: '', isSignedUp: true });
+      } else {
+        alert('There was an error submitting your query. Please try again later.');
       }
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      console.error('Error submitting contact form:', error);
+      alert('There was an error submitting your query. Please try again later.');
     }
   };
-
-  fetchUserDetails();
-}, []);
 
   return (
     <>
-   <UserNavbar searchDisabled={true}/>
-    <div className="contact-us">
-          <h2>Contact Us</h2>
+    <UserNavbar profilePic={profilePic} setSearchQuery={setSearchQuery} />
+      <div className="contact-us-containeru">
+        <div className="contact-us-contentu">
+          <h2 className="h2u">Contact Us</h2>
+          <p className="pu">If you have any questions or need assistance, please fill out the form below, and we'll get back to you as soon as possible.</p>
           <form onSubmit={handleSubmit}>
-            <div className='name-phone'>
-              <div className="form-group form-new">
-                <label className='fields' htmlFor="name">Name:</label>
-                <input type="text" id="name" name="name" className='name-field' value={formData.name} onChange={handleChange} required />
-              </div>
-              <div className="form-group form-news">
-                <label className='fields' htmlFor="phone">Phone:</label>
-                <input type="number" id="phone" name="phone" className='name-field' value={formData.phone} onChange={handleChange} required />
-              </div>
+            <div className="form-groupu">
+              <label htmlFor="name" className="form-labelu">Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                value={formData.name} 
+                onChange={handleChange} 
+                required 
+                className="form-inputu"
+                pattern="^[A-Za-z\s]+$" // HTML5 validation for only letters and spaces
+                title="Please enter a valid name. Only letters and spaces are allowed."
+              />
             </div>
-            <div className="form-group">
-              <label className='fields' htmlFor="email">Email:</label>
-              <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} required disabled/>
+            <div className="form-groupu">
+              <label htmlFor="phone" className="form-labelu">Phone</label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                value={formData.phone} 
+                onChange={handleChange} 
+                required 
+                className="form-inputu"
+                pattern="^\d{10}$" // HTML5 validation for 10 digits
+                title="Please enter a 10-digit phone number"
+              />
             </div>
-            <div className="form-group">
-              <label className='fields' htmlFor="message">Message:</label>
-              <textarea id="message" name="message" rows="4" value={formData.message} onChange={handleChange} required></textarea>
+            <div className="form-groupu">
+              <label htmlFor="email" className="form-labelu">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                value={formData.email} 
+                onChange={handleChange} 
+                required 
+                className="form-inputu"
+                pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$" // HTML5 validation for email format
+                title="Please enter a valid email address"
+              />
             </div>
-            <button type="submit" className="submit-button">Submit</button>
+            <div className="form-groupu">
+              <label htmlFor="message" className="form-labelu">Message</label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="5" 
+                value={formData.message} 
+                onChange={handleChange} 
+                required 
+                className="form-inputu"
+                minLength="10" // HTML5 validation for min length
+                title="Please enter at least 10 characters"
+              />
+            </div>
+            <button type="submit" className="submit-buttonu">Submit</button>
           </form>
         </div>
-        </>
+      </div>
+      </>
   );
 };
 
-export default ContactUs;
+export default ContactUsu;
