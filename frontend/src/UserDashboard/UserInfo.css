@@ -9,12 +9,68 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   align-items: center;
+  min-height: 100vh; 
+  box-sizing: border-box;
+  margin-top: 20px;
 }
+
+.delete-icon {
+  position: relative; /* or stick to absolute if necessary */
+  left: 10px;
+  /* top: 10px; */
+  color: red;
+  cursor: pointer;
+  font-size: 24px;
+  z-index: 1;
+}
+
+.delete-icon:hover {
+  color: darkred;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  position: relative; 
+  width: 100%; 
+}
+
+.more-vert-icon {
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.dropdown-menus {
+  position: absolute;
+  top: 100%; 
+  right: 0; 
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 10;
+  display: flex;
+  flex-direction: column; 
+  min-width: 100px; 
+}
+
+.dropdown-itemu {
+  display: block;
+  padding: 8px 16px;
+  text-align: left;
+  cursor: pointer;
+  width: 100%; 
+  font-size: 14px !important;
+  text-transform: capitalize !important;
+}
+
+.dropdown-itemu:hover {
+  background-color: #f0f0f0;
+}
+
 
 .profile-avatar {
   width: 180px !important;
   height: 180px !important;
-  margin-bottom: 10px;
   cursor: pointer;
 }
 
@@ -91,9 +147,27 @@
   cursor: pointer;
 }
 
+@media (max-width: 600px) {
+  .buttons-container {
+    flex-direction: column; 
+    align-items: stretch; 
+  }
+
+  .profile-button {
+    width: 100%; 
+    margin-bottom: 10px; 
+    font-size: 0.9rem; 
+  }
+
+  .profile-button:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
 @media (max-width: 320px) {
   .profile-container {
     padding: 10px;
+    min-height: auto;
   }
 
   .profile-field {

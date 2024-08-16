@@ -141,7 +141,11 @@ const GraphPage = () => {
             }
 
             const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
-            const values = data.map(entry => entry[parameter]);
+        const values = data.map(entry => 
+            typeof entry.parameters === 'object' && entry.parameters !== null
+                ? entry.parameters[parameter] 
+                : entry[parameter]
+        );
 
             setChartData({
                 labels: labels,
@@ -176,14 +180,19 @@ const GraphPage = () => {
 
     const getTicks = () => {
         const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
-        if (duration <= 7) {
+        if (duration <= 1) {
             return { unit: 'minute', stepSize: 10 };
+        } else if (duration <= 7) {
+            return { unit: 'hour', stepSize: 1 };
+        } else if (duration <= 10) {
+            return { unit: 'day', stepSize: 1 };
         } else if (duration <= 30) {
             return { unit: 'day', stepSize: 1 };
         } else {
             return { unit: 'week', stepSize: 1 };
         }
     };
+    
     
     const { unit, stepSize } = getTicks();
     const formatTick = (tick) => {
@@ -201,9 +210,9 @@ const GraphPage = () => {
             case 'Excel':
                 handleDownloadExcel();
                 break;
-            case 'Word':
-                handleDownloadWord();
-                break;
+            // case 'Word':
+            //     handleDownloadWord();
+            //     break;
             default:
                 break;
         }
@@ -229,6 +238,7 @@ const GraphPage = () => {
     const handleDownloadExcel = () => {
         const worksheet = XLSX.utils.json_to_sheet(chartData.datasets[0].data.map((value, index) => ({
             Date: dayjs(chartData.labels[index]).format('YYYY-MM-DD HH:mm:ss'),
+            Parameter: parameter,
             Value: value
         })));
         const workbook = XLSX.utils.book_new();
@@ -238,14 +248,15 @@ const GraphPage = () => {
         saveAs(blob, 'chart.xlsx');
     };
 
-    const handleDownloadWord = () => {
-        const doc = new jsPDF();
-        doc.text('Air Quality Index Data', 10, 10);
-        chartData.labels.forEach((label, index) => {
-            doc.text(`${dayjs(label).format('YYYY-MM-DD HH:mm:ss')}: ${chartData.datasets[0].data[index]}`, 10, 20 + index * 10);
-        });
-        doc.save('chart.doc');
-    };
+    // const handleDownloadWord = () => {
+    //     const doc = new jsPDF();
+    //     doc.text('Air Quality Index Data', 10, 10);
+    //     chartData.labels.forEach((label, index) => {
+    //         doc.text(`${dayjs(label).format('YYYY-MM-DD HH:mm:ss')}: ${chartData.datasets[0].data[index]}`, 10, 20 + index * 10);
+    //     });
+    //     doc.save('chart.doc'); // Use PDF format for better compatibility and viewing
+    // };
+    
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -278,7 +289,7 @@ const GraphPage = () => {
                             <button onClick={() => handleDownload('PNG')} className="dropdown-item">PNG</button>
                             <button onClick={() => handleDownload('PDF')} className="dropdown-item">PDF</button>
                             <button onClick={() => handleDownload('Excel')} className="dropdown-item">Excel</button>
-                            <button onClick={() => handleDownload('Word')} className="dropdown-item">Word</button>
+                            {/* <button onClick={() => handleDownload('Word')} className="dropdown-item">Word</button> */}
                         </div>
                     </div>
                     <Line
@@ -288,8 +299,8 @@ const GraphPage = () => {
             x: {
                 type: 'time',
                 time: {
-                    unit: unit,
-                    stepSize: stepSize,
+                    unit: getTicks().unit,
+                    stepSize: getTicks().stepSize,
                     tooltipFormat: 'dd-MM-yyyy HH:mm',
                     displayFormats: {
                         minute: 'dd-MM-yyyy HH:mm',
@@ -305,8 +316,19 @@ const GraphPage = () => {
                     text: 'Date'
                 },
                 ticks: {
-                    autoSkip: true
-                }
+                    autoSkip: true,
+                    maxTicksLimit: 10,
+                    callback: (value) => {
+                        const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
+                        if (duration <= 10) {
+                            return dayjs(value).format('DD-MM-YYYY HH:mm');
+                        }
+                        return dayjs(value).format('DD-MM-YYYY');
+                    }
+                },
+                min: dayjs(startDate).startOf('day').toDate(),
+                max: dayjs(endDate).endOf('day').toDate(),
+
             },
             y: {
                 title: {

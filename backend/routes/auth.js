@@ -3,7 +3,7 @@ const router = express.Router();
 const { register, login,checkNameAvailability,    requestSignupOTP,
     verifySignupOTP,
     requestForgotPasswordOTP,
-    verifyForgotPasswordOTP, rememberMe, changePassword,checkEmailExists, searchDevices, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser   } = require('../controllers/authController');
+    verifyForgotPasswordOTP, rememberMe, changePassword,checkEmailExists, searchDevices, resetPassword,getAllUsers,getProfilePicture, uploadProfilePicture, renameUser,deleteProfilePicture   } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/authMiddleware'); // Import the middleware
 const upload = require('../middleware/uploadMiddleware');
 
@@ -30,4 +30,5 @@ router.put('/rename', authMiddleware, renameUser);
 router.get('/profile-picture', authMiddleware, getProfilePicture);
 
 router.get('/search',authMiddleware, searchDevices);
+router.delete('/delete-profile-picture', authMiddleware,deleteProfilePicture);
 module.exports = router;

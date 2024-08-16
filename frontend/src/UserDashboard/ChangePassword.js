@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ChangePassword.css';
 
 const ChangePasswordPage = () => {
+    const navigate = useNavigate();
     const [passwordDetails, setPasswordDetails] = useState({
         email: "",
         oldPassword: "",
@@ -21,7 +23,7 @@ const ChangePasswordPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    
         if (!emailRegex.test(passwordDetails.email)) {
             setError('Invalid email format');
             setTimeout(() => {
@@ -29,7 +31,7 @@ const ChangePasswordPage = () => {
             }, 5000);
             return;
         }
-
+    
         fetch("http://localhost:5000/auth/checkemail", {
             method: "POST",
             body: JSON.stringify({ email: passwordDetails.email }),
@@ -66,13 +68,10 @@ const ChangePasswordPage = () => {
                     setError("Old Password is incorrect");
                     setTimeout(() => {
                         setError('');
-                    }, 5000); 
+                    }, 5000);
                     return Promise.reject("Failed to change password");
                 }
-                setSuccess("Password changed successfully");
-                setTimeout(() => {
-                    setSuccess('');
-                }, 5000);
+                navigate('/new-otp', { state: { userDetails: { email: passwordDetails.email } } }); // Navigate to new OTP page with email
                 setPasswordDetails({
                     email: "",
                     oldPassword: "",
@@ -87,6 +86,7 @@ const ChangePasswordPage = () => {
             console.error("Error:", error);
         });
     };
+    
 
     return (
         <div className="change-password-container">

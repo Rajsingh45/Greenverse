@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SignupPage = () => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     const [userDetails, setUserDetails] = useState({
@@ -51,6 +52,8 @@ const SignupPage = () => {
 
 const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userDetails.email)) {
         setError('Invalid email format');
@@ -68,6 +71,7 @@ const handleSubmit = async (e) => {
     }
 
     if (error) {
+        setIsSubmitting(false);
         return;
     }
 
@@ -95,6 +99,8 @@ const handleSubmit = async (e) => {
         console.error('Error during OTP request:', err);
         setError('An error occurred. Please try again.');
         setTimeout(() => setError(''), 5000);
+    } finally {
+        setIsSubmitting(false);
     }
 };
 
@@ -156,7 +162,9 @@ const handleSubmit = async (e) => {
                             <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                         </span>
                     </div>
-                    <button type="submit" className="signup-btn-new">Next</button>
+                    <button type="submit" className="signup-btn-new" disabled={isSubmitting}>
+    {isSubmitting ? 'Processing...' : 'Next'}
+</button>
                 </form>
             </div>
             <div className="right-panel-new">

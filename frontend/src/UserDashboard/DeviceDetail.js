@@ -12,7 +12,6 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-
 const DeviceDetailPage = () => {
     const [downloadStartDate, setDownloadStartDate] = useState(new Date());
     const [downloadEndDate, setDownloadEndDate] = useState(new Date());
@@ -33,6 +32,26 @@ const DeviceDetailPage = () => {
     const [selectedOption, setSelectedOption] = useState('');
 
     useEffect(() => {
+        const fetchParameterOptions = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/device-parameters/${deviceName}`);
+                const result = await response.json();
+    
+                if (Array.isArray(result)) {
+                    setParameterOptions(result);
+                } else {
+                    setParameterOptions([]);
+                }
+            } catch (error) {
+                console.error('Error fetching parameter options:', error);
+                setParameterOptions([]);
+            }
+        };
+    
+        fetchParameterOptions();
+    }, []);
+
+    useEffect(() => {
         const fetchLiveData = async () => {
             try {
                 let fetchDateTime = latestDateTime;
@@ -46,11 +65,20 @@ const DeviceDetailPage = () => {
 
                 if (result.length > 0) {
                     const data = result[0];
-                    const headers = Object.keys(data).filter(key => key !== '_id' && key !== 'id' && key !== 'dateTime');
-                    setParameterOptions(headers);
-                    setLiveData(data);
+                    let parameters = {};
+
+                    if (data.parameters && typeof data.parameters === 'object') {
+                        parameters = data.parameters;
+                    } else {
+                        parameters = Object.fromEntries(
+                            Object.entries(data).filter(([key]) => !['_id', 'id', 'dateTime', 'dataType'].includes(key))
+                        );
+                    }
+
+                    // setParameterOptions(Object.keys(parameters));
+                    setLiveData({ ...data, parameters });
                 } else {
-                    setParameterOptions([]);
+                    // setParameterOptions([]);
                     setLiveData(null);
                 }
             } catch (error) {
@@ -81,10 +109,35 @@ const DeviceDetailPage = () => {
         return () => clearInterval(interval);
     }, []);
 
-    const handleDateSelection = (date) => {
+    const handleDateSelection = async (date) => {
         setCalendarDate(date);
         setIsFiltered(true);
         setFetching(true);
+        try {
+            const fetchDateTime = dayjs(date).format('YYYY-MM-DD HH:mm:ss');
+            const response = await fetch(`http://localhost:5000/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
+            const result = await response.json();
+
+            if (result.length > 0) {
+                const data = result[0];
+
+                if (data.parameters && typeof data.parameters === 'object') {
+                    setParameterOptions(Object.keys(data.parameters));
+                    setLiveData(data);
+                } else {
+                    setParameterOptions([]);
+                    setLiveData(null);
+                }
+            } else {
+                setParameterOptions([]);
+                setLiveData(null);
+            }
+        } catch (error) {
+            console.error('Error fetching data for selected date:', error);
+            setError('Error fetching data for selected date');
+        } finally {
+            setFetching(false);
+        }
     };
 
     const handleIconClick = () => {
@@ -141,25 +194,42 @@ const DeviceDetailPage = () => {
             const response = await fetch(`http://localhost:5000/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
             const data = await response.json();
 
-            const csvContent = [
-                "dateTime," + Object.keys(data[0] || {}).filter(key => key !== 'dateTime').join(','),
-                ...data.map(row => {
-                    return [
-                        row.dateTime,
-                        ...Object.keys(row).filter(key => key !== 'dateTime').map(key => row[key])
-                    ].join(',');
-                })
-            ].join('\n');
+            const aggregatedData = data.filter(item => item.dataType === 'aggregated');
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, `${deviceName}_data_${dayjs(downloadStartDate).format('YYYY-MM-DD')}_${dayjs(downloadEndDate).format('YYYY-MM-DD')}.csv`);
+            const excelData = aggregatedData.map(item => {
+                const { _id, parameters, dateTime, ...rest } = item;  // Exclude _id
+                const formattedDateTime = dayjs(dateTime).format('YYYY-MM-DD HH:mm:ss'); // Format datetime
+    
+                // Flatten parameters object
+                const flattenedParameters = parameters ? Object.keys(parameters).reduce((acc, key) => {
+                    acc[key] = parameters[key];
+                    return acc;
+                }, {}) : {};
+    
+                return {
+                    dateTime: formattedDateTime, // Include formatted datetime
+                    ...rest,
+                    ...flattenedParameters // Spread flattened parameters into the main object
+                };
+            });
+    
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+    
+            // Set a custom column width for the dateTime column
+            worksheet['!cols'] = [{ wch: 20 }]; // Adjust the width to fit the datetime format
+    
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Aggregated Data');
+    
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    
+            saveAs(blob, `${deviceName}_aggregated_data_${dayjs(downloadStartDate).format('YYYY-MM-DD')}_${dayjs(downloadEndDate).format('YYYY-MM-DD')}.xlsx`);
         } catch (error) {
             console.error('Error downloading data:', error);
             setError('Error downloading data');
         }
     };
-
-
 
     const [maxDate, setMaxDate] = useState(new Date());
     const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
@@ -201,7 +271,7 @@ const DeviceDetailPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {liveData && Object.entries(liveData).filter(([key]) => !['_id', 'dateTime'].includes(key)).map(([key, value]) => (
+                            {liveData && Object.entries(liveData.parameters || {}).map(([key, value]) => (
                                 <tr key={key}>
                                     <td>{key}</td>
                                     <td>{value}</td>
@@ -294,8 +364,6 @@ const DeviceDetailPage = () => {
                         </button>
                     </div>
                 </div>
-
-
             </div>
         </>
     );

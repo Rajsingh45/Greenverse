@@ -184,6 +184,7 @@ const requestSignupOTP = async (req, res) => {
         
         // Path to the logo.png image from the authController.js file
         const logoPath = path.join(__dirname, '../../frontend/src/images/logo.png');
+        console.log(logoPath)
         
         // Reading the image as a Base64 string
         const logoBase64 = fs.readFileSync(logoPath, 'base64');
@@ -196,7 +197,7 @@ const requestSignupOTP = async (req, res) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                    <img src="data:image/png;base64,${logoBase64}" alt="Company Logo" style="width: 100px; height: auto;" />
+                    <img src="https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU" alt="Company Logo" style="width: 100px; height: auto;" />
                     <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
                 </div>
                 <div style="padding: 20px;">
@@ -566,7 +567,30 @@ const searchDevices = async (req, res) => {
     }
 };
 
+const deleteProfilePicture = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      if (user.profilePicture && fs.existsSync(user.profilePicture)) {
+        fs.unlinkSync(user.profilePicture);
+      }
+  
+      user.profilePicture = null;
+      await user.save();
+  
+      res.status(200).json({ message: 'Profile picture deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting profile picture:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
 module.exports = { register,    checkNameAvailability,    requestSignupOTP,
     verifySignupOTP,
     requestForgotPasswordOTP,
-    verifyForgotPasswordOTP, login, rememberMe ,searchDevices, changePassword,checkEmailExists, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture};
+    verifyForgotPasswordOTP, login, rememberMe ,searchDevices, changePassword,checkEmailExists, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture,deleteProfilePicture};

@@ -19,6 +19,7 @@ import Maps from './UserDashboard/Maps';
 import VerifyOtpPage from './VerifyOtpPage.js'
 import About from './About.js'
 import NeedHelp from './NeedHelp.js'
+import ChangePasswordOTP from './ChangePasswordOTP.js'
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
               <Route path="/verifysignupotp" element={< VerifyOtpPage/>} />
               <Route path="/about-us" element={< About/>} />
               <Route path="/need-help" element={< NeedHelp/>} />
+              <Route path="/new-otp" element={< ChangePasswordOTP/>} />
             </Routes>
           </Router>
       </UserContextProvider>

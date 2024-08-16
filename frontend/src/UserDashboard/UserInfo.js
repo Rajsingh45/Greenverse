@@ -1,15 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import './UserInfo.css';
 import { TextField, Button, Typography, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import UserNavbar from '../UserNavbar';
+import Layout from '../Layout';
+import { Delete } from '@mui/icons-material'; 
+import { MoreVert } from '@mui/icons-material';
 
 const UserProfile = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const dropdownRef = useRef(null);
+  const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+  const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [user, setUser] = useState({});
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const navigate = useNavigate();
+
+  const toggleDropdown = (e) => {
+    e.stopPropagation();
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  const handleClickOutside = (e) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      setDropdownVisible(false);
+    }
+  };
+  
+  const handleEditName = () => {
+    setIsEditingName(true);
+    setDropdownVisible(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  const handleDeleteProfilePic = async () => {
+    if (!profilePic) {
+      alert('No profile picture to delete.');
+      return;
+    }
+    const token = localStorage.getItem('token');
+  
+    try {
+      const response = await fetch('http://localhost:5000/auth/delete-profile-picture', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      const data = await response.json();
+      if (data.message === 'Profile picture deleted successfully') {
+        alert('Profile picture deleted successfully.');
+        setProfilePic(null);
+        setProfilePicFile(null);
+      } else {
+        console.error('Error deleting profile picture:', data);
+        alert('Failed to delete profile picture.');
+      }
+    } catch (error) {
+      console.error('Error deleting profile picture:', error);
+      alert('An error occurred while deleting the profile picture.');
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,21 +110,55 @@ const UserProfile = () => {
     fetchUser();
   }, []);
 
-  const handleProfilePicChange = (event) => {
+  const handleProfilePicChange = async (event) => {
     const file = event.target.files[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/png') && file.size <= 1048576) {
-      setProfilePic(URL.createObjectURL(file));
+      const previewURL = URL.createObjectURL(file);
+      setProfilePic(previewURL);
       setProfilePicFile(file);
+  
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+  
+      try {
+        const response = await fetch('http://localhost:5000/auth/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+  
+        const data = await response.json();
+        if (data.message === 'Profile picture uploaded successfully') {
+          alert('Profile picture uploaded successfully.');
+          setProfilePic(previewURL); // Update the displayed profile picture
+          setProfilePicFile(null); // Clear the file input
+        } else {
+          console.error('Error uploading profile picture:', data);
+          alert('Failed to upload profile picture.');
+        }
+      } catch (error) {
+        console.error('Error uploading profile picture:', error);
+        alert('An error occurred while uploading the profile picture.');
+      }
     } else {
       alert('Please select a JPG or PNG image smaller than 1MB.');
     }
   };
-
+  
+  
   const handleSubmitProfilePic = async () => {
+    if (!profilePicFile) {
+      alert('No profile picture selected.');
+      return;
+    }
+    
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('profilePicture', profilePicFile);
-
+  
     try {
       const response = await fetch('http://localhost:5000/auth/upload', {
         method: 'POST',
@@ -70,7 +167,7 @@ const UserProfile = () => {
         },
         body: formData
       });
-
+  
       const data = await response.json();
       if (data.message === 'Profile picture uploaded successfully') {
         alert('Profile picture updated successfully.');
@@ -86,7 +183,7 @@ const UserProfile = () => {
       alert('An error occurred while uploading the profile picture.');
     }
   };
-
+  
   const handleEditNameClick = () => {
     setIsEditingName(true);
   };
@@ -133,18 +230,49 @@ const UserProfile = () => {
   };
 
   return (
+    <>
+      {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true} />}
+      
     <div className="profile-container">
+      <div className="header">
+    <MoreVert
+      className="more-vert-icon"
+      onClick={toggleDropdown}
+    />
+    {dropdownVisible && (
+      <div ref={dropdownRef} className="dropdown-menus">
+        <Button
+          onClick={handleEditName}
+          className="dropdown-itemu"
+        >
+          Edit Username
+        </Button>
+        <Button
+          onClick={handleDeleteProfilePic}
+          className="dropdown-itemu"
+        >
+          Delete Profile Picture
+        </Button>
+      </div>
+    )}
+  </div>
       <Avatar
         src={profilePic}
         alt="Profile"
         className="profile-avatar"
         onClick={openModal}
       />
+      {profilePic && (
+    <Delete 
+      className="delete-icon" 
+      onClick={handleDeleteProfilePic} 
+    />
+  )}
       <Typography variant="h4" className="title-profile">User Profile</Typography>
       
       <div className="profile-field">
         <TextField
-          label="Name"
+          label="Username"
           value={user.name || ''}
           onChange={handleNameChange}
           InputProps={{ readOnly: !isEditingName }}
@@ -177,40 +305,24 @@ const UserProfile = () => {
             onClick={handleSubmitName}
             className="profile-button"
           >
-            Submit Name
+            Save Username
           </Button>
-        ) : (
-          <Button
-            variant="contained"
-            onClick={handleEditNameClick}
-            className="profile-button"
-          >
-            Edit Name
-          </Button>
-        )}
-        {profilePicFile ? (
-          <Button
-            variant="contained"
-            onClick={handleSubmitProfilePic}
-            className="profile-button"
-          >
-            Submit Profile Picture
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            component="label"
-            className="profile-button"
-          >
-            Upload Profile Picture
-            <input
-              type="file"
-              hidden
-              accept="image/jpeg, image/png"
-              onChange={handleProfilePicChange}
-            />
-          </Button>
-        )}
+        ) 
+        :  null
+        }
+        <Button
+    variant="contained"
+    component="label"
+    className="profile-button"
+  >
+    {profilePic ? 'Edit Profile Picture' : 'Upload Profile Picture'}
+    <input
+      type="file"
+      hidden
+      accept="image/jpeg, image/png"
+      onChange={handleProfilePicChange}
+    />
+  </Button>
       </div>
       {modalVisible && (
         <div className="modal" onClick={closeModal}>
@@ -221,6 +333,7 @@ const UserProfile = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

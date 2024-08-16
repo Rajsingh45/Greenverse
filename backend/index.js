@@ -110,12 +110,14 @@ app.get('/api/device-data-by-daterange/:espTopic', async (req, res) => {
 
     if (data.length > 0) {
       const filteredData = data.map(entry => {
-        if (entry.hasOwnProperty(parameter)) {
+        
+        if (entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
           return {
             dateTime: entry.dateTime,
-            [parameter]: entry[parameter] 
+            [parameter]: entry.parameters[parameter]
           };
-        } else {
+        }
+        else {
           console.warn(`Parameter "${parameter}" not found in document.`);
           return null;
         }
@@ -176,6 +178,38 @@ app.get('/api/device-data-parameter/:espTopic', async (req, res) => {
   }
 });
 
+app.get('/api/device-parameters/:espTopic', async (req, res) => {
+  const { espTopic } = req.params;
+
+  try {
+    await mongoClient.connect();
+    const db = mongoClient.db(dbName);
+    const deviceCollection = db.collection(espTopic);
+
+    const data = await deviceCollection.findOne();
+
+    if (data) {
+      let parameters = {};
+
+      // Check if data.parameters exists
+      if (data.parameters && typeof data.parameters === 'object') {
+        parameters = data.parameters;
+      } else {
+        // Extract parameters from the document
+        parameters = Object.fromEntries(
+          Object.entries(data).filter(([key]) => !['_id', 'id', 'dateTime', 'dataType'].includes(key))
+        );
+      }
+
+      // Respond with parameter keys
+      res.json(Object.keys(parameters));
+    } else {
+      res.status(404).json({ error: 'No data found' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch parameters' });
+  }
+});
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -7,6 +7,11 @@
     background-color: #f9f9f9;
 }
 
+.resend-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .otp-box {
     background-color: #ffffff;
     padding: 2rem;
