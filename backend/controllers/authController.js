@@ -231,6 +231,72 @@ const requestSignupOTP = async (req, res) => {
     }
 };
 
+const requestPasswordOTP = async (req, res) => {
+    const { email, oldPassword  } = req.body;
+
+    try {
+        const userByEmail = await User.findOne({ email });
+        if (!userByEmail) {
+            return res.status(400).json({ message: 'User with this email does not exist' });
+        }
+
+        const isMatch = await bcrypt.compare(oldPassword, userByEmail.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Incorrect old password' });
+        }
+
+        const otp = generateOTP();
+        otpStore[email] = { otp, expiresAt: Date.now() + (10 * 60 * 1000) }; 
+
+        const path = require('path');
+        const fs = require('fs');
+        
+        const logoPath = path.join(__dirname, '../../frontend/src/images/logo.png');
+        console.log(logoPath)
+        
+        const logoBase64 = fs.readFileSync(logoPath, 'base64');
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Email Verification OTP',
+            html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
+                    <img src="https://fastly.picsum.photos/id/0/5000/3333.jpg?hmac=_j6ghY5fCfSD6tvtcV74zXivkJSPIfR9B8w34XeQmvU" alt="Company Logo" style="width: 100px; height: auto;" />
+                    <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
+                </div>
+                <div style="padding: 20px;">
+                    <p>Hi,</p>
+                    <p>Enter this code in the next 10 minutes to sign up:</p>
+                    <div style="text-align: center; margin: 20px 0;">
+                        <div style="font-size: 36px; font-weight: bold; border: 2px solid #ddd; display: inline-block; padding: 10px 20px; border-radius: 5px;">
+                            ${otp}
+                        </div>
+                    </div>
+                    <p>If you didn't request this code, you can safely ignore this email. Someone else might have typed your email address by mistake.</p>
+                </div>
+                <div style="background-color: #f8f8f8; padding: 10px; text-align: center; border-radius: 0 0 10px 10px;">
+                    <p style="margin: 0; color: #888;">Thank you for using our service!</p>
+                </div>
+            </div>
+            `
+        };
+
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({ message: 'Error sending email' });
+            }
+            res.status(200).json({ message: 'OTP sent successfully' });
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
 
 const verifySignupOTP = async (req, res) => {
     const { email, otp, name, password, contactNumber } = req.body;
@@ -255,6 +321,36 @@ const verifySignupOTP = async (req, res) => {
         delete otpStore[email];
 
         res.status(200).json({ message: 'OTP verified successfully, user created' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+
+const verifyPasswordOTP = async (req, res) => {
+    const { email, otp, password } = req.body;
+
+    try {
+        const otpData = otpStore[email];
+        if (!otpData) {
+            return res.status(402).json({ message: 'OTP not requested or expired' });
+        }
+
+        if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
+            return res.status(401).json({ message: 'Invalid or expired OTP' });
+        }
+
+        // OTP is valid, hash the password before saving the user
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        await User.findOneAndUpdate(
+            { email },
+            { password: hashedPassword }
+        );
+
+        delete otpStore[email];
+
+        res.status(200).json({ message: 'OTP verified successfully, user details updated' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -593,4 +689,4 @@ const deleteProfilePicture = async (req, res) => {
 module.exports = { register,    checkNameAvailability,    requestSignupOTP,
     verifySignupOTP,
     requestForgotPasswordOTP,
-    verifyForgotPasswordOTP, login, rememberMe ,searchDevices, changePassword,checkEmailExists, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture,deleteProfilePicture};
+    verifyForgotPasswordOTP, login, rememberMe ,searchDevices, changePassword,checkEmailExists, resetPassword,getAllUsers, uploadProfilePicture, renameUser ,getProfilePicture,deleteProfilePicture,requestPasswordOTP,verifyPasswordOTP};

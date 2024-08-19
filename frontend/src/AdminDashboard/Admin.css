@@ -1,7 +1,7 @@
 .containers {
   display: flex;
   min-height: 100vh;
-  background: #ccffd9;
+  background: white;
 }
 
 .left {
@@ -11,7 +11,7 @@
 
 .left {
   width: 80%;
-  background: #ccffd9;
+  /* background: #ccffd9; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,7 +22,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 2rem;
-  background-color: #e1e1e1;
+  background-color: rgb(255, 253, 253);
 }
 
 .user-table th, .user-table td {
@@ -30,7 +30,7 @@
   padding: 1rem;
   text-align: center;
   font-size: 1.2rem;
-  color: green;
+  color: black;
 }
 
 .add-user-btn {

@@ -6,6 +6,7 @@ const VerifyOtpPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { userDetails } = location.state;
+    
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const [error, setError] = useState('');
     const [resendTimer, setResendTimer] = useState(60);
@@ -33,14 +34,12 @@ const VerifyOtpPage = () => {
         const enteredOtp = otp.join('');
 
         try {
-            const response = await fetch("http://localhost:5000/auth/verifysignupotp", {
-                method: "POST",
+            const response = await fetch("http://localhost:5000/auth/verifypasswordotp", {
+                method: "PUT",
                 body: JSON.stringify({
                     email: userDetails.email,
                     otp: enteredOtp,
-                    name: userDetails.name,
-                    password: userDetails.password,
-                    contactNumber: userDetails.contactNumber
+                    password: userDetails.password
                 }),
                 headers: {
                     "Content-Type": "application/json"
@@ -48,6 +47,7 @@ const VerifyOtpPage = () => {
             });
 
             if (response.status === 200) {
+                window.alert('Password changed successfully. Redirecting to login page.');
                 navigate('/');
             } else {
                 const data = await response.json();
@@ -62,7 +62,7 @@ const VerifyOtpPage = () => {
         if (resendTimer === 0  && !isResending) {
             setIsResending(true);
             try {
-                const response = await fetch("http://localhost:5000/auth/requestsignupotp", {
+                const response = await fetch("http://localhost:5000/auth/requestpasswordotp", {
                     method: "POST",
                     body: JSON.stringify({ email: userDetails.email }),
                     headers: {
@@ -86,7 +86,7 @@ const VerifyOtpPage = () => {
     };
 
     const handleBack = () => {
-        navigate('/signup');
+        navigate('/change-password');
     };
 
     return (

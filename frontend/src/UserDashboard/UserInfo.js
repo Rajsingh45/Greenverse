@@ -4,7 +4,6 @@ import { TextField, Button, Typography, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
-import { Delete } from '@mui/icons-material'; 
 import { MoreVert } from '@mui/icons-material';
 
 const UserProfile = () => {
@@ -148,46 +147,6 @@ const UserProfile = () => {
     }
   };
   
-  
-  const handleSubmitProfilePic = async () => {
-    if (!profilePicFile) {
-      alert('No profile picture selected.');
-      return;
-    }
-    
-    const token = localStorage.getItem('token');
-    const formData = new FormData();
-    formData.append('profilePicture', profilePicFile);
-  
-    try {
-      const response = await fetch('http://localhost:5000/auth/upload', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      });
-  
-      const data = await response.json();
-      if (data.message === 'Profile picture uploaded successfully') {
-        alert('Profile picture updated successfully.');
-        const imageURL = URL.createObjectURL(profilePicFile);
-        setProfilePic(imageURL);
-        setProfilePicFile(null);
-      } else {
-        console.error('Error uploading profile picture:', data);
-        alert('Failed to upload profile picture.');
-      }
-    } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      alert('An error occurred while uploading the profile picture.');
-    }
-  };
-  
-  const handleEditNameClick = () => {
-    setIsEditingName(true);
-  };
-
   const handleNameChange = (event) => {
     setUser({ ...user, name: event.target.value });
   };
@@ -262,12 +221,6 @@ const UserProfile = () => {
         className="profile-avatar"
         onClick={openModal}
       />
-      {profilePic && (
-    <Delete 
-      className="delete-icon" 
-      onClick={handleDeleteProfilePic} 
-    />
-  )}
       <Typography variant="h4" className="title-profile">User Profile</Typography>
       
       <div className="profile-field">
