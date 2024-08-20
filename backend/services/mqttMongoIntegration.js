@@ -111,10 +111,8 @@ async function aggregateData(db, topic, range) {
     }).toArray();
 
     if (data.length === 0) {
-        console.log(`No raw data found for aggregation for ${range} seconds in topic ${topic}.`);
         return;
     }
-
     // Calculate averages
     const averageData = {
         dateTime: endTime, // Timestamp the aggregated document as the most recent entry
@@ -128,16 +126,12 @@ async function aggregateData(db, topic, range) {
         averageData.parameters[key] = data.reduce((sum, doc) => sum + parseFloat(doc[key]), 0) / data.length;
     });
 
-    // Delete the original detailed raw data (the 60 documents)
     await collection.deleteMany({
         dateTime: { $gte: startTime, $lt: endTime },
         dataType: 'raw' // Ensure only raw data is deleted
     });
-
-    // Insert the new aggregated data without deleting the previous aggregates
     await collection.insertOne(averageData);
 
-    console.log(`Aggregated data inserted for topic: ${topic} at ${endTime}`);
 }
 
 // Schedule a job to run every 60 seconds for 1-minute aggregation
@@ -151,24 +145,9 @@ cron.schedule('* * * * *', async () => {
             await aggregateData(db, topic, 60); // 1-minute range
         }
     } catch (err) {
-        console.error('Error during 1-minute aggregation job:', err.message);
+        console.error(err);
     }
 });
-
-// Schedule a job to run every 2 minutes for 2-minute aggregation
-// cron.schedule('*/2 * * * *', async () => {
-//     try {
-//         const db = mongoClient.db(dbName);
-//         const collections = await db.listCollections().toArray();
-//         const espTopics = collections.map(col => col.name).filter(name => /^.*\d$/.test(name));
-
-//         for (const topic of espTopics) {
-//             await aggregateData(db, topic, 120); // 2-minute range
-//         }
-//     } catch (err) {
-//         console.error('Error during 2-minute aggregation job:', err.message);
-//     }
-// });
 
 subscribeToTopics().catch(err => {
     console.error('Failed to subscribe to topics:', err);

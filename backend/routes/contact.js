@@ -40,7 +40,7 @@ router.post('/contact', async (req, res) => {
           </p>
           <div style="padding: 15px; text-align: center; border: 1px solid #dddddd; background-color: #ffffff; border-radius: 5px;">
             <p style="color: #333333; margin: 0;">
-              ${isSignedUp ? 'A signed-in user' : 'A non-signed-in user'} has contacted you. Click 'Reply' to respond to the user's email address.
+              ${isSignedUp ? 'A signed-in user' : 'A visitor'} has contacted you. Click 'Reply' to respond to the user's email address.
             </p>
           </div>
         </div>
