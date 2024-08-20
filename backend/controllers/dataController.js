@@ -71,28 +71,28 @@ const getDeviceDataByDateRange = async (req, res) => {
 
 const downloadDeviceData = async (req, res) => {
     const { espTopic } = req.params;
-    const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+  const { startDate, endDate } = req.query;
 
-    try {
-        await mongoClient.connect();
-        const db = mongoClient.db(dbName);
-        const collection = db.collection(espTopic);
+  try {
+    await mongoClient.connect();
+    const db = mongoClient.db(dbName);
+    const deviceCollection = db.collection(espTopic);
 
-        const data = await collection.find({}).toArray();
+    const data = await deviceCollection.find({
+      dateTime: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).toArray();
 
-        if (data.length > 0) {
-            // Generate CSV or Excel file logic here (you can use a library like csv-writer or exceljs)
-            // For now, just send the JSON data as a placeholder
-            res.json(data);
-        } else {
-            res.status(404).json({ error: 'No data found for the ESP topic' });
-        }
-    } catch (err) {
-        console.error('Failed to download data:', err.message);
-        res.status(500).json({ error: 'Failed to download data.' });
-    } finally {
-        await mongoClient.close();
+    if (data.length > 0) {
+      res.json(data);
+    } else {
+      res.status(404).json({ error: 'No data found for the specified date range' });
     }
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
 };
 
 const getDeviceParameters = async (req, res) => {

@@ -197,7 +197,7 @@ const DeviceDetailPage = () => {
             const aggregatedData = data.filter(item => item.dataType === 'aggregated');
 
             const excelData = aggregatedData.map(item => {
-                const { _id, parameters, dateTime, ...rest } = item;  // Exclude _id
+                const { _id, parameters,dataType, dateTime, ...rest } = item;  // Exclude _id
                 const formattedDateTime = dayjs(dateTime).format('YYYY-MM-DD HH:mm:ss'); // Format datetime
     
                 // Flatten parameters object
@@ -214,9 +214,8 @@ const DeviceDetailPage = () => {
             });
     
             const worksheet = XLSX.utils.json_to_sheet(excelData);
-    
-            // Set a custom column width for the dateTime column
-            worksheet['!cols'] = [{ wch: 20 }]; // Adjust the width to fit the datetime format
+            worksheet['!cols'] = [{ wch: 20 }, 
+                { wch: 20 }]; 
     
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Aggregated Data');
@@ -271,12 +270,20 @@ const DeviceDetailPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {liveData && Object.entries(liveData.parameters || {}).map(([key, value]) => (
-                                <tr key={key}>
-                                    <td>{key}</td>
-                                    <td>{value}</td>
-                                </tr>
-                            ))}
+                        {liveData && Object.entries(liveData.parameters || {}).length > 0 ? (
+        Object.entries(liveData.parameters).map(([key, value]) => (
+            <tr key={key}>
+                <td>{key}</td>
+                <td>{value}</td>
+            </tr>
+        ))
+    ) : (
+        <tr>
+            <td colSpan="2" style={{ textAlign: 'center' }}>
+                No live data available currently.
+            </td>
+        </tr>
+    )}
                         </tbody>
                     </table>
                 </div>

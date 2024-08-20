@@ -16,7 +16,7 @@ import ContactUs from './UserDashboard/ContactUs';
 import UserDetail from './AdminDashboard/UserDetail';
 import NewUserForm from './AdminDashboard/NewUser';
 import Maps from './UserDashboard/Maps';
-import VerifyOtpPage from './VerifyOtpPage.js'
+import VerifyOtpPage from './VerifyOtpPage'
 import About from './About.js'
 import NeedHelp from './NeedHelp.js'
 import ChangePasswordOTP from './ChangePasswordOTP.js'
