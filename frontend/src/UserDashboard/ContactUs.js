@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../NeedHelp.css';
+import './ContactUs.css';
 import UserNavbar from '../UserNavbar';
 import axios from 'axios';
 
@@ -90,10 +90,10 @@ const ContactUsu = () => {
   return (
     <>
     <UserNavbar profilePic={profilePic} setSearchQuery={setSearchQuery} />
-      <div className="contact-us-containeru">
-        <div className="contact-us-contentu">
+      <div className="contact-us-containerur">
+        <div className="contact-us-contentur">
           <h2 className="h2u">Contact Us</h2>
-          <p className="pu">If you have any questions or need assistance, please fill out the form below, and we'll get back to you as soon as possible.</p>
+          <p className="pur">If you have any questions or need assistance, please fill out the form below, and we'll get back to you as soon as possible.</p>
           <form onSubmit={handleSubmit}>
             <div className="form-groupu">
               <label htmlFor="name" className="form-labelu">Name</label>
@@ -142,7 +142,7 @@ const ContactUsu = () => {
               <textarea 
                 id="message" 
                 name="message" 
-                rows="5" 
+                rows="2" 
                 value={formData.message} 
                 onChange={handleChange} 
                 required 

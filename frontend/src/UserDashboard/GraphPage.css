@@ -1,7 +1,7 @@
 .graph-page-wrapper {
     background-color: #e0f2f1; 
     padding: 20px;
-    min-height: fit-content;
+    min-height: calc(100vh - 80px);
     width: 100%;
     box-sizing: border-box;
 }
