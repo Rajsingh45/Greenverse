@@ -8,7 +8,7 @@ const ContactUsu = () => {
   const [profilePic, setProfilePic] = useState(null); 
   
   const [searchQuery, setSearchQuery] = useState(''); 
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '', isSignedUp: true }); // Default isSignedUp to true
+  const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '', isSignedUp: true }); 
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -77,7 +77,13 @@ const ContactUsu = () => {
       });
       if (response.ok) {
         alert('Your query has been submitted successfully.');
-        setFormData({ name: '', phone: '', email: '', message: '', isSignedUp: true });
+        setFormData(prevData => ({
+          name: '', 
+          phone: '', 
+          email: prevData.email, 
+          message: '', 
+          isSignedUp: true 
+      }));
       } else {
         alert('There was an error submitting your query. Please try again later.');
       }

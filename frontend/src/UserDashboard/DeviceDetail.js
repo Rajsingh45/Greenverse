@@ -109,6 +109,18 @@ const DeviceDetailPage = () => {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        const savedStartDate = localStorage.getItem('startDate');
+        const savedEndDate = localStorage.getItem('endDate');
+    
+        if (savedStartDate) {
+            setStartDate(new Date(savedStartDate));
+        }
+        if (savedEndDate) {
+            setEndDate(new Date(savedEndDate));
+        }
+    }, []);
+
     const handleDateSelection = async (date) => {
         setCalendarDate(date);
         setIsFiltered(true);
@@ -149,15 +161,19 @@ const DeviceDetailPage = () => {
 
     const handleStartDateChange = (date) => {
         setStartDate(date);
+        localStorage.setItem('startDate', date);
         if (date > endDate) {
             setEndDate(date);
+            localStorage.setItem('endDate', date);
         }
     };
 
     const handleEndDateChange = (date) => {
         setEndDate(date);
+        localStorage.setItem('endDate', date)
         if (date < startDate) {
             setStartDate(date);
+            localStorage.setItem('startDate', date)
         }
     };
 
