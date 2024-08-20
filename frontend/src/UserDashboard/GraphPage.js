@@ -326,8 +326,8 @@ const GraphPage = () => {
                         return dayjs(value).format('DD-MM-YYYY');
                     }
                 },
-                min: dayjs(startDate).startOf('day').toDate(),
-                max: dayjs(endDate).endOf('day').toDate(),
+                min: dayjs(startDate).toDate(),
+                max: dayjs(endDate).toDate(),
 
             },
             y: {

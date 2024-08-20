@@ -1,62 +1,136 @@
 const { MongoClient } = require('mongodb');
+const moment = require('moment-timezone');
 require('dotenv').config();
 
 const mongoURL = process.env.MONGODB_URL;
-const dbName = 'Airbuddi'; 
+const dbName = 'Airbuddi';
 const collectionName = 'sensors';
 
 const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const getDataByDateTime = async (date, time) => {
-  if (!date || !time) {
-    throw new Error('Date and time query parameters are required.');
-  }
 
-  const dateTime = `${date} ${time}`;
-  
-  try {
-    await mongoClient.connect();
-    const db = mongoClient.db(dbName);
-    const collection = db.collection(collectionName);
+const getDeviceDataByDatetime = async (req, res) => {
+    const { espTopic, datetime } = req.params;
 
-    const data = await collection.find({ dateTime }).toArray();
-    return data;
-  } catch (err) {
-    throw new Error('Failed to fetch data: ' + err.message);
-  }
-};
-
-
-const getDataByDateTimeRange = async (startDate, endDate, startTime, endTime, parameter) => {
-  const startDateTime = `${startDate}T${startTime}`;
-  const endDateTime = `${endDate}T${endTime}`;
-
-  const data = await sensors.find({
-    date: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) },
-    parameter: parameter
-  });
-
-  return data;
-};
-
-const getDataByTopic = async (topic, date, time) => {
-    if (!date || !time) {
-        throw new Error('Date and time query parameters are required.');
-    }
-    const dateTime = `${date} ${time}`;
     try {
         await mongoClient.connect();
         const db = mongoClient.db(dbName);
-        const collection = db.collection(topic);
+        const deviceCollection = db.collection(espTopic);
 
-        const data = await collection.find({ dateTime }).toArray();
-        return data;
+        const data = await deviceCollection.find({ dateTime: datetime }).toArray();
+
+        if (data.length > 0) {
+            res.json(data);
+        } else {
+            res.status(404).json({ error: 'No data found for the specified datetime' });
+        }
     } catch (err) {
-        throw new Error('Failed to fetch data: ' + err.message);
+        console.error('Failed to fetch data:', err.message);
+        res.status(500).json({ error: 'Failed to fetch data.' });
+    }
+};
+
+const getDeviceDataByDateRange = async (req, res) => {
+    const { espTopic } = req.params;
+    const { startDate, endDate, parameter } = req.query;
+
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db(dbName);
+        const deviceCollection = db.collection(espTopic);
+
+        const data = await deviceCollection.find({
+            dateTime: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        }).toArray();
+
+        if (data.length > 0) {
+            const filteredData = data.map(entry => {
+                if (entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
+                    return {
+                        dateTime: entry.dateTime,
+                        [parameter]: entry.parameters[parameter]
+                    };
+                } else {
+                    console.warn(`Parameter "${parameter}" not found in document.`);
+                    return null;
+                }
+            }).filter(entry => entry !== null);
+
+            res.json(filteredData);
+        } else {
+            res.status(404).json({ error: 'No data found for the specified date range' });
+        }
+    } catch (err) {
+        console.error('Failed to fetch data:', err.message);
+        res.status(500).json({ error: 'Failed to fetch data.' });
+    }
+};
+
+const downloadDeviceData = async (req, res) => {
+    const { espTopic } = req.params;
+    const now = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+
+    try {
+        await mongoClient.connect();
+        const db = mongoClient.db(dbName);
+        const collection = db.collection(espTopic);
+
+        const data = await collection.find({}).toArray();
+
+        if (data.length > 0) {
+            // Generate CSV or Excel file logic here (you can use a library like csv-writer or exceljs)
+            // For now, just send the JSON data as a placeholder
+            res.json(data);
+        } else {
+            res.status(404).json({ error: 'No data found for the ESP topic' });
+        }
+    } catch (err) {
+        console.error('Failed to download data:', err.message);
+        res.status(500).json({ error: 'Failed to download data.' });
     } finally {
         await mongoClient.close();
     }
 };
 
+const getDeviceParameters = async (req, res) => {
+    const { espTopic } = req.params;
 
-module.exports = { getDataByDateTimeRange,getDataByDateTime,getDataByTopic };
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db(dbName);
+      const deviceCollection = db.collection(espTopic);
+  
+      const data = await deviceCollection.findOne();
+  
+      if (data) {
+        let parameters = {};
+  
+        // Check if data.parameters exists
+        if (data.parameters && typeof data.parameters === 'object') {
+          parameters = data.parameters;
+        } else {
+          // Extract parameters from the document
+          parameters = Object.fromEntries(
+            Object.entries(data).filter(([key]) => !['_id', 'id', 'dateTime', 'dataType'].includes(key))
+          );
+        }
+  
+        // Respond with parameter keys
+        res.json(Object.keys(parameters));
+      } else {
+        res.status(404).json({ error: 'No data found' });
+      }
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch parameters' });
+    }
+};
+
+module.exports = {
+    getDeviceDataByDatetime,
+    getDeviceDataByDateRange,
+    downloadDeviceData,
+    getDeviceParameters
+};
