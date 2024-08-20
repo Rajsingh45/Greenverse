@@ -27,16 +27,15 @@ const LoginPage = () => {
         }
     }, []);
 
-    // Load password if email matches a remembered user
     useEffect(() => {
         const storedCredentials = JSON.parse(localStorage.getItem('rememberedUsers')) || {};
         const rememberedUser = storedCredentials[userDetails.email];
         if (rememberedUser) {
             setUserDetails((prevState) => ({ ...prevState, password: rememberedUser }));
-            setRememberMe(true); // Keep checkbox ticked if the user was remembered
+            setRememberMe(true);
         } else {
             setUserDetails((prevState) => ({ ...prevState, password: '' }));
-            setRememberMe(false); // Untick checkbox if the user was not remembered
+            setRememberMe(false);
         }
     }, [userDetails.email]);
 
@@ -127,49 +126,39 @@ const LoginPage = () => {
     return (
         <div className="container">
             <div className="left-panel">
-                <div className="logo">
-                    <img src={logo} className='photo' alt="GreenVerse Logo" />
+            <div className="logo">
+                    <img src={logo} alt="Company Logo" style={{ width: '100px', height: '140px' }} />
                 </div>
-                <h1 className='title'>GreenVerse</h1>
-                <p className='personal-details'>Enter your personal details to start the journey with us</p>
-                <button className="signup-btn" onClick={handleSign}>SIGN UP</button>
-            </div>
-            <div className="right-panel">
-                <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
+            <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
-                    <div className="avatar">
-                        <FaUserCircle className="avatar-icon" />
-                    </div>
+                    <h1 className="h1title">Get Started Now</h1>
                     {error && <p className="error-message">{error}</p>}
                     <form onSubmit={handleSubmit}>
-                        <div className="input-group">
-                            <input type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
-                        </div>
-                        <div className="input-group password-group">
-                            <input 
-                                type={passwordVisible ? "text" : "password"} 
-                                name="password" 
-                                placeholder="Password" 
-                                value={userDetails.password} 
-                                onChange={handleInput} 
-                            />
-                            <span 
-                                className="password-toggle-icon" 
-                                onClick={() => setPasswordVisible(!passwordVisible)}
-                            >
-                                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-                            </span>
-                        </div>
-                        <div className="remember-container">
-                            <label className="remember-me-label">
-                                <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
-                                Remember Me
-                            </label>
-                            <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
-                        </div>
-                        <button type="submit" className="signin-btn">SIGN IN</button>
-                    </form>
+                <div className="input-group">
+                    <input className="size" type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
                 </div>
+                <div className="input-group password-group">
+                    <input className="sizekam"
+                        type="password"
+                        name="password"
+                        placeholder="Password" 
+                        value={userDetails.password} 
+                        onChange={handleInput} 
+                    />
+                </div>
+                <div className="remember-container">
+                    <label className="remember-me-label">
+                        <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
+                        Remember me
+                    </label>
+                    <p className='forgot-pass' onClick={handleForgot}>Forgot password?</p>
+                </div>
+                <button type="submit" className="signin-btn">LOGIN</button>
+            </form>
+                </div>
+                
+            </div>
+            <div className="right-panel">
             </div>
         </div>
     );

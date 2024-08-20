@@ -7,16 +7,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.title{
-  color: white !important;
-  font-size: 40px !important;
-}
-
-.personal-details{
-  font-size: 35px;
-  font-family: Alata;
-}
-
 .container {
   display: flex;
   min-height: 100vh;
@@ -24,63 +14,52 @@ body {
 }
 
 .left-panel, .right-panel {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
   padding: 2rem;
 }
 
 .left-panel {
-  width: 40%;
-  background: url('./images/background.png') no-repeat center center;
-  background-size: cover;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  position: relative;
-}
-
-.left-panel::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.photo{
-width: 200px;
-height: 200px;
-}
-
-.left-panel * {
-  position: relative; 
-  z-index: 1;
-}
-
-.signup-btn {
-  background-color: white;
-  color: #27ae60;
-  border: none;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 1rem;
-  border-radius: 30px;
-  width: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #fff;
 }
 
 .right-panel {
-  width: 60%;
+  background: url('./images/leaf.jpg') no-repeat center center;
+  background-size: cover;
+}
+/* .form-container {
+    background-color: #e1e1e1;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 350px;
+} */
+
+.form-container {
+  padding: 2rem;
+  background-color: #e1e1e1;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  position: relative;
+  height: 75%;
+}
+
+.logo {
+  position: absolute;
+  top: 0rem;
+  left: 0.7rem;
 }
 
 .help-link {
@@ -91,14 +70,11 @@ height: 200px;
   color: #27ae60;
 }
 
-.form-container {
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.h1title{
+  text-align: left;
+  font-style: Canva Sans;
 
+}
 .avatar-icon {
   font-size: 8rem;
   color: green;
@@ -110,18 +86,22 @@ height: 200px;
   margin-top: 1rem;
 }
 
+.size{
+  font-size: 1.4rem !important;
+}
+
 .input-group input {
   width: 100%;
   padding: 2rem;
   border: 1px solid #ccc;
-  border-radius: 30px;
-  font-size: 1.5rem;
+  border-radius: 10px;
+  font-size: 2rem;
   display: block;
   margin: 0 auto; 
-  height: 3rem;
+  height: 2rem ;
 }
 
-.error-message{
+.error-message {
   font-size: 18px;
   color: red;
 }
@@ -141,19 +121,6 @@ height: 200px;
   align-items: center;
 }
 
-.form-container .input-group:nth-child(2) {
-  margin-top: 1rem; 
-}
-
-.forgot-pass{
- text-align: right; 
- width: 100%;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  color: green;
-}
-
 .remember-container {
   display: flex;
   align-items: center;
@@ -161,26 +128,22 @@ height: 200px;
   width: 100%;
 }
 
-.change{
-margin-bottom: 10px !important;
-}
-
 .password-group {
-position: relative;
+  position: relative;
 }
 
 .password-toggle-icon {
-position: absolute;
-right: 20px;
-top: 55%;
-transform: translateY(-50%);
-cursor: pointer;
-font-size: 1.5rem;
-color: #ccc;
+  position: absolute;
+  right: 20px;
+  top: 55%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #ccc;
 }
 
 .password-group input {
-padding-right: 40px;
+  padding-right: 40px;
 }
 
 .remember-me-label {
@@ -189,7 +152,7 @@ padding-right: 40px;
   font-size: 1rem;
   cursor: pointer;
   width: 100%;
-  color: green;
+  color: rgb(12, 0, 0);
 }
 
 .remember-me {
@@ -204,8 +167,8 @@ padding-right: 40px;
 }
 
 .remember-me:checked {
-  border-color: green;
-  background-color: green;
+  border-color: black;
+  background-color: black;
 }
 
 .remember-me:checked::before {
@@ -221,122 +184,60 @@ padding-right: 40px;
   transition: transform 0.3s ease;
 }
 
+.forgot-pass {
+  text-align: right; 
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  color: black;
+}
+
 @media (max-width: 767px) {
   .container {
-    flex-direction: row;
-    flex-wrap: wrap; 
+    flex-direction: column;
   }
+  
   .left-panel, .right-panel {
-    width: 50%; 
-  }
-  .help-link {
-    align-self: flex-end;
-    margin-bottom: 1rem;
-  }
-}
-
-@media (max-width: 675px) {
-  .input-group input{
-    font-size: 1rem;
-    width: 80%;
-  padding: 2rem;
-  border: 1px solid #ccc;
-  border-radius: 30px;
-  display: block;
-  margin: 0 auto; 
-  height: 2.5rem;
-  }
-
-.signin-btn {
-  width: 50%;
-  padding: 1rem;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  display: block;
-  margin: 2rem auto;
-  background-color: orange;
-  border-color: orange;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  outline: none;
-}
-
-.avatar-icon {
-  font-size: 5rem;
-}
-
-.signup-btn{
-  width: 100%;
-  padding: 1rem;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  display: block;
-  margin: 2rem auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-}
-
-@media (max-width: 465px) {
-  .title{
-    font-size: 25px !important;
-  }
-  .input-group input{
-    font-size: 0.8rem;
     width: 100%;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 30px;
-  display: block;
-  margin: 0 auto; 
-  height: 2.5rem;
+    padding: 1rem;
+  }
+
+  .form-container {
+    max-width: 100%;
+  }
+
+  .input-group input {
+    padding: 1rem;
+    font-size: 1.2rem;
   }
 
   .signin-btn {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 30px;
-    font-size: 0.5rem;
-    cursor: pointer;
-    display: block;
-    margin: 2rem auto;
-    background-color: orange;
-    border-color: orange;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 70%;
+  }
+
+  .help-link, .logo {
+    position: static;
+    margin-bottom: 1rem;
   }
 
   .avatar-icon {
     font-size: 5rem;
   }
-
-  .personal-details{
-    font-size: 25px;
-    font-family: Alata;
-  }
-
-  .signup-btn{
-    width: 100%;
-    padding: 1rem;
-    border-radius: 30px;
-    font-size: 0.5rem;
-    cursor: pointer;
-    display: block;
-    margin: 2rem auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
 }
 
-@media (max-width: 319px) {
-  .left-panel, .right-panel {
-    width: 100%; 
+@media (max-width: 465px) {
+  .input-group input {
+    font-size: 1rem;
+    padding: 0.8rem;
+  }
+
+  .signin-btn {
+    width: 100%;
+    font-size: 0.8rem;
+  }
+
+  .avatar-icon {
+    font-size: 4rem;
   }
 }
