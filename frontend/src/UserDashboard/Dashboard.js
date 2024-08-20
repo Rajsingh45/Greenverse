@@ -5,13 +5,9 @@ import axios from 'axios';
 import device1 from '../images/device1.png';
 import device2 from '../images/device2.png';
 import device3 from '../images/device3.png';
-import device4 from '../images/device4.png';
+import device4 from '../images/device4.jpg';
 import device5 from '../images/device5.png';
 import device6 from '../images/device6.jpg';
-import device7 from '../images/device7.jpg';
-import device8 from '../images/device8.png';
-import device9 from '../images/device9.jpg';
-import device10 from '../images/device10.jpg';
 
 import UserNavbar from '../UserNavbar';
 import { useParams } from 'react-router-dom';
@@ -19,8 +15,8 @@ import { useParams } from 'react-router-dom';
 const Dashboard = ({ isReadOnly = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const { email } = useParams();
-  const imagesPerPage = 10;
-  const images = [device1, device2, device3, device4, device5, device6, device7, device8, device9, device10];
+  const imagesPerPage = 6;
+  const images = [device1, device2, device3, device4, device5, device6];
 
   const [totalPages, setTotalPages] = useState(1);
   const [profilePic, setProfilePic] = useState(null); 
