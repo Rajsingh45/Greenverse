@@ -106,6 +106,8 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('startDate');
+    localStorage.removeItem('endDate');
     navigate('/');
   };
 
