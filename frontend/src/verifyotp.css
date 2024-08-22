@@ -84,8 +84,3 @@
 .back-btn:hover {
     background-color: #e2e6ea;
 }
-
-.error-message {
-    color: #ff0000;
-    margin-bottom: 1rem;
-}

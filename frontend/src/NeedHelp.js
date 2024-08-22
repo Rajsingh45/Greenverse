@@ -4,27 +4,7 @@ import axios from 'axios';
 
 const NeedHelp = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
-
-  useEffect(() => {
-    const fetchUserDetails = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/auth/users', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const userData = response.data;
-        if (userData && userData.email) {
-          setFormData(prevData => ({ ...prevData, email: userData.email }));
-        }
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-      }
-    };
-
-    fetchUserDetails();
-  }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,33 +13,32 @@ const NeedHelp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Name validation: only letters and spaces
+    if (isSubmitting) return;
+    
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(formData.name)) {
       alert('Please enter a valid name. Only letters and spaces are allowed.');
       return;
     }
 
-    // Phone number validation: 10 digits
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(formData.phone)) {
       alert('Please enter a valid 10-digit phone number.');
       return;
     }
 
-    // Email validation: proper email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       alert('Please enter a valid email address.');
       return;
     }
 
-    // Message validation: minimum 10 characters
     if (formData.message.length < 10) {
       alert('Please enter at least 10 characters in the message.');
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const response = await fetch('http://localhost:5000/contact', {
@@ -79,7 +58,9 @@ const NeedHelp = () => {
     } catch (error) {
       console.error('Error submitting contact form:', error);
       alert('There was an error submitting your query. Please try again later.');
-    }
+    }finally {
+      setIsSubmitting(false); 
+  }
   };
 
   return (
@@ -144,7 +125,9 @@ const NeedHelp = () => {
               title="Please enter at least 10 characters"
             />
           </div>
-          <button type="submit" className="submit-buttonu">Submit</button>
+          <button type="submit" className="submit-buttonu" disabled={isSubmitting}>
+    {isSubmitting ? 'Processing...' : 'Submit'}
+</button>
         </form>
       </div>
     </div>
