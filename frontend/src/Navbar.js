@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaUserCircle, FaBars, FaTimes  } from 'react-icons/fa';
+import { FaUserCircle, FaBars, FaTimes, FaKey, FaSignOutAlt } from 'react-icons/fa';
 import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
@@ -41,7 +41,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
+const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
@@ -105,7 +105,6 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
       window.removeEventListener('resize', handleResize);
     };
   }, [isUserDetailPage]);
-  
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -164,14 +163,13 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-  placeholder={placeholderText}
-  inputProps={{ 'aria-label': 'search' }}
-  value={searchQuery}
-  onChange={handleSearchChange}
-  className='device-name'
-  disabled={searchInputDisabled}
-/>
-
+              placeholder={placeholderText}
+              inputProps={{ 'aria-label': 'search' }}
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className='device-name'
+              disabled={searchInputDisabled}
+            />
           </Search>
         </div>
 
@@ -195,9 +193,10 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled,user }) => {
 
         {dropdownVisible && (
           <div ref={dropdownRef} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`}>
-            <p onClick={handleChangePassword}>Change Password</p>
-            <p onClick={handleUserInfo}>User Profile</p>
-            <p onClick={handleLogout}>Logout</p>
+            <FaTimes className="close-icon" onClick={toggleDropdown} />
+            <p onClick={handleUserInfo}><FaUserCircle className="dropdown-icon" /> User Profile</p>
+            <p onClick={handleChangePassword}><FaKey className="dropdown-icon" /> Change Password</p>
+            <p onClick={handleLogout}><FaSignOutAlt className="dropdown-icon" /> Logout</p>
           </div>
         )}
       </div>
