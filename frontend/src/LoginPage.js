@@ -126,50 +126,56 @@ const LoginPage = () => {
     return (
         <div className="container">
             <div className="left-panel">
-            <div className="logo">
+                <div className="logo">
                     <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
                 </div>
-            <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
+                <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
                     <h2 className="h1title">Get Started Now</h2>
                     {error && <p className="error-message">{error}</p>}
-                    <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <input className="size" type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
-                </div>
-                <div className="input-group password-group">
-                    <input className="size"
-                        type={passwordVisible ? "text" : "password"}
-                        name="password"
-                        placeholder="Password" 
-                        value={userDetails.password} 
-                        onChange={handleInput} 
-                    />
-                     <span
-    className="password-toggle-icon"
-    onClick={() => setPasswordVisible(!passwordVisible)}
-  >
-    {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-  </span>
-                </div>
-                <div className="remember-container">
-                    <label className="remember-me-label">
-                        <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
-                        Remember Me
-                    </label>
-                    <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
-                </div>
-                <button type="submit" className="signin-btn">LOGIN</button>
-            </form>
-            <div className="or-container">
-    <div className="line"></div>
-    <span className="or-text">OR</span>
-    <div className="line"></div>
-</div>
-<p className="signup-text" onClick={handleSign}>Don't have an account? Sign up</p>
+                    <form onSubmit={handleSubmit} className='new-form'>
+                        <div>
+                            {/* Input fields and other elements go here */}
+                            <div className="input-group">
+                                <input className="size" type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
+                            </div>
+                            <div className="input-group password-group">
+                                <input className="size"
+                                    type={passwordVisible ? "text" : "password"}
+                                    name="password"
+                                    placeholder="Password"
+                                    value={userDetails.password}
+                                    onChange={handleInput}
+                                />
+                                <span
+                                    className="password-toggle-icon"
+                                    onClick={() => setPasswordVisible(!passwordVisible)}
+                                >
+                                    {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                                </span>
+                            </div>
+                            <div className="remember-container">
+                                <label className="remember-me-label">
+                                    <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
+                                    Remember Me
+                                </label>
+                                <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit" className="signin-btn">LOGIN</button>
+                            <div className="or-container">
+                                <div className="line"></div>
+                                <span className="or-text">OR</span>
+                                <div className="line"></div>
+                            </div>
+                            <p className="signup-text">Don't have an account? <a href="/signup"> Sign up</a></p>
+                        </div>
+                    </form>
 
                 </div>
-                
+
             </div>
             <div className="right-panel">
             </div>
