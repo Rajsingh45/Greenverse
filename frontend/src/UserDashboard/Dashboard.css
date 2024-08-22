@@ -1,6 +1,11 @@
 .dash {
   padding: 20px;
   text-align: center;
+  background: url('../images/dashboard-image.jpg') no-repeat center center;
+  background-size: cover;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  position: relative;
 }
 
 .title {

@@ -62,7 +62,6 @@ body {
 
 .h1title{
   font-size: 32px;
-
 }
 
 .input-group {
@@ -92,8 +91,8 @@ body {
 }
 
 .signin-btn {
-  width: 50%;
-  padding: 1rem;
+  width: 40%;
+  padding: 0.9rem;
   border-radius: 30px;
   font-size: 1rem;
   cursor: pointer;
@@ -207,17 +206,35 @@ body {
   font-size: 1rem;
   color: #27ae60;
   cursor: pointer;
-  margin-top: 1rem; 
+  margin: 0;
+}
+
+.signup-text a{  
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.new-form{
+   display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    height: 100%;
 }
 
 @media (max-width: 767px) {
   .container {
     flex-direction: column;
   }
+
+  .new-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: normal; 
+    height: 100%;
+  }
   
   .left-panel {
     width: 100%;
-    padding: 1rem;
   }
 
   .right-panel{
@@ -230,12 +247,12 @@ body {
   }
 
   .input-group input {
-    padding: 1rem;
+    padding: 2rem;
     font-size: 1.2rem;
   }
 
   .signin-btn {
-    width: 70%;
+    width: 50%;
   }
 
   .help-link, .logo {
