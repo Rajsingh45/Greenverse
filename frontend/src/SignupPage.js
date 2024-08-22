@@ -14,10 +14,12 @@ function RegisterForm() {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     contactNumber: ""
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -53,6 +55,12 @@ function RegisterForm() {
     if (isSubmitting) return;
     setIsSubmitting(true);
     
+    if (userDetails.password !== userDetails.confirmPassword) {
+      alert("Passwords do not match");
+      setIsSubmitting(false);
+      return;
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userDetails.email)) {
       setError('Invalid email format');
@@ -107,83 +115,98 @@ function RegisterForm() {
     setShowPassword(!showPassword);
   };
 
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   const handleNeedHelp = () => {
     navigate("/need-help");
-};
+  };
 
   return (
     <>
-    <div className="containerq">
-      <div className="left-sideq">
-      <div className="logo">
-                    <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
-                </div>
-                <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
-        <div className="form-containerq">
-          <form className="formq" onSubmit={handleSubmit}>
-            <h2 className="titleq">Get Started Now</h2>
-            {error && <p className="error-message">{error}</p>}
-            <input
-              type="text"
-              placeholder="Username"
-              name="name"
-              value={userDetails.name}
-              onChange={handleInputChange}
-              className="inputq"
-              required
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={userDetails.email}
-              onChange={handleInputChange}
-              className="inputq"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Contact Number"
-              name="contactNumber"
-              value={userDetails.contactNumber}
-              onChange={handleInputChange}
-              className="inputq"
-              required
-            />
-            <div className="password-containerq">
+      <div className="containerq">
+        <div className="left-sideq">
+          <div className="logo">
+            <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
+          </div>
+          <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
+          <div className="form-containerq">
+            <form className="formq" onSubmit={handleSubmit}>
+              <h2 className="titleq">Get Started Now</h2>
+              {error && <p className="error-message">{error}</p>}
               <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                name="password"
-                value={userDetails.password}
+                type="text"
+                placeholder="Username"
+                name="name"
+                value={userDetails.name}
                 onChange={handleInputChange}
                 className="inputq"
                 required
               />
-              <span className="password-toggleq" onClick={toggleShowPassword}>
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-              </span>
-            </div>
-            <p className="policyq">
-              Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a href="#" className="privacy-linkq">privacy policy</a>.
-            </p>
-            <button type="submit" className="register-btnq" disabled={isSubmitting}>
-              {isSubmitting ? 'Processing...' : 'Register'}
-            </button>
-            
-          </form>
+              <input
+                type="email"
+                placeholder="Email"
+                name="email"
+                value={userDetails.email}
+                onChange={handleInputChange}
+                className="inputq"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Contact Number"
+                name="contactNumber"
+                value={userDetails.contactNumber}
+                onChange={handleInputChange}
+                className="inputq"
+                required
+              />
+              <div className="password-containerq">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  name="password"
+                  value={userDetails.password}
+                  onChange={handleInputChange}
+                  className="inputq"
+                  required
+                />
+                <span className="password-toggleq" onClick={toggleShowPassword}>
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </span>
+              </div>
+              <div className="password-containerq">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  name="confirmPassword"
+                  value={userDetails.confirmPassword}
+                  onChange={handleInputChange}
+                  className="inputq"
+                  required
+                />
+                <span className="password-toggleq" onClick={toggleShowConfirmPassword}>
+                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                </span>
+              </div>
+              <p className="policyq">
+                Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a href="#" className="privacy-linkq">privacy policy</a>.
+              </p>
+              <button type="submit" className="register-btnq" disabled={isSubmitting}>
+                {isSubmitting ? 'Processing...' : 'Register'}
+              </button>
+            </form>
+          </div>
+          <div className="or-containerq">
+            <div className="lineq"></div>
+            <span className="or-textq">OR</span>
+            <div className="lineq"></div>
+          </div>
+          <p className="login-linkq">Already have an account? <a href="/">Log in</a></p>
         </div>
-        <div className="or-containerq">
-          <div className="lineq"></div>
-          <span className="or-textq">OR</span>
-          <div className="lineq"></div>
-        </div>
-        <p className="login-linkq">Already have an account? <a href="/">Log in</a></p>
-
+        <div className="background-imageq"></div>
       </div>
-      <div className="background-imageq"></div>
-      
-    </div>
     </>
   );
 }
