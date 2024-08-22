@@ -1,7 +1,6 @@
 import React, { useState, useEffect,useRef } from 'react';
 import './UserInfo.css';
 import { TextField, Button, Typography, Avatar } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
 import { MoreVert } from '@mui/icons-material';
@@ -18,7 +17,6 @@ const UserProfile = () => {
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const navigate = useNavigate();
 
   const toggleDropdown = (e) => {
     e.stopPropagation();
@@ -63,6 +61,7 @@ const UserProfile = () => {
         alert('Profile picture deleted successfully.');
         setProfilePic(null);
         setProfilePicFile(null);
+        window.location.reload();
       } else {
         console.error('Error deleting profile picture:', data);
         alert('Failed to delete profile picture.');
@@ -134,6 +133,7 @@ const UserProfile = () => {
           alert('Profile picture uploaded successfully.');
           setProfilePic(previewURL); // Update the displayed profile picture
           setProfilePicFile(null); // Clear the file input
+          window.location.reload();
         } else {
           console.error('Error uploading profile picture:', data);
           alert('Failed to upload profile picture.');
@@ -168,6 +168,7 @@ const UserProfile = () => {
       if (data.message === 'Name updated successfully in both collections') {
         alert('Name updated successfully.');
         setIsEditingName(false);
+        window.location.reload();
       } else {
         console.error('Error updating name:', data);
         alert('Failed to update name.');

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import { UserContext } from "./UserContext";
-import { FaUserCircle, FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import logo from './images/logo.png';
 
 const LoginPage = () => {
@@ -127,34 +127,47 @@ const LoginPage = () => {
         <div className="container">
             <div className="left-panel">
             <div className="logo">
-                    <img src={logo} alt="Company Logo" style={{ width: '100px', height: '140px' }} />
+                    <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
                 </div>
             <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
-                    <h1 className="h1title">Get Started Now</h1>
+                    <h2 className="h1title">Get Started Now</h2>
                     {error && <p className="error-message">{error}</p>}
                     <form onSubmit={handleSubmit}>
                 <div className="input-group">
                     <input className="size" type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
                 </div>
                 <div className="input-group password-group">
-                    <input className="sizekam"
-                        type="password"
+                    <input className="size"
+                        type={passwordVisible ? "text" : "password"}
                         name="password"
                         placeholder="Password" 
                         value={userDetails.password} 
                         onChange={handleInput} 
                     />
+                     <span
+    className="password-toggle-icon"
+    onClick={() => setPasswordVisible(!passwordVisible)}
+  >
+    {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+  </span>
                 </div>
                 <div className="remember-container">
                     <label className="remember-me-label">
                         <input type="checkbox" checked={rememberMe} onChange={handleCheckboxChange} className='remember-me' />
-                        Remember me
+                        Remember Me
                     </label>
-                    <p className='forgot-pass' onClick={handleForgot}>Forgot password?</p>
+                    <p className='forgot-pass' onClick={handleForgot}>Forgot Password?</p>
                 </div>
                 <button type="submit" className="signin-btn">LOGIN</button>
             </form>
+            <div className="or-container">
+    <div className="line"></div>
+    <span className="or-text">OR</span>
+    <div className="line"></div>
+</div>
+<p className="signup-text" onClick={handleSign}>Don't have an account? Sign up</p>
+
                 </div>
                 
             </div>
