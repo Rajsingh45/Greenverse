@@ -29,6 +29,9 @@
   align-items: center;
   position: relative;
   width: 50%;
+  height: 100%;
+  padding-top: 20px; 
+  box-sizing: border-box;
 }
 
 .form-containerq {
@@ -38,7 +41,8 @@
   border-radius: 8px;
   width: 100%;
   max-width: 500px;
-  margin-top: 100px;
+  margin-top: 50px;
+  height: auto;
 }
 
 .or-containerq {
@@ -66,6 +70,7 @@
 .login-linkq {
   text-align: center;
   margin-top: 10px;
+  margin-bottom: 20px;
   font-size: 14px;
 }
 
@@ -81,7 +86,6 @@
 
 .titleq {
   font-size: 24px;
-  margin-bottom: 20px;
   color: #000;
 }
 
@@ -130,6 +134,7 @@
   background: url('./images/signup-image.jpg') no-repeat center center;
   background-size: cover;
   width: 50%;
+  height: 100%; 
 }
 
 @media (max-width: 768px) {
@@ -146,9 +151,6 @@
     box-shadow: none;
   }
 
-  .form-containerq{
-    margin-top: 0;
-  }
 
 }
 

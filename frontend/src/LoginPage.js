@@ -13,6 +13,7 @@ const LoginPage = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [showPasswordIcon, setShowPasswordIcon] = useState(false); // New state to control password icon visibility
     const navigate = useNavigate();
     const loggedData = useContext(UserContext);
 
@@ -38,6 +39,11 @@ const LoginPage = () => {
             setRememberMe(false);
         }
     }, [userDetails.email]);
+
+    useEffect(() => {
+        // Show the password toggle icon only when there is input in the password field
+        setShowPasswordIcon(userDetails.password !== "");
+    }, [userDetails.password]);
 
     const handleInput = (e) => {
         const { name, value } = e.target;
@@ -127,7 +133,7 @@ const LoginPage = () => {
         <div className="container">
             <div className="left-panel">
                 <div className="logo">
-                    <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
+                    <img src={logo} alt="Company Logo" style={{ height: '100px' }} />
                 </div>
                 <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
@@ -135,7 +141,6 @@ const LoginPage = () => {
                     {error && <p className="error-message">{error}</p>}
                     <form onSubmit={handleSubmit} className='new-form'>
                         <div>
-                            {/* Input fields and other elements go here */}
                             <div className="input-group">
                                 <input className="size" type="email" name="email" placeholder="Email" value={userDetails.email} onChange={handleInput} />
                             </div>
@@ -147,12 +152,14 @@ const LoginPage = () => {
                                     value={userDetails.password}
                                     onChange={handleInput}
                                 />
-                                <span
-                                    className="password-toggle-icon"
-                                    onClick={() => setPasswordVisible(!passwordVisible)}
-                                >
-                                    {passwordVisible ? <FaEyeSlash /> : <FaEye />}
-                                </span>
+                                {showPasswordIcon && (
+                                    <span
+                                        className="password-toggle-icon"
+                                        onClick={() => setPasswordVisible(!passwordVisible)}
+                                    >
+                                        {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                                    </span>
+                                )}
                             </div>
                             <div className="remember-container">
                                 <label className="remember-me-label">

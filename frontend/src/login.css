@@ -43,19 +43,21 @@ body {
   border-radius: 8px;
   width: 100%;
   max-width: 500px;
-  height: 68%;
+  height: 75%;
+  max-height: 440px;
 }
 
 .logo {
   position: absolute;
   top: 0rem;
   left: 0.3rem;
+  margin-bottom: 20px; 
 }
 
 .help-link {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
+  top: 20px;
+  right: 20px;
   cursor: pointer;
   color: #27ae60;
 }
@@ -222,6 +224,10 @@ body {
 }
 
 @media (max-width: 767px) {
+  .or-container{
+    margin-top: 3.5rem;
+  }
+
   .container {
     flex-direction: column;
   }
@@ -256,20 +262,20 @@ body {
   }
 
   .help-link, .logo {
-    position: static;
     margin-bottom: 1rem;
   }
 
 }
 
 @media (max-width: 465px) {
+
   .input-group input {
     font-size: 1rem;
-    padding: 0.8rem;
+    padding: 1.8rem;
   }
 
   .signin-btn {
-    width: 100%;
+    width: 50%;
     font-size: 0.8rem;
   }
 }

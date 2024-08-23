@@ -28,6 +28,11 @@ function RegisterForm() {
     }
   }, [userDetails.name]);
 
+  useEffect(() => {
+    setShowPassword(userDetails.password !== "");
+    setShowConfirmPassword(userDetails.confirmPassword !== "");
+  }, [userDetails.password, userDetails.confirmPassword]);
+
   const checkNameAvailability = async (name) => {
     try {
       const response = await fetch(`http://localhost:5000/auth/check-name?name=${name}`);
@@ -52,15 +57,9 @@ function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || error) return;
     setIsSubmitting(true);
     
-    if (userDetails.password !== userDetails.confirmPassword) {
-      alert("Passwords do not match");
-      setIsSubmitting(false);
-      return;
-    }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(userDetails.email)) {
       setError('Invalid email format');
@@ -72,6 +71,13 @@ function RegisterForm() {
     const contactNumberRegex = /^\d{10}$/;
     if (!contactNumberRegex.test(userDetails.contactNumber)) {
       setError('Invalid contact number');
+      setTimeout(() => setError(''), 5000);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (userDetails.password !== userDetails.confirmPassword) {
+      setError('Passwords do not match');
       setTimeout(() => setError(''), 5000);
       setIsSubmitting(false);
       return;
@@ -112,11 +118,15 @@ function RegisterForm() {
   };
 
   const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+    if (userDetails.password) {
+      setShowPassword(!showPassword);
+    }
   };
 
   const toggleShowConfirmPassword = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+    if (userDetails.confirmPassword) {
+      setShowConfirmPassword(!showConfirmPassword);
+    }
   };
 
   const handleNeedHelp = () => {
@@ -128,7 +138,7 @@ function RegisterForm() {
       <div className="containerq">
         <div className="left-sideq">
           <div className="logo">
-            <img src={logo} alt="Company Logo" style={{ width: '100px', height: '120px' }} />
+            <img src={logo} alt="Company Logo" style={{ height: '100px' }} />
           </div>
           <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
           <div className="form-containerq">
@@ -164,7 +174,7 @@ function RegisterForm() {
               />
               <div className="password-containerq">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? "password" : "text"}
                   placeholder="Password"
                   name="password"
                   value={userDetails.password}
@@ -172,13 +182,15 @@ function RegisterForm() {
                   className="inputq"
                   required
                 />
-                <span className="password-toggleq" onClick={toggleShowPassword}>
-                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-                </span>
+                {userDetails.password && (
+                  <span className="password-toggleq" onClick={toggleShowPassword}>
+                    <FontAwesomeIcon icon={showPassword ? faEye :  faEyeSlash} />
+                  </span>
+                )}
               </div>
               <div className="password-containerq">
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "password" : "text"}
                   placeholder="Confirm Password"
                   name="confirmPassword"
                   value={userDetails.confirmPassword}
@@ -186,9 +198,11 @@ function RegisterForm() {
                   className="inputq"
                   required
                 />
-                <span className="password-toggleq" onClick={toggleShowConfirmPassword}>
-                  <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
-                </span>
+                {userDetails.confirmPassword && (
+                  <span className="password-toggleq" onClick={toggleShowConfirmPassword}>
+                    <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} />
+                  </span>
+                )}
               </div>
               <p className="policyq">
                 Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a href="#" className="privacy-linkq">privacy policy</a>.
@@ -212,3 +226,4 @@ function RegisterForm() {
 }
 
 export default RegisterForm;
+
