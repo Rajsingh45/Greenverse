@@ -192,11 +192,11 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
         )}
 
         {dropdownVisible && (
-          <div ref={dropdownRef} className={`dropdown-menu ${dropdownVisible ? 'show' : ''}`}>
+          <div ref={dropdownRef} className={`dropdown-menus ${dropdownVisible ? 'show' : ''}`}>
             <FaTimes className="close-icon" onClick={toggleDropdown} />
-            <p onClick={handleUserInfo}><FaUserCircle className="dropdown-icon" /> User Profile</p>
-            <p onClick={handleChangePassword}><FaKey className="dropdown-icon" /> Change Password</p>
-            <p onClick={handleLogout}><FaSignOutAlt className="dropdown-icon" /> Logout</p>
+            <p onClick={handleUserInfo}><FaUserCircle className="dropdown-icons" /> User Profile</p>
+            <p onClick={handleChangePassword}><FaKey className="dropdown-icons" /> Change Password</p>
+            <p onClick={handleLogout}><FaSignOutAlt className="dropdown-icons" /> Logout</p>
           </div>
         )}
       </div>
