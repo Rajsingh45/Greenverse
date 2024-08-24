@@ -227,6 +227,7 @@ body {
 
   .container {
     flex-direction: column;
+    background-size: cover;
   }
 
   .new-form{
@@ -241,8 +242,7 @@ body {
   }
 
   .right-panel{
-    width: 0;
-    background: none;
+    display: none;
   }
 
   .form-container {
