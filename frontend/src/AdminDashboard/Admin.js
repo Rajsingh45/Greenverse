@@ -132,7 +132,7 @@ const Admin = ({ users = [], setUsers }) => {
   };
 
   const handleDeleteUser = async (userEmail) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this user? This action will also delete all associated ESP topics.');
+    const confirmDelete = window.confirm('Are you sure you want to delete this user? This action will also delete all associated devices.');
     if (confirmDelete) {
         try {
             const token = localStorage.getItem('token');

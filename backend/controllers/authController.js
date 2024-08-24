@@ -163,7 +163,7 @@ const requestSignupOTP = async (req, res) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                    <img src="https://drive.google.com/uc?export=view&id=1tibqF-G8qw0smIfHzR2PinFB6D1duDis" alt="Company Logo" style="width: 100px; height: auto;" />
+                    <img src="https://drive.google.com/uc?export=view&id=12121nsZjukO8ve1fUz84v0BY8Dm9yYme" alt="Company Logo" style="width: 100px; height: auto;" />
                     <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
                 </div>
                 <div style="padding: 20px;">
@@ -218,7 +218,7 @@ const requestPasswordOTP = async (req, res) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                    <img src="https://drive.google.com/uc?export=view&id=1tibqF-G8qw0smIfHzR2PinFB6D1duDis" alt="Company Logo" style="width: 100px; height: auto;" />
+                <img src="https://drive.google.com/uc?export=view&id=12121nsZjukO8ve1fUz84v0BY8Dm9yYme" alt="Company Logo" style="width: 100px; height: auto;" />
                     <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
                 </div>
                 <div style="padding: 20px;">
@@ -313,7 +313,7 @@ const requestForgotPasswordOTP = async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                     <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                        <img src="data:image/png;base64,${logoBase64}" alt="Company Logo" style="width: 100px; height: auto;" />
+                        <img src="https://drive.google.com/uc?export=view&id=12121nsZjukO8ve1fUz84v0BY8Dm9yYme" alt="Company Logo" style="width: 100px; height: auto;" />
                         <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
                     </div>
                     <div style="padding: 20px;">
