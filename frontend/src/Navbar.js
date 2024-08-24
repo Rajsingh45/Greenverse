@@ -133,6 +133,8 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('startDate');
+    localStorage.removeItem('endDate');
     window.location.href = '/';
   };
 
