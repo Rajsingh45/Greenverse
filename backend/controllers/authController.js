@@ -444,21 +444,26 @@ const getProfilePicture = async (req, res) => {
 
 const renameUser = async (req, res) => {
     const { email, newName } = req.body;
+    const adminEmail = process.env.ADMIN_EMAIL; 
     try {
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
             return res.status(400).json({ message: 'User not found in users collection' });
         }
-        const existingAdmin = await Admin.findOne({ email });
-        if (!existingAdmin) {
-            return res.status(400).json({ message: 'User not found in admins collection' });
-        }
-        existingUser.name = newName;
-        existingAdmin.name = newName;
-        await existingUser.save();
-        await existingAdmin.save();
 
-        res.json({ message: 'Name updated successfully in both collections', user: existingUser, admin: existingAdmin });
+        existingUser.name = newName;
+        await existingUser.save();
+
+        if (email !== adminEmail) {
+            const existingAdmin = await Admin.findOne({ email });
+            if (!existingAdmin) {
+                return res.status(400).json({ message: 'User not found in admins collection' });
+            }
+            existingAdmin.name = newName;
+            await existingAdmin.save();
+        }
+
+        res.json({ message: 'Name updated successfully in both collections', user: existingUser });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Something went wrong' });

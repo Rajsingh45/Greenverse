@@ -172,6 +172,7 @@ const UserProfile = () => {
       } else {
         console.error('Error updating name:', data);
         alert('Failed to update name.');
+        window.location.reload();
       }
     } catch (error) {
       console.error('Error updating name:', error);
@@ -194,13 +195,20 @@ const UserProfile = () => {
       {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true} />}
       
     <div className="profile-container">
-      <div className="header">
+    <div className="avatar-container">
+  <Avatar
+    src={profilePic}
+    alt="Profile"
+    className="profile-avatar"
+    onClick={openModal}
+  />
+  <div className="header">
     <MoreVert
       className="more-vert-icon"
       onClick={toggleDropdown}
     />
     {dropdownVisible && (
-      <div ref={dropdownRef} className="dropdown-menus">
+      <div ref={dropdownRef} className="dropdown-menuz">
         <Button
           onClick={handleEditName}
           className="dropdown-itemu"
@@ -216,12 +224,7 @@ const UserProfile = () => {
       </div>
     )}
   </div>
-      <Avatar
-        src={profilePic}
-        alt="Profile"
-        className="profile-avatar"
-        onClick={openModal}
-      />
+</div>
       <Typography variant="h4" className="title-profile">User Profile</Typography>
       
       <div className="profile-field">
