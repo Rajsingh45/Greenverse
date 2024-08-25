@@ -35,38 +35,42 @@ const EditUserForm = ({ onUserUpdated }) => {
   const handleDeleteTopic = async () => {
     if (selectedTopicIndex !== null) {
       const topicToDelete = espTopics[selectedTopicIndex];
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found in localStorage');
+      const isConfirmed = window.confirm(`Are you sure you want to delete "${topicToDelete}" Device?`);
+  
+      if (isConfirmed) {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            throw new Error('No token found in localStorage');
+          }
+  
+          const response = await fetch('http://localhost:5000/admin/deletetopic', {
+            method: 'DELETE', // Use DELETE instead of Delete
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ name, topic: topicToDelete })
+          });
+  
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+  
+          const data = await response.json();
+          console.log('Device deleted successfully:', data);
+  
+          const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+          setEspTopics(newEspTopics);
+          setDevices(newEspTopics.length);
+          handleMenuClose();
+        } catch (error) {
+          console.error('Error:', error);
         }
-
-        const response = await fetch('http://localhost:5000/admin/deletetopic', {
-          method: 'Delete',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ name, topic: topicToDelete })
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        console.log('Topic deleted successfully:', data);
-
-        const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
-        setEspTopics(newEspTopics);
-        setDevices(newEspTopics.length);
-        handleMenuClose();
-      } catch (error) {
-        console.error('Error:', error);
       }
     }
   };
-
+  
   const handleAddTopicClick = () => {
     const lastTopicNumber = espTopics.length > 0 ?
       Math.max(...espTopics.map(topic => parseInt(topic.replace(/[^\d]/g, ''), 10))) : 0;
@@ -76,13 +80,13 @@ const EditUserForm = ({ onUserUpdated }) => {
 
   const handleAddTopic = () => {
     if (newTopic === '') {
-      alert('Please enter a valid topic');
+      alert('Please enter a valid device name');
       return;
     }
 
     const uniqueTopics = new Set(espTopics);
     if (uniqueTopics.has(newTopic)) {
-      alert('Topic already exists');
+      alert('Device already exists');
       return;
     }
 
@@ -95,7 +99,7 @@ const EditUserForm = ({ onUserUpdated }) => {
   const handleTopicSubmission = async () => {
     const uniqueTopics = new Set(espTopics);
     if (espTopics.length !== uniqueTopics.size) {
-      alert('Please ensure all topics are unique');
+      alert('Please ensure all device names are unique');
       return;
     }
 
@@ -145,7 +149,7 @@ const EditUserForm = ({ onUserUpdated }) => {
       <div className='full-height-container'>
         <div className="container-main">
           <div className="header-main">
-            <h1 className='new-user-edit'>EDIT AWS Topics</h1>
+            <h1 className='new-user-edit'>EDIT DEVICE DETAILS</h1>
           </div>
           <div className="content">
             <div className="right-screen-exist">
@@ -153,7 +157,7 @@ const EditUserForm = ({ onUserUpdated }) => {
                 <thead>
                   <tr>
                     <th>No.</th>
-                    <th>Current AWS Topic</th>
+                    <th>Current Devices</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -195,7 +199,7 @@ const EditUserForm = ({ onUserUpdated }) => {
                         type="text"
                         value={newTopic}
                         onChange={(e) => setNewTopic(e.target.value)}
-                        placeholder="Enter new AWS topic"
+                        placeholder="Enter new Device Name"
                         className="textboxsu"
                       />
                       <button onClick={handleAddTopic} className="add-ip-btn">Save Device</button>
@@ -210,7 +214,7 @@ const EditUserForm = ({ onUserUpdated }) => {
         </div>
 
         <div className="submit-button-containeru">
-          <button onClick={handleTopicSubmission} className='save-btnu'>Submit AWS Topics</button>
+          <button onClick={handleTopicSubmission} className='save-btnu'>Submit Devices</button>
         </div>
       </div>
     </>
