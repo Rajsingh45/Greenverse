@@ -5,6 +5,13 @@
     padding: 20px;
     box-sizing: border-box;
 }
+.device-name-title {
+    text-align: left;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-right: auto; /* Align title to the right */
+}
 
 .table-section {
     width: 70%;
@@ -40,6 +47,7 @@
 .date-picker {
     margin-bottom: 20px;
     width: 100%;
+    
 }
 
 .date-picker label {
@@ -159,6 +167,7 @@
 
 .date-pickers {
     margin: 10px 0;
+    text-align: right;
 }
 
 .date-picker label {
@@ -186,7 +195,7 @@
 }
 
 .date-picker .react-datepicker__input-container input,.date-pickers .react-datepicker__input-container input {
-    width: 100%;
+    width: 60%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;

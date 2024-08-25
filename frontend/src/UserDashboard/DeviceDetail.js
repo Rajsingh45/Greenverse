@@ -254,37 +254,39 @@ const DeviceDetailPage = () => {
         <>
             {isAdmin ? <Layout /> : <UserNavbar searchDisabled={true} />}
             <div className="device-detail-page">
-                <div className="table-section">
-                    <div className="calendar-icon-container">
-                        <div className="date-pickers">
-                            <IconButton onClick={handleIconClick}>
-                                <CalendarTodayIcon />
-                            </IconButton>
-                            {datePickerOpen && (
-                                <DatePicker
-                                    selected={calendarDate}
-                                    onChange={handleDateSelection}
-                                    showTimeSelect
-                                    timeIntervals={1}
-                                    timeFormat="HH:mm"
-                                    dateFormat="yyyy-MM-dd HH:mm"
-                                    className='date-picker-input new-date-picker-input'
-                                    onClickOutside={() => setDatePickerOpen(true)}
-                                    maxDate={maxDate}
-                                    filterTime={filterFutureTimes}
-                                    yearDropdownItemNumber={15}
-                                    scrollableYearDropdown
-                                />
-                            )}
-                        </div>
+            <div className="table-section">
+                <div className="calendar-icon-container">
+                    <div className="date-pickers"  >
+                    <h2 className="device-name-title">{deviceName}</h2> {/* Add this line */}   
+                        <IconButton onClick={handleIconClick}>
+                            <CalendarTodayIcon />
+                        </IconButton>
+                        {datePickerOpen && (
+                            <DatePicker
+                                selected={calendarDate}
+                                onChange={handleDateSelection}
+                                showTimeSelect
+                                timeIntervals={1}
+                                timeFormat="HH:mm"
+                                dateFormat="yyyy-MM-dd HH:mm"
+                                className='date-picker-input new-date-picker-input'
+                                onClickOutside={() => setDatePickerOpen(true)}
+                                maxDate={maxDate}
+                                filterTime={filterFutureTimes}
+                                yearDropdownItemNumber={15}
+                                scrollableYearDropdown
+                            />
+                        )}
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+
                         <tbody>
                         {liveData && Object.entries(liveData.parameters || {}).length > 0 ? (
         Object.entries(liveData.parameters).map(([key, value]) => (
