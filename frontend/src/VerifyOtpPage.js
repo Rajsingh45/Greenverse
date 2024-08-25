@@ -48,6 +48,7 @@ const VerifyOtpPage = () => {
             });
 
             if (response.status === 200) {
+                window.alert('Account successfully verified! Please log in to continue.');
                 navigate('/');
             } else {
                 const data = await response.json();

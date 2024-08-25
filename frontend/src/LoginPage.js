@@ -137,7 +137,7 @@ const LoginPage = () => {
                 </div>
                 <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
                 <div className="form-container">
-                    <h2 className="h1title">Get Started Now</h2>
+                    <h2 className="h1title">Welcome Back!</h2>
                     {error && <p className="error-message">{error}</p>}
                     <form onSubmit={handleSubmit} className='new-form'>
                         <div>
