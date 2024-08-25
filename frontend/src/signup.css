@@ -137,9 +137,21 @@
   height: 100%; 
 }
 
+.help-linkq {
+  position: absolute;
+  top: 20px;
+  right: 60px;
+  cursor: pointer;
+  color: #27ae60;
+}
+
 @media (max-width: 768px) {
   .containerq {
     flex-direction: column;
+  }
+
+  .help-linkq {
+    margin-bottom: 1rem;
   }
 
   .background-imageq {
