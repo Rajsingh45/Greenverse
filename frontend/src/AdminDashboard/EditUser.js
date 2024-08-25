@@ -68,7 +68,7 @@ const EditUserForm = ({ onUserUpdated }) => {
   };
 
   const handleAddTopicClick = () => {
-    const lastTopicNumber = espTopics.length > 0 ? 
+    const lastTopicNumber = espTopics.length > 0 ?
       Math.max(...espTopics.map(topic => parseInt(topic.replace(/[^\d]/g, ''), 10))) : 0;
     setNewTopic(`${name}${lastTopicNumber + 1}`);
     setIsAddingTopic(true);
@@ -141,84 +141,85 @@ const EditUserForm = ({ onUserUpdated }) => {
 
   return (
     <>
-    <Navbar/>
-    <div className="container-main">
-      <div className="header-main">
-        <h1 className='new-user-edit'>EDIT AWS Topics</h1>
-      </div>
-      <div className="content">
-        <div className="right-screen-exist">
-          <h2>Current AWS Topics:</h2>
-          <table className="ip-table">
-            <thead>
-              <tr>
-                <th>No.</th>
-                <th>Current AWS Topic</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {espTopics.map((topic, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{topic}</td>
-                  <td>
-                    <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
-                      onClick={(e) => handleMenuClick(e, index)}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      id="long-menu"
-                      anchorEl={anchorEl}
-                      keepMounted
-                      open={Boolean(anchorEl) && selectedTopicIndex === index}
-                      onClose={handleMenuClose}
-                    >
-                      <MenuItem onClick={handleDeleteTopic}>
-                        Delete
-                      </MenuItem>
-                    </Menu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="button-container">
-            <div className="add-ip-container">
-              {isAddingTopic ? (
-                <>
-                  <input
-                    type="text"
-                    value={newTopic}
-                    onChange={(e) => setNewTopic(e.target.value)}
-                    placeholder="Enter new AWS topic"
-                    className="textboxsu"
-                  />
-                  <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button>
-                </>
-              ) : (
-                <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button> 
-              )}
+      <Navbar />
+      <div className='full-height-container'>
+        <div className="container-main">
+          <div className="header-main">
+            <h1 className='new-user-edit'>EDIT AWS Topics</h1>
+          </div>
+          <div className="content">
+            <div className="right-screen-exist">
+              <h2>Current AWS Topics:</h2>
+              <table className="ip-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Current AWS Topic</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {espTopics.map((topic, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td>{topic}</td>
+                      <td>
+                        <IconButton
+                          aria-label="more"
+                          aria-controls="long-menu"
+                          aria-haspopup="true"
+                          onClick={(e) => handleMenuClick(e, index)}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                        <Menu
+                          id="long-menu"
+                          anchorEl={anchorEl}
+                          keepMounted
+                          open={Boolean(anchorEl) && selectedTopicIndex === index}
+                          onClose={handleMenuClose}
+                        >
+                          <MenuItem onClick={handleDeleteTopic}>
+                            Delete
+                          </MenuItem>
+                        </Menu>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="button-container">
+                <div className="add-ip-container">
+                  {isAddingTopic ? (
+                    <>
+                      <input
+                        type="text"
+                        value={newTopic}
+                        onChange={(e) => setNewTopic(e.target.value)}
+                        placeholder="Enter new AWS topic"
+                        className="textboxsu"
+                      />
+                      <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button>
+                    </>
+                  ) : (
+                    <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button>
+                  )}
+                </div>
+              </div>
             </div>
-            {/* <button onClick={handleTopicSubmission} className='save-btn'>Submit AWS Topics</button> */}
           </div>
         </div>
+
+        <div className="submit-button-containeru">
+          <button onClick={handleTopicSubmission} className='save-btnu'>Submit AWS Topics</button>
+        </div>
       </div>
-    </div>
-    
-    <div className="submit-button-containeru">
-    <button onClick={handleTopicSubmission} className='save-btnu'>Submit AWS Topics</button>
-  </div>
-  </>
+    </>
   );
 };
 
 EditUserForm.defaultProps = {
-  onUserUpdated: () => {},
+  onUserUpdated: () => { },
 };
 
 export default EditUserForm;
