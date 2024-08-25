@@ -14,7 +14,6 @@ const Admin = ({ users = [], setUsers }) => {
   const [renamingUserEmail, setRenamingUserEmail] = useState(null);
   const [newName, setNewName] = useState('');
   const [menuUser, setMenuUser] = useState(null);
-  const [mapUrl, setMapUrl] = useState('');
   const [fetchedUsers, setFetchedUsers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);

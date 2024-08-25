@@ -2,6 +2,8 @@
   display: flex;
   min-height: 100vh;
   background: white;
+  background: url('../images/admin-image.jpg') no-repeat center center;
+  background-size: cover;
 }
 
 .left {
@@ -36,7 +38,7 @@
 .add-user-btn {
   background-color:  #007bff;
   color: white;
-  border: 2px solid;
+  border: 2px solid #007bff;
   padding: 0.6rem 1rem;
   font-size: 1rem;
   cursor: pointer;

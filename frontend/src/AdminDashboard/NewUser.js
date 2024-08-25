@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './NewUser.css';
 import { useNavigate } from 'react-router-dom';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 
 const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
@@ -10,7 +11,6 @@ const NewUserForm = ({ onUserAdded }) => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [buttonText, setButtonText] = useState('SAVE');
   const [emailError, setEmailError] = useState('');
-  const [topicError, setTopicError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,11 +127,13 @@ const NewUserForm = ({ onUserAdded }) => {
   };
 
   return (
-    <div className="container">
-      <div className="left-screen">
+    <div className='container-height'>
+    <div className="single-container">
+      <div className="icon-section">
+        <PersonAddIcon style={{ fontSize: '100px', color: 'orange' }} />
         <h1 className='new-user'>NEW USER</h1>
       </div>
-      <div className="right-screen">
+      <div className="form-section">
         <form className='input-form' onSubmit={handleSubmit}>
           <label htmlFor="name" className='box'>Name:</label>
           <input
@@ -177,27 +179,27 @@ const NewUserForm = ({ onUserAdded }) => {
 
           <button type="submit" className='save-btn' disabled={!isFormValid() || isFormSubmitted}>{buttonText}</button>
         </form>
-
         {isFormSubmitted && (
-          <div className="device-ip-form">
-            <h2>Enter AWS Topic:</h2>
-            {Array.from({ length: Number(devices) }).map((_, index) => (
-              <div key={index}>
-                <label htmlFor={`device${index + 1}`} className='boxs'>{`Device${index + 1}:`} </label>
-                <input
-                  type="text"
-                  id={`device${index + 1}`}
-                  name={`device${index + 1}`}
-                  className='textboxs'
-                  value={espTopics[index] || ''}
-                  onChange={(e) => handleEspTopicChange(index, e.target.value)}
-                />
-              </div>
-            ))}
-            <button onClick={handleTopicSubmission} className='save-btn'>Submit Topics</button>
+      <div className="device-ip-form">
+        <h2>Enter Device Name:</h2>
+        {Array.from({ length: Number(devices) }).map((_, index) => (
+          <div key={index}>
+            <label htmlFor={`device${index + 1}`} className='boxs'>{`Device${index + 1}:`} </label>
+            <input
+              type="text"
+              id={`device${index + 1}`}
+              name={`device${index + 1}`}
+              className='textboxs'
+              value={espTopics[index] || ''}
+              onChange={(e) => handleEspTopicChange(index, e.target.value)}
+            />
           </div>
-        )}
+        ))}
+        <button onClick={handleTopicSubmission} className='save-btn'>Submit Topics</button>
       </div>
+    )}
+      </div>
+    </div>
     </div>
   );
 };

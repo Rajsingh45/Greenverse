@@ -1,12 +1,16 @@
 
-  .container {
+  .containeris {
     display: flex;
     flex-direction: row;
+    min-height: 100vh;
+    width: 100%;
+    background: url('../images/newuser-image.jpg') no-repeat center center;
+  background-size: cover;
   }
   
   .left-screen {
     width: 40%;
-  background: url('../images/background.png') no-repeat center center;
+  /* background: url('../images/background.png') no-repeat center center; */
   background-size: cover;
   display: flex;
   flex-direction: column;
@@ -24,12 +28,6 @@
   text-align: center;
   position: relative;
   }
-  
-  .input-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
 
   .box{
     font-size: 40px;
@@ -46,7 +44,8 @@
   }
 
   .new-user{
-    color: white;
+    color: black;
+    text-align: center;
   }
 
   .textbox{
@@ -68,6 +67,9 @@
   }
 
   .save-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: auto;
     width: 40%;
     padding: 10px 20px;
@@ -148,7 +150,7 @@
 }
   
   @media (max-width: 319px) {
-    .container {
+    .containeris {
       flex-direction: column;
     }
   
@@ -168,3 +170,45 @@
     }
   }
   
+  .container-height {
+    min-height: 100vh;
+    width: 100%;
+    background: url('../images/newuser-image.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .single-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 60%;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.8); 
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+  }  
+  
+  .icon-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 100px;
+  }
+  
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .input-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
