@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './ForgotPassword.css';
 import { useNavigate } from 'react-router-dom';
+import { ArrowBack } from '@mui/icons-material';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -47,24 +48,38 @@ const ForgotPassword = () => {
     }
   };
 
+  const handleBackToLogin = () => {
+    navigate('/');
+  };
+
   return (
-    <div className="forgot-password-container">
-      <div className="forgot-password-box">
-        <h2 className='pass-forgot'>Forgot Password</h2>
-        {error && <p className="error-message">{error}</p>}
-        <input
-          type="email"
-          placeholder="Enter your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="email-input"
-          required
-        />
-        <button onClick={handleGenerateOTP} className="generate-otp-btn">
-          Generate OTP
-        </button>
+    <div className="forgot-password-wrapper">
+      <div className="forgot-password-image"></div>
+      <div className="forgot-password-container">
+        <div className="forgot-password-box">
+          <h2 className='pass-forgot'>Forgot Password</h2>
+          <p className='new-text'>Enter your email to receive an OTP for password recovery. We’re here to help you get back in.</p>
+          {error && <p className="error-message">{error}</p>}
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="email-input"
+            required
+          />
+          <button onClick={handleGenerateOTP} className="generate-otp-btn">
+            Generate OTP
+          </button>
+          <div className="back-to-login">
+        <ArrowBack className="back-icon" />
+        <span onClick={handleBackToLogin}>Back to Login Page</span>
       </div>
-    </div>
+        </div>
+        
+      </div>
+      
+    </div>   
   );
 };
 
