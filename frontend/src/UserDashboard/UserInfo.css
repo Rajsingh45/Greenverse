@@ -29,10 +29,19 @@
 }
 
 .header {
+  position: absolute;
+  right: 0; 
+  top: 10%; 
+  transform: translateY(-50%); 
+  margin-right: 10px; 
+}
+
+.avatar-container {
   display: flex;
-  justify-content: flex-end;
-  position: relative; 
-  width: 100%; 
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: relative;
 }
 
 .more-vert-icon {
@@ -40,7 +49,7 @@
   font-size: 24px;
 }
 
-.dropdown-menus {
+.dropdown-menuz {
   position: absolute;
   top: 100%; 
   right: 0; 
@@ -54,13 +63,13 @@
 }
 
 .dropdown-itemu {
-  display: block;
+  display: inline-block; /* Change from block to inline-block */
   padding: 8px 16px;
-  text-align: left;
+  text-align: center; /* Centers the text horizontally */
   cursor: pointer;
-  width: 100%; 
   font-size: 14px !important;
   text-transform: capitalize !important;
+  white-space: nowrap; 
 }
 
 .dropdown-itemu:hover {
@@ -72,6 +81,7 @@
   width: 180px !important;
   height: 180px !important;
   cursor: pointer;
+  margin: 0 auto; 
 }
 
 .title-profile {
@@ -90,12 +100,14 @@
   display: flex;
   gap: 10px;
   justify-content: center;
+  margin-bottom: 0;
 }
 
 .profile-button {
   transition: background-color 0.3s ease, transform 0.2s ease;
   background-color: blue !important;
   border-radius: 40px !important;
+  margin-bottom: 0 !important;
 }
 
 .profile-button:hover {
