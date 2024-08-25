@@ -43,7 +43,7 @@ const ForgotPassword = () => {
       setError('');
     } catch (error) {
       console.error('Error requesting OTP:', error);
-      setError('Error requesting OTP. Please try again later.');
+      setError('Email not registered! Please SignUp');
     }
   };
 
