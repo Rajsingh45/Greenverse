@@ -166,8 +166,15 @@
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 3px 3px 3px rgba(0, 0, 0, 0.2);
   padding: 5px 10px;
+  /* background-color: #f6f4f4; */
+}
+
+.no-user-message {
+  color: rgb(16, 15, 15);
+  font-size: 1.5rem;
+  margin: 20px 0;
 }
 
 .MuiPagination-ul {
@@ -190,7 +197,8 @@
 }
 
 .MuiPaginationItem-root.Mui-disabled {
-  color: #ccc;
+  /* color: #ccc; */
+  color: rgba(0, 0, 0, 0.87);
   cursor: not-allowed;
 }
 

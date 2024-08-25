@@ -149,7 +149,6 @@ const EditUserForm = ({ onUserUpdated }) => {
           </div>
           <div className="content">
             <div className="right-screen-exist">
-              <h2>Current AWS Topics:</h2>
               <table className="ip-table">
                 <thead>
                   <tr>

@@ -42,6 +42,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
+  const [userName, setUserName] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
@@ -51,6 +52,30 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
   const [placeholderText, setPlaceholderText] = useState('Search by user name…');
   
   const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:5000/auth/users', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+  
+        if (response.ok) {
+          const userData = await response.json();
+          setUserName(userData.name);
+        } else {
+          console.error('Failed to fetch user name');
+        }
+      } catch (error) {
+        console.error('Error fetching user name:', error);
+      }
+    };
+  
+    fetchUserName();
+  }, []);
 
   useEffect(() => {
     const fetchProfilePic = async () => {
@@ -151,7 +176,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
   return (
     <div className="navbar sticky-top">
       <img src={newlogo} alt='Logo' className='newlogo' />
-      <span className="user-greeting">Hi Admin!</span>
+      <span className="user-greeting">Hi {userName}!</span>
 
       <div className={`navbar-links ${menuVisible ? 'visible' : ''}`}>
         <a href="/admin" className="navbar-link sect">Home</a>
