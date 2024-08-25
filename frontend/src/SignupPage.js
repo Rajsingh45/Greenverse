@@ -76,6 +76,13 @@ function RegisterForm() {
       return;
     }
 
+    if (userDetails.password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setTimeout(() => setError(''), 5000);
+      setIsSubmitting(false);
+      return;
+    }
+
     if (userDetails.password !== userDetails.confirmPassword) {
       setError('Passwords do not match');
       setTimeout(() => setError(''), 5000);
