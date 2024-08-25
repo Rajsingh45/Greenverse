@@ -4,6 +4,8 @@
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    background: url('../images/admin-image.jpg') no-repeat center center;
+  background-size: cover;
 }
 .device-name-title {
     text-align: left;
