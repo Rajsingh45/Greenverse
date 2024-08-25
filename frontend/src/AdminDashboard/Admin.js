@@ -22,6 +22,9 @@ const Admin = ({ users = [], setUsers }) => {
   const navigate = useNavigate();
   const [fullUserList, setFullUserList] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [noUserFound, setNoUserFound] = useState(false);
+
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -182,6 +185,7 @@ const Admin = ({ users = [], setUsers }) => {
     }
   };
 
+
   useEffect(() => {
     if (currentUserEmail) {
       console.log("Current User Email:", currentUserEmail);
@@ -199,6 +203,11 @@ const Admin = ({ users = [], setUsers }) => {
       const date = new Date(dateString);
       return date.toLocaleDateString('en-GB', options);
     };
+    
+    useEffect(() => {
+      setNoUserFound(filteredUsers.length === 0 && searchQuery !== '');
+    }, [filteredUsers, searchQuery]);
+    
 
   return (
     <>
@@ -211,6 +220,7 @@ const Admin = ({ users = [], setUsers }) => {
         ) : (
           <>
             <div className="left">
+            {noUserFound && <p className="no-user-message">No such User found!</p>}
               <table className="user-table">
                 <thead className='heads-form'>
                   <tr>
@@ -286,8 +296,6 @@ const Admin = ({ users = [], setUsers }) => {
                 />
               </div>
             </div>
-
-            
           </>
         )}
       </div>
