@@ -199,10 +199,10 @@ const EditUserForm = ({ onUserUpdated }) => {
                         placeholder="Enter new AWS topic"
                         className="textboxsu"
                       />
-                      <button onClick={handleAddTopic} className="add-ip-btn">Save AWS Topic</button>
+                      <button onClick={handleAddTopic} className="add-ip-btn">Save Device</button>
                     </>
                   ) : (
-                    <button onClick={handleAddTopicClick} className="add-ip-btn">Add AWS Topic</button>
+                    <button onClick={handleAddTopicClick} className="add-ip-btn">Add Device</button>
                   )}
                 </div>
               </div>
