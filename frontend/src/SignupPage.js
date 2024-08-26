@@ -147,7 +147,7 @@ function RegisterForm() {
           <div className="logo">
             <img src={logo} alt="Company Logo" style={{ height: '100px' }} />
           </div>
-          <div className="help-linkq" onClick={handleNeedHelp}>Need Help?</div>
+          <div className="help-link" onClick={handleNeedHelp}>Need Help?</div>
           <div className="form-containerq">
             <form className="formq" onSubmit={handleSubmit}>
               <h2 className="titleq">Get Started Now</h2>

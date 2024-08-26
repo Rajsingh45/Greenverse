@@ -172,17 +172,16 @@ const LoginPage = () => {
 
                         <div>
                             <button type="submit" className="signin-btn">LOGIN</button>
-                            <div className="or-container">
+                            
+                        </div>
+                    </form>
+                </div>
+                <div className="or-container">
                                 <div className="line"></div>
                                 <span className="or-text">OR</span>
                                 <div className="line"></div>
                             </div>
                             <p className="signup-text">Don't have an account? <a href="/signup"> Sign up</a></p>
-                        </div>
-                    </form>
-
-                </div>
-
             </div>
             <div className="right-panel">
             </div>

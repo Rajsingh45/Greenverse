@@ -66,7 +66,7 @@ const ForgotPassword = () => {
         <div className="forgot-password-box">
           <h2 className='pass-forgot'>Forgot Your Password?</h2>
           <p className='new-text'>Enter your email to receive an OTP for password recovery. We’re here to help you get back in.</p>
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-messages">{error}</p>}
           <input
             type="email"
             placeholder="Enter your email"
