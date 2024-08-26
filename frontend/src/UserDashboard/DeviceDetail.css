@@ -5,7 +5,7 @@
     padding: 20px;
     box-sizing: border-box;
     background: url('../images/parameter-image.jpg') no-repeat center center;
-  background-size: cover;
+    background-size: cover;
 }
 .device-name-title {
     display: block;
