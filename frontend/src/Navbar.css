@@ -151,11 +151,6 @@
   overflow: hidden;
 }
 
-/* CSS for disabled search field */
-.navbar .search-field:disabled {
-  cursor: not-allowed;
-}
-
 .search-result-item {
   padding: 10px 20px;
   cursor: pointer;
@@ -224,6 +219,14 @@ width: 100%;
   margin-right: 30px !important;
 }
 
+.css-yz9k0d-MuiInputBase-input.Mui-disabled {
+  cursor: not-allowed;
+}
+
+.css-nxtrxc-MuiInputBase-root.Mui-disabled{
+  cursor: not-allowed !important;
+}
+
 .css-171m06a {
   padding: 0px !important;
   margin-left: 10px !important;
@@ -259,7 +262,6 @@ width: 100%;
   pointer-events: none;
   cursor: not-allowed;
 }
-
 
 .hamburger-menu {
   display: none;
@@ -408,18 +410,6 @@ width: 100%;
 .close-icon:hover {
   background-color: #eae0e0;
 } 
-
-/* .dropdown-item {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  color: #fff;
-} */
-
-/* .dropdown-item:hover {
-  background-color: #444;
-} */
 
 .dropdown-icons {
   margin-right: 10px;

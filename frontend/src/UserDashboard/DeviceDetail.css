@@ -8,11 +8,13 @@
   background-size: cover;
 }
 .device-name-title {
+    display: block;
+    /* text-align: center; */
     text-align: left;
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-    margin-right: auto; /* Align title to the right */
+    position: absolute;
 }
 
 .table-section {
@@ -189,7 +191,7 @@
 }
 
 .date-pickers .react-datepicker-wrapper {
-    width: 30%;
+    width: 23%;
 }
 
 .date-picker .react-datepicker__input-container,.date-pickers .react-datepicker__input-container {
@@ -197,13 +199,14 @@
 }
 
 .date-picker .react-datepicker__input-container input,.date-pickers .react-datepicker__input-container input {
-    width: 60%;
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
     outline: none;
+    cursor: pointer;
 }
 
 .date-picker .react-datepicker__input-container input:focus,.date-pickers .react-datepicker__input-container input:focus {

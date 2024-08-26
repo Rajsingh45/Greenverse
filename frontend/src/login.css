@@ -70,7 +70,7 @@ body {
 }
 
 .size{
-  font-size: 1.4rem !important;
+  font-size: 1.4rem;
 }
 
 .input-group input {
@@ -78,7 +78,7 @@ body {
   padding: 2rem;
   border: 1px solid #ccc;
   border-radius: 10px;
-  font-size: 2rem;
+  font-size: 1.2rem;
   display: block;
   margin: 0 auto; 
   height: 2rem ;
@@ -267,12 +267,18 @@ body {
 @media (max-width: 465px) {
 
   .input-group input {
-    font-size: 1rem;
+    font-size: 0.9rem;
     padding: 1.8rem;
   }
 
   .signin-btn {
     width: 50%;
     font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 380px){
+  .h1title{
+    font-size: 25px;
   }
 }

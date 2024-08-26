@@ -256,8 +256,8 @@ const DeviceDetailPage = () => {
             <div className="device-detail-page">
             <div className="table-section">
                 <div className="calendar-icon-container">
-                    <div className="date-pickers"  >
-                    <h2 className="device-name-title">{deviceName}</h2> {/* Add this line */}   
+                    <div className="date-pickers">
+                    <span className="device-name-title">{deviceName}</span> {/* Add this line */}   
                         <IconButton onClick={handleIconClick}>
                             <CalendarTodayIcon />
                         </IconButton>

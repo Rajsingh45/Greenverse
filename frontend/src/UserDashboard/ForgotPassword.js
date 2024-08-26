@@ -6,9 +6,12 @@ import { ArrowBack } from '@mui/icons-material';
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
   const handleGenerateOTP = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!email) {
@@ -16,6 +19,7 @@ const ForgotPassword = () => {
       setTimeout(() => {
         setError('');
       }, 5000);
+      setIsProcessing(false);
       return;
     }
 
@@ -24,6 +28,7 @@ const ForgotPassword = () => {
       setTimeout(() => {
         setError('');
       }, 5000);
+      setIsProcessing(false);
       return;
     }
 
@@ -45,6 +50,8 @@ const ForgotPassword = () => {
     } catch (error) {
       console.error('Error requesting OTP:', error);
       setError('Email not registered! Please SignUp');
+    }finally {
+      setIsProcessing(false); 
     }
   };
 
@@ -57,7 +64,7 @@ const ForgotPassword = () => {
       <div className="forgot-password-image"></div>
       <div className="forgot-password-container">
         <div className="forgot-password-box">
-          <h2 className='pass-forgot'>Forgot Password</h2>
+          <h2 className='pass-forgot'>Forgot Your Password?</h2>
           <p className='new-text'>Enter your email to receive an OTP for password recovery. We’re here to help you get back in.</p>
           {error && <p className="error-message">{error}</p>}
           <input
@@ -68,8 +75,12 @@ const ForgotPassword = () => {
             className="email-input"
             required
           />
-          <button onClick={handleGenerateOTP} className="generate-otp-btn">
-            Generate OTP
+          <button
+            onClick={handleGenerateOTP}
+            className="generate-otp-btn"
+            disabled={isProcessing} // Disable button while processing
+          >
+            {isProcessing ? 'Processing...' : 'Generate OTP'}
           </button>
           <div className="back-to-login">
         <ArrowBack className="back-icon" />
