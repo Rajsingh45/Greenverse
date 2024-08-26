@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './UserInfo.css';
 import { TextField, Button, Typography, Avatar } from '@mui/material';
 import UserNavbar from '../UserNavbar';
@@ -28,7 +28,7 @@ const UserProfile = () => {
       setDropdownVisible(false);
     }
   };
-  
+
   const handleEditName = () => {
     setIsEditingName(true);
     setDropdownVisible(false);
@@ -40,14 +40,14 @@ const UserProfile = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  
+
   const handleDeleteProfilePic = async () => {
     if (!profilePic) {
       alert('No profile picture to delete.');
       return;
     }
     const token = localStorage.getItem('token');
-  
+
     try {
       const response = await fetch('http://localhost:5000/auth/delete-profile-picture', {
         method: 'DELETE',
@@ -55,7 +55,7 @@ const UserProfile = () => {
           'Authorization': `Bearer ${token}`
         }
       });
-  
+
       const data = await response.json();
       if (data.message === 'Profile picture deleted successfully') {
         alert('Profile picture deleted successfully.');
@@ -114,11 +114,11 @@ const UserProfile = () => {
       const previewURL = URL.createObjectURL(file);
       setProfilePic(previewURL);
       setProfilePicFile(file);
-  
+
       const token = localStorage.getItem('token');
       const formData = new FormData();
       formData.append('profilePicture', file);
-  
+
       try {
         const response = await fetch('http://localhost:5000/auth/upload', {
           method: 'POST',
@@ -127,7 +127,7 @@ const UserProfile = () => {
           },
           body: formData
         });
-  
+
         const data = await response.json();
         if (data.message === 'Profile picture uploaded successfully') {
           alert('Profile picture uploaded successfully.');
@@ -146,7 +146,7 @@ const UserProfile = () => {
       alert('Please select a JPG or PNG image smaller than 1MB.');
     }
   };
-  
+
   const handleNameChange = (event) => {
     setUser({ ...user, name: event.target.value });
   };
@@ -193,103 +193,104 @@ const UserProfile = () => {
   return (
     <>
       {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true} />}
-      
-    <div className="profile-container">
-    <div className="avatar-container">
-  <Avatar
-    src={profilePic}
-    alt="Profile"
-    className="profile-avatar"
-    onClick={openModal}
-  />
-  <div className="header">
-    <MoreVert
-      className="more-vert-icon"
-      onClick={toggleDropdown}
-    />
-    {dropdownVisible && (
-      <div ref={dropdownRef} className="dropdown-menuz">
-        <Button
-          onClick={handleEditName}
-          className="dropdown-itemu"
-        >
-          Edit Username
-        </Button>
-        <Button
-          onClick={handleDeleteProfilePic}
-          className="dropdown-itemu"
-        >
-          Delete Profile Picture
-        </Button>
-      </div>
-    )}
-  </div>
-</div>
-      <Typography variant="h4" className="title-profile">User Profile</Typography>
-      
-      <div className="profile-field">
-        <TextField
-          label="Username"
-          value={user.name || ''}
-          onChange={handleNameChange}
-          InputProps={{ readOnly: !isEditingName }}
-          variant="outlined"
-          fullWidth
-        />
-      </div>
-      <div className="profile-field">
-        <TextField
-          label="Email"
-          value={user.email || ''}
-          InputProps={{ readOnly: true }}
-          variant="outlined"
-          fullWidth
-        />
-      </div>
-      <div className="profile-field">
-        <TextField
-          label="Contact Number"
-          value={user.contactNumber || ''}
-          InputProps={{ readOnly: true }}
-          variant="outlined"
-          fullWidth
-        />
-      </div>
-      <div className="buttons-container">
-        {isEditingName ? (
-          <Button
-            variant="contained"
-            onClick={handleSubmitName}
-            className="profile-button"
-          >
-            Save Username
-          </Button>
-        ) 
-        :  null
-        }
-        <Button
-    variant="contained"
-    component="label"
-    className="profile-button"
-  >
-    {profilePic ? 'Edit Profile Picture' : 'Upload Profile Picture'}
-    <input
-      type="file"
-      hidden
-      accept="image/jpeg, image/png"
-      onChange={handleProfilePicChange}
-    />
-  </Button>
-      </div>
-      {modalVisible && (
-        <div className="modal" onClick={closeModal}>
-          <span className="close" onClick={closeModal}>&times;</span>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={profilePic} alt="Enlarged Profile" />
+      <div className='outermost-container'>
+        <div className="profile-container">
+          <div className="avatar-container">
+            <Avatar
+              src={profilePic}
+              alt="Profile"
+              className="profile-avatar"
+              onClick={openModal}
+            />
+            <div className="header">
+              <MoreVert
+                className="more-vert-icon"
+                onClick={toggleDropdown}
+              />
+              {dropdownVisible && (
+                <div ref={dropdownRef} className="dropdown-menuz">
+                  <Button
+                    onClick={handleEditName}
+                    className="dropdown-itemu"
+                  >
+                    Edit Username
+                  </Button>
+                  <Button
+                    onClick={handleDeleteProfilePic}
+                    className="dropdown-itemu"
+                  >
+                    Delete Profile Picture
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
+          <Typography variant="h4" className="title-profile">User Profile</Typography>
+
+          <div className="profile-field">
+            <TextField
+              label="Username"
+              value={user.name || ''}
+              onChange={handleNameChange}
+              InputProps={{ readOnly: !isEditingName }}
+              variant="outlined"
+              fullWidth
+            />
+          </div>
+          <div className="profile-field">
+            <TextField
+              label="Email"
+              value={user.email || ''}
+              InputProps={{ readOnly: true }}
+              variant="outlined"
+              fullWidth
+            />
+          </div>
+          <div className="profile-field">
+            <TextField
+              label="Contact Number"
+              value={user.contactNumber || ''}
+              InputProps={{ readOnly: true }}
+              variant="outlined"
+              fullWidth
+            />
+          </div>
+          <div className="buttons-container">
+            {isEditingName ? (
+              <Button
+                variant="contained"
+                onClick={handleSubmitName}
+                className="profile-button"
+              >
+                Save Username
+              </Button>
+            )
+              : null
+            }
+            <Button
+              variant="contained"
+              component="label"
+              className="profile-button"
+            >
+              {profilePic ? 'Edit Profile Picture' : 'Upload Profile Picture'}
+              <input
+                type="file"
+                hidden
+                accept="image/jpeg, image/png"
+                onChange={handleProfilePicChange}
+              />
+            </Button>
+          </div>
+          {modalVisible && (
+            <div className="modal" onClick={closeModal}>
+              <span className="close" onClick={closeModal}>&times;</span>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <img src={profilePic} alt="Enlarged Profile" />
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
     </>
   );
 };

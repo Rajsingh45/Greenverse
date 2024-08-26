@@ -2,7 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #e0f2f1; 
+    /* background-color: #e0f2f1;  */
+    background: url('../images/edituser-image.jpg');
     padding: 20px;
     min-height: calc(100vh - 80px);
     width: 100%;
@@ -26,8 +27,6 @@
     right: 10px;
     z-index: 1; 
 }
-
-
 
 .dropdown-button {
     background-color: #4caf50; 

@@ -81,10 +81,12 @@ const SetPassword = () => {
   };
 
   return (
-    <div className="set-password-container">
+    <div className="set-password-wrapper">
+      <div className="set-password-image"></div>
+      <div className="set-password-container">
       <div className="set-password-box">
         <h2 className='set-password-title'>Set New Password</h2>
-        <p>Enter your new password below:</p>
+        <p>Your identity has been verified. <br/> Now, set a new password for your account.</p>
         {passwordError && <p className="error-message">{passwordError}</p>}
         
         <div className="input-groups">
@@ -119,12 +121,15 @@ const SetPassword = () => {
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           )}
-        </div>
+          </div>
         
         <button onClick={handlePasswordSubmit} className="submit-password-btn">
           Update Password
         </button>
+      
+      
       </div>
+        </div>
     </div>
   );
 };

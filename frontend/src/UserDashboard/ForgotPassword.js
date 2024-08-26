@@ -50,8 +50,8 @@ const ForgotPassword = () => {
     } catch (error) {
       console.error('Error requesting OTP:', error);
       setError('Email not registered! Please SignUp');
-    }finally {
-      setIsProcessing(false); 
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -83,14 +83,14 @@ const ForgotPassword = () => {
             {isProcessing ? 'Processing...' : 'Generate OTP'}
           </button>
           <div className="back-to-login">
-        <ArrowBack className="back-icon" />
-        <span onClick={handleBackToLogin}>Back to Login Page</span>
-      </div>
+            <ArrowBack className="back-icon" />
+            <span onClick={handleBackToLogin}>Back to Login Page</span>
+          </div>
         </div>
-        
+
       </div>
-      
-    </div>   
+
+    </div>
   );
 };
 

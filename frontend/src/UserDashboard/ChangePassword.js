@@ -6,6 +6,9 @@ import './ChangePassword.css';
 import { ArrowBack } from '@mui/icons-material';
 
 const ChangePasswordPageUnique = () => {
+    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+  const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+  
     useEffect(() => {
         const fetchUserEmail = async () => {
             try {
@@ -47,6 +50,15 @@ const ChangePasswordPageUnique = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const navigate = useNavigate();
+    
+    const handleBackToHome = () => {
+        if(!isAdmin){
+        navigate('/dashboard');
+        }
+        else{
+    navigate('/admin')
+}
+      };
 
     const handleInput = (e) => {
         const { name, value } = e.target;
@@ -98,7 +110,6 @@ const ChangePasswordPageUnique = () => {
         });
     };
     
-
     const toggleShowOldPassword = () => {
         if (passwordDetails.oldPassword) {
             setShowOldPassword(!showOldPassword);
@@ -110,9 +121,7 @@ const ChangePasswordPageUnique = () => {
             setShowNewPassword(!showNewPassword);
         }
     };
-    const handleBackToHome = () => {
-        navigate('/dashboard');
-      };
+
 
     return (
         <div className="unique-change-password-container">
