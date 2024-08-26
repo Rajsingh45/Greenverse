@@ -55,6 +55,14 @@ const EditUserForm = ({ onUserUpdated }) => {
       const isConfirmed = window.confirm(`Are you sure you want to delete "${topicToDelete}" Device?`);
   
       if (isConfirmed) {
+        // Remove the topic from the espTopics array immediately
+        const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+        setEspTopics(newEspTopics);
+        setDevices(newEspTopics.length);
+  
+        // Close the menu
+        handleMenuClose();
+        
         try {
           const token = localStorage.getItem('token');
           if (!token) {
@@ -62,7 +70,7 @@ const EditUserForm = ({ onUserUpdated }) => {
           }
   
           const response = await fetch('http://localhost:5000/admin/deletetopic', {
-            method: 'DELETE', // Use DELETE instead of Delete
+            method: 'DELETE',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${token}`
@@ -77,16 +85,14 @@ const EditUserForm = ({ onUserUpdated }) => {
           const data = await response.json();
           console.log('Device deleted successfully:', data);
   
-          const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
-          setEspTopics(newEspTopics);
-          setDevices(newEspTopics.length);
-          handleMenuClose();
+          setHasUnsavedChanges(true);
         } catch (error) {
           console.error('Error:', error);
         }
       }
     }
   };
+  
   
   const handleAddTopicClick = () => {
     const lastTopicNumber = espTopics.length > 0 ?
@@ -222,6 +228,16 @@ const EditUserForm = ({ onUserUpdated }) => {
                         className="textboxsu"
                       />
                       <button onClick={handleAddTopic} className="add-ip-btn">Save Device</button>
+                      <button 
+                        onClick={() => { 
+                          setIsAddingTopic(false); 
+                          setNewTopic(''); 
+                        }} 
+                        className="cancel-btn"
+                        // style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}
+                      >
+                        Cancel
+                      </button>
                     </>
                   ) : (
                     <button onClick={handleAddTopicClick} className="add-ip-btn">Add Device</button>
