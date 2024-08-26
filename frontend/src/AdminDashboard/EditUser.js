@@ -17,11 +17,28 @@ const EditUserForm = ({ onUserUpdated }) => {
   const [selectedTopicIndex, setSelectedTopicIndex] = useState(null);
   const [newTopic, setNewTopic] = useState('');
   const [isAddingTopic, setIsAddingTopic] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
 
   useEffect(() => {
     setEspTopics(user.espTopics || []);
   }, [user.espTopics]);
 
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
+  
+    window.addEventListener('beforeunload', handleBeforeUnload);
+  
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [hasUnsavedChanges]); 
+  
   const handleMenuClick = (event, index) => {
     setAnchorEl(event.currentTarget);
     setSelectedTopicIndex(index);
@@ -94,6 +111,7 @@ const EditUserForm = ({ onUserUpdated }) => {
     setDevices(devices + 1);
     setNewTopic('');
     setIsAddingTopic(false);
+    setHasUnsavedChanges(true);
   };
 
   const handleTopicSubmission = async () => {
@@ -137,6 +155,7 @@ const EditUserForm = ({ onUserUpdated }) => {
         espTopics
       });
 
+      setHasUnsavedChanges(false);
       navigate('/admin');
     } catch (error) {
       console.error('Error:', error);

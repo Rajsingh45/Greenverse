@@ -1,6 +1,6 @@
 .containers {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
   background: white;
   background: url('../images/admin-image.jpg') no-repeat center center;
   background-size: cover;
@@ -96,10 +96,6 @@
     flex-direction: column;
   }
 
-  .left {
-    padding: 0rem;
-  }
-
   .user-table {
     overflow-x: none;
   }
@@ -122,10 +118,6 @@
 @media (max-width: 400px) {
   .containers {
     flex-direction: column;
-  }
-
-  .left {
-    padding: 0.3rem;
   }
 
   .user-table {
