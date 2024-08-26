@@ -11,22 +11,18 @@ const fs = require('fs');
 const register = async (req, res) => {
     const { email, password, name, contactNumber } = req.body;
     try {
-        // Check if the name already exists
         const existingName = await User.findOne({ name });
         if (existingName) {
             return res.status(400).json({ message: 'Username already exists' });
         }
-        // Check if the email already exists
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'Email already registered' });
         }
-        // Check if the contact number already exists
         const existingContact = await User.findOne({ contactNumber });
         if (existingContact) {
             return res.status(400).json({ message: 'Contact number already registered' });
         }
-        // Hash the password and create a new user
         const hashedPassword = await bcrypt.hash(password, 12);
         const newUser = new User({ email, password: hashedPassword, name, contactNumber });
         await newUser.save();
@@ -93,7 +89,6 @@ const rememberMe = async (req, res) => {
     }
 };
 
-
 const changePassword = async (req, res) => {
     const { email, oldPassword, newPassword } = req.body;
     try {
@@ -128,6 +123,7 @@ const checkEmailExists = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 const transporter = nodemailer.createTransport({
     service: 'gmail', // You can use any email service
     auth: {
@@ -399,7 +395,7 @@ const getAllUsers = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Something went wrong' });
     }
-  };
+};
 
 const uploadProfilePicture = async (req, res) => {
     try {
@@ -423,7 +419,6 @@ const uploadProfilePicture = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-
 
 const getProfilePicture = async (req, res) => {
   try {
@@ -450,10 +445,8 @@ const renameUser = async (req, res) => {
         if (!existingUser) {
             return res.status(400).json({ message: 'User not found in users collection' });
         }
-
         existingUser.name = newName;
         await existingUser.save();
-
         if (email !== adminEmail) {
             const existingAdmin = await Admin.findOne({ email });
             if (!existingAdmin) {
@@ -462,7 +455,6 @@ const renameUser = async (req, res) => {
             existingAdmin.name = newName;
             await existingAdmin.save();
         }
-
         res.json({ message: 'Name updated successfully in both collections', user: existingUser });
     } catch (error) {
         console.error(error);
@@ -492,7 +484,7 @@ const searchDevices = async (req, res) => {
     }
   };
   
-  const checkNameAvailability = async (req, res) => {
+const checkNameAvailability = async (req, res) => {
     const { name } = req.query;
     try {
         const existingUser = await User.findOne({ name });
@@ -523,7 +515,7 @@ const deleteProfilePicture = async (req, res) => {
       console.error('Error deleting profile picture:', error);
       res.status(500).json({ message: 'Server error' });
     }
-  };
+};
 
 module.exports = { register, checkNameAvailability, requestSignupOTP, verifySignupOTP, requestForgotPasswordOTP, verifyForgotPasswordOTP,
     login, rememberMe, searchDevices, changePassword, checkEmailExists,  getAllUsers,

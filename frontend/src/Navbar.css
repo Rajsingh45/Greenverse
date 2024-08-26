@@ -76,7 +76,7 @@
   color: #ecf0f1;
   animation: fadeIn 3s ease-in-out, moveUpDown 3s ease-in-out infinite;
   padding: 10px 20px;
-  background: linear-gradient(90deg, #c2cacd, #74c57c);
+  background: linear-gradient(90deg, #b8b4b4, #2ade3c);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: inline-block;
