@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import './ChangePassword.css';
+import { ArrowBack } from '@mui/icons-material';
 
-const ChangePasswordPage = () => {
+const ChangePasswordPageUnique = () => {
     useEffect(() => {
         const fetchUserEmail = async () => {
             try {
@@ -60,71 +61,43 @@ const ChangePasswordPage = () => {
             setShowNewPassword(value !== "");
         }
     };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (isProcessing) return;
-        setIsProcessing(true);
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailRegex.test(passwordDetails.email)) {
-            setIsProcessing(false);
-            setError('Invalid email format');
-            setTimeout(() => {
-                setError('');
-            }, 5000);
+        
+        if (passwordDetails.newPassword.length < 8) {
+            setError("The new password must be at least 8 characters long.");
             return;
         }
-
-        fetch("http://localhost:5000/auth/checkemail", {
+    
+        if (isProcessing) return;
+        setIsProcessing(true);
+    
+        fetch("http://localhost:5000/auth/requestpasswordotp", {
             method: "POST",
-            body: JSON.stringify({ email: passwordDetails.email }),
+            body: JSON.stringify({ email: passwordDetails.email, oldPassword: passwordDetails.oldPassword }),
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             }
         })
         .then(response => {
-            if (response.status === 404) {
-                setIsProcessing(false);
-                setError("Email not found in database");
-                setTimeout(() => {
-                    setError('');
-                }, 5000);
-                return Promise.reject("Email not found in database");
+            setIsProcessing(false);
+            if (response.ok) {
+                navigate('/new-otp', { state: { userDetails: { email: passwordDetails.email, password: passwordDetails.newPassword } } });
+                setPasswordDetails({
+                    email: "",
+                    oldPassword: "",
+                    newPassword: ""
+                });
+            } else {
+                setError("The old password you entered is incorrect. Please try again.");
             }
-            return response.json();
-        })
-        .then(() => {
-            fetch("http://localhost:5000/auth/requestpasswordotp", {
-                method: "POST",
-                body: JSON.stringify({ email: passwordDetails.email, oldPassword: passwordDetails.oldPassword }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => {
-                setIsProcessing(false);
-                if (response.ok) {
-                    navigate('/new-otp', { state: { userDetails: { email: passwordDetails.email, password: passwordDetails.newPassword } } });
-                    setPasswordDetails({
-                        email: "",
-                        oldPassword: "",
-                        newPassword: ""
-                    });
-                } else {
-                    setError("The old password you entered is incorrect. Please try again.");
-                }
-            })
-            .catch(error => {
-                setIsProcessing(false);
-                console.error("Error sending OTP:", error);
-            });
         })
         .catch(error => {
             setIsProcessing(false);
-            console.error("Error:", error);
+            console.error("Error sending OTP:", error);
         });
     };
+    
 
     const toggleShowOldPassword = () => {
         if (passwordDetails.oldPassword) {
@@ -137,64 +110,83 @@ const ChangePasswordPage = () => {
             setShowNewPassword(!showNewPassword);
         }
     };
+    const handleBackToHome = () => {
+        navigate('/dashboard');
+      };
 
     return (
-        <div className="change-password-container">
-            <h2>Change Password</h2>
-            {error && <p className="error-message">{error}</p>}
-            {success && <p className="success-message">{success}</p>}
-            <form onSubmit={handleSubmit}>
-                <div className="input-groups">
-                    <input 
-                        type="email" 
-                        name="email" 
-                        placeholder="Email" 
-                        value={passwordDetails.email} 
-                        onChange={handleInput} 
-                        required 
-                        readOnly 
-                    />
+        <div className="unique-change-password-container">
+            <div className="unique-change-password-image-container">
+                {/* <img src="../images/fp.png" alt="fp" /> */}
+            </div>
+            <div className="unique-change-password-form-container">
+            <div className="unique-change-password-box">
+                <h2>Reset Password</h2>
+                <p className='unique-new-text'>Ready to change your password?</p>
+                <p className='unique-new-text'>Confirm your current password and set a new one.</p>
+                {error && <p className="unique-error-message">{error}</p>}
+                {success && <p className="unique-success-message">{success}</p>}
+                <form onSubmit={handleSubmit}>
+                    <div className="unique-input-groups">
+                        <input 
+                            type="email" 
+                            name="email" 
+                            placeholder="Email" 
+                            value={passwordDetails.email} 
+                            onChange={handleInput} 
+                            required 
+                            readOnly 
+                        />
+                    </div>
+                    <div className="unique-input-groups unique-password-input-group">
+                        <input 
+                            type={showOldPassword ? "text" : "password"} 
+                            name="oldPassword" 
+                            placeholder="Old Password" 
+                            value={passwordDetails.oldPassword} 
+                            onChange={handleInput} 
+                            required 
+                        />
+                        {passwordDetails.oldPassword && (
+                            <span className="unique-password-toggle-icon" onClick={toggleShowOldPassword}>
+                                <FontAwesomeIcon icon={showOldPassword ? faEye : faEyeSlash} />
+                            </span>
+                        )}
+                    </div>
+                    <div className="unique-input-groups unique-password-input-group">
+                        <input 
+                            type={showNewPassword ? "text" : "password"} 
+                            name="newPassword" 
+                            placeholder="New Password" 
+                            value={passwordDetails.newPassword} 
+                            onChange={handleInput} 
+                            required 
+                        />
+                        {passwordDetails.newPassword && (
+                            <span className="unique-password-toggle-icon" onClick={toggleShowNewPassword}>
+                                <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} />
+                            </span>
+                        )}
+                    </div>
+                    <button
+                        type="submit"
+                        className={`unique-submit-btn ${isProcessing ? 'processing' : ''}`}
+                        disabled={isProcessing}
+                    >
+                        {isProcessing ? 'Processing...' : 'Reset Password'}
+                    </button>
+                </form>
+                {/* <div className="unique-back-to-home-container">
+                    <a href="/">Back to Home Page</a>
+                </div> */}
+                <div className="unique-back-to-home-container">
+                <ArrowBack className="back-iconn" />
+                <span onClick={handleBackToHome}>Back to Home Page</span>
                 </div>
-                <div className="input-groups password-input-group">
-                    <input 
-                        type={showOldPassword ? "password" : "text"} 
-                        name="oldPassword" 
-                        placeholder="Old Password" 
-                        value={passwordDetails.oldPassword} 
-                        onChange={handleInput} 
-                        required 
-                    />
-                    {passwordDetails.oldPassword && (
-                        <span className="password-toggle-iconn" onClick={toggleShowOldPassword}>
-                            <FontAwesomeIcon icon={showOldPassword ? faEye : faEyeSlash} />
-                        </span>
-                    )}
-                </div>
-                <div className="input-groups password-input-group">
-                    <input 
-                        type={showNewPassword ? "password" : "text"} 
-                        name="newPassword" 
-                        placeholder="New Password" 
-                        value={passwordDetails.newPassword} 
-                        onChange={handleInput} 
-                        required 
-                    />
-                    {passwordDetails.newPassword && (
-                        <span className="password-toggle-iconn" onClick={toggleShowNewPassword}>
-                            <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} />
-                        </span>
-                    )}
-                </div>
-                <button
-                    type="submit"
-                    className={`submit-btn ${isProcessing ? 'processing' : ''}`}
-                    disabled={isProcessing}
-                >
-                    {isProcessing ? 'Processing...' : 'Change Password'}
-                </button>
-            </form>
+            </div>
+            </div>
         </div>
     );
 };
 
-export default ChangePasswordPage;
+export default ChangePasswordPageUnique;
