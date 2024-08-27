@@ -8,8 +8,13 @@ const otpStore = {}; // In-memory store for OTPs
 const path = require('path');
 const fs = require('fs');
 
+const adminEmails = process.env.ADMIN_EMAIL; // List of unique admin email IDs
+
 const register = async (req, res) => {
     const { email, password, name, contactNumber } = req.body;
+
+    // Determine the role based on the email
+    const role = adminEmails.includes(email) ? 'admin' : 'user';
     try {
         const existingName = await User.findOne({ name });
         if (existingName) {
@@ -24,19 +29,24 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'Contact number already registered' });
         }
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ email, password: hashedPassword, name, contactNumber });
+        const newUser = new User({
+            email,
+            password,  // Ensure you hash the password before saving
+            name,
+            contactNumber,
+            role
+        });
+
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).send('User registered successfully');
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(500).send('Error registering user');
     }
 };
 
 const generateRememberMeToken = () => {
     return crypto.randomBytes(32).toString('hex');
 };
-
 const login = async (req, res) => {
     const { email, password, rememberMe } = req.body;
     try {
@@ -48,7 +58,7 @@ const login = async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        const token = jwt.sign({ email: user.email, id: user._id }, 'your_jwt_secret', { expiresIn: '24h' });
+        const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '24h' });
         if (rememberMe) {
             const rememberMeToken = generateRememberMeToken();
             user.rememberMeToken = rememberMeToken;
@@ -64,7 +74,7 @@ const login = async (req, res) => {
             res.clearCookie('rememberMeToken');
         }
         await user.save();
-        res.status(200).json({ token });
+        res.status(200).json({ token, role: user.role    });
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: 'Something went wrong' });
@@ -256,8 +266,17 @@ const verifySignupOTP = async (req, res) => {
         if (otpData.otp !== Number(otp) || Date.now() > otpData.expiresAt) {
             return res.status(401).json({ message: 'Invalid or expired OTP' });
         }
+        
         const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({ name, email, password: hashedPassword, contactNumber });
+        const role = adminEmails.includes(email) ? 'admin' : 'user'; // Determine role based on email
+        
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword,
+            contactNumber,
+            role // Include the role in the user creation
+        });
         await newUser.save();
         delete otpStore[email];
         res.status(200).json({ message: 'OTP verified successfully, user created' });
@@ -266,6 +285,7 @@ const verifySignupOTP = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
+
 
 const verifyPasswordOTP = async (req, res) => {
     const { email, otp, password } = req.body;

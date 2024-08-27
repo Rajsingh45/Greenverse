@@ -51,8 +51,10 @@ const GraphPage = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+    // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+    const token = localStorage.getItem('token');
+    const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
+
 
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
