@@ -10,9 +10,8 @@
     box-sizing: border-box;
 }
 
-canvas{
-    width: 100% !important;
-    min-height: 70vh !important;
+.MuiLineChart-yAxisLabel {
+    padding-right: 10px; /* Adjust as needed */
 }
 
 .chart-section {

@@ -14,6 +14,7 @@ import {
     Legend
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
+import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -51,8 +52,9 @@ const GraphPage = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+    // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+    const token = localStorage.getItem('token');
+    const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
 
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -216,27 +218,48 @@ const GraphPage = () => {
     };
 
     const handleDownloadPNG = () => {
-        const canvas = document.querySelector('canvas');
-        const imgData = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = 'chart.png';
-        link.click();
+        const chartElement = document.getElementById('chart-container'); // Updated selector to match custom ID
+        
+        if (!chartElement) {
+            console.error('Chart element not found');
+            return;
+        }
+        
+        html2canvas(chartElement).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = imgData;
+            link.download = 'chart.png';
+            link.click();
+        }).catch((error) => {
+            console.error('Error generating PNG:', error);
+        });
     };
-
+    
     const handleDownloadPDF = () => {
-        const canvas = document.querySelector('canvas');
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-        pdf.addImage(imgData, 'PNG', 10, 10, 180, 160);
-        pdf.save('chart.pdf');
+        const chartElement = document.getElementById('chart-container'); // Updated selector to match custom ID
+        
+        if (!chartElement) {
+            console.error('Chart element not found');
+            return;
+        }
+        
+        html2canvas(chartElement).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF();
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 160);
+            pdf.save('chart.pdf');
+        }).catch((error) => {
+            console.error('Error generating PDF:', error);
+        });
     };
-
+    
+    
     const handleDownloadExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(chartData.datasets[0].data.map((value, index) => ({
-            Date: dayjs(chartData.labels[index]).format('YYYY-MM-DD HH:mm:ss'),
+        const worksheet = XLSX.utils.json_to_sheet(chartData.labels.map((label, index) => ({
+            Date: dayjs(label).format('YYYY-MM-DD HH:mm:ss'),
             Parameter: parameter,
-            Value: value
+            Value: chartData.datasets[0].data[index]
         })));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
@@ -244,7 +267,8 @@ const GraphPage = () => {
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
         saveAs(blob, 'chart.xlsx');
     };
-
+    
+    
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
@@ -302,8 +326,12 @@ const GraphPage = () => {
     ]}
     yAxis={[
         {
-            label: parameter, // Y-axis title
+            label: parameter,
+            labelFontSize: 14, // Adjusts the font size of the label
+            tickSize: 5, // Reduces the tick size to create space
+            tickPadding: 10, 
         },
+        
     ]}
     tooltip={{
         valueFormatter: (value, index) => {
