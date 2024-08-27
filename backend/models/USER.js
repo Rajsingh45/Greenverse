@@ -35,8 +35,6 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-
-
 UserSchema.pre('save', function (next) {
     if (!this.rememberMeToken) {
         this.rememberMeToken = undefined;
@@ -44,7 +42,6 @@ UserSchema.pre('save', function (next) {
     if (!this.rememberMeTokenExpiry) {
         this.rememberMeTokenExpiry = undefined;
     }
-
     next();
 });
 
