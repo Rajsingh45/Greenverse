@@ -82,7 +82,7 @@ const LoginPage = () => {
         })
             .then((response) => {
                 if (response.status === 404) {
-                    setError("Email doesn't exist");
+                    setError("Email is not registered");
                 } else if (response.status === 400) {
                     setError("Incorrect Password");
                 }
