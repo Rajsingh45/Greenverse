@@ -267,4 +267,7 @@ body {
   .h1title{
     font-size: 25px;
   }
+  .remember-me-label, .forgot-pass{
+    font-size: 0.8rem;
+  }
 }

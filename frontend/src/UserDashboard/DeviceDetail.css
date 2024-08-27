@@ -140,13 +140,17 @@
 
 @media (max-width: 500px){
     .new-date-picker-input{
-        font-size: 10px !important;
+        font-size: 12px !important;
     }
 } 
 @media (max-width: 400px){
     .new-date-picker-input{
-        font-size: 8px !important;
+        font-size: 11px !important;
     }
+    
+.date-pickers .react-datepicker-wrapper {
+    width: 40%;
+}
 } 
 
 @media (max-width: 340px) {
@@ -191,10 +195,6 @@
     width: 100%;
 }
 
-.date-pickers .react-datepicker-wrapper {
-    width: 23%;
-}
-
 .date-picker .react-datepicker__input-container,.date-pickers .react-datepicker__input-container {
     width: 100%;
 }
@@ -207,6 +207,10 @@
     font-size: 16px;
     box-sizing: border-box;
     outline: none;
+    cursor: pointer;
+}
+
+.select-option{
     cursor: pointer;
 }
 

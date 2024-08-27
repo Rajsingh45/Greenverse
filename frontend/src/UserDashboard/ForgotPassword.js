@@ -84,7 +84,7 @@ const ForgotPassword = () => {
           </button>
           <div className="back-to-login">
             <ArrowBack className="back-icon" />
-            <span onClick={handleBackToLogin}>Back to Login Page</span>
+            <span onClick={handleBackToLogin} className='back-login'>Back to Login Page</span>
           </div>
         </div>
 

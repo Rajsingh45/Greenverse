@@ -15,7 +15,6 @@ import { saveAs } from 'file-saver';
 const DeviceDetailPage = () => {
     const [downloadStartDate, setDownloadStartDate] = useState(new Date());
     const [downloadEndDate, setDownloadEndDate] = useState(new Date());
-    const [downloadParameter, setDownloadParameter] = useState('');
 
     const { deviceName } = useParams();
     const navigate = useNavigate();
@@ -36,7 +35,7 @@ const DeviceDetailPage = () => {
             try {
                 const response = await fetch(`http://localhost:5000/api/device-parameters/${deviceName}`);
                 const result = await response.json();
-    
+
                 if (Array.isArray(result)) {
                     setParameterOptions(result);
                 } else {
@@ -47,7 +46,7 @@ const DeviceDetailPage = () => {
                 setParameterOptions([]);
             }
         };
-    
+
         fetchParameterOptions();
     }, []);
 
@@ -75,10 +74,8 @@ const DeviceDetailPage = () => {
                         );
                     }
 
-                    // setParameterOptions(Object.keys(parameters));
                     setLiveData({ ...data, parameters });
                 } else {
-                    // setParameterOptions([]);
                     setLiveData(null);
                 }
             } catch (error) {
@@ -112,7 +109,7 @@ const DeviceDetailPage = () => {
     useEffect(() => {
         const savedStartDate = localStorage.getItem('startDate');
         const savedEndDate = localStorage.getItem('endDate');
-    
+
         if (savedStartDate) {
             setStartDate(new Date(savedStartDate));
         }
@@ -213,32 +210,32 @@ const DeviceDetailPage = () => {
             const aggregatedData = data.filter(item => item.dataType === 'aggregated');
 
             const excelData = aggregatedData.map(item => {
-                const { _id, parameters,dataType, dateTime, ...rest } = item;  // Exclude _id
+                const { _id, parameters, dataType, dateTime, ...rest } = item;  // Exclude _id
                 const formattedDateTime = dayjs(dateTime).format('YYYY-MM-DD HH:mm:ss'); // Format datetime
-    
+
                 // Flatten parameters object
                 const flattenedParameters = parameters ? Object.keys(parameters).reduce((acc, key) => {
                     acc[key] = parameters[key];
                     return acc;
                 }, {}) : {};
-    
+
                 return {
-                    dateTime: formattedDateTime, // Include formatted datetime
+                    dateTime: formattedDateTime,
                     ...rest,
-                    ...flattenedParameters // Spread flattened parameters into the main object
+                    ...flattenedParameters 
                 };
             });
-    
+
             const worksheet = XLSX.utils.json_to_sheet(excelData);
-            worksheet['!cols'] = [{ wch: 20 }, 
-                { wch: 20 }]; 
-    
+            worksheet['!cols'] = [{ wch: 20 },
+            { wch: 20 }];
+
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Aggregated Data');
-    
+
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-    
+
             saveAs(blob, `${deviceName}_aggregated_data_${dayjs(downloadStartDate).format('YYYY-MM-DD')}_${dayjs(downloadEndDate).format('YYYY-MM-DD')}.xlsx`);
         } catch (error) {
             console.error('Error downloading data:', error);
@@ -254,54 +251,54 @@ const DeviceDetailPage = () => {
         <>
             {isAdmin ? <Layout /> : <UserNavbar searchDisabled={true} />}
             <div className="device-detail-page">
-            <div className="table-section">
-                <div className="calendar-icon-container">
-                    <div className="date-pickers">
-                    <span className="device-name-title">{deviceName}</span> {/* Add this line */}   
-                        <IconButton onClick={handleIconClick}>
-                            <CalendarTodayIcon />
-                        </IconButton>
-                        {datePickerOpen && (
-                            <DatePicker
-                                selected={calendarDate}
-                                onChange={handleDateSelection}
-                                showTimeSelect
-                                timeIntervals={1}
-                                timeFormat="HH:mm"
-                                dateFormat="yyyy-MM-dd HH:mm"
-                                className='date-picker-input new-date-picker-input'
-                                onClickOutside={() => setDatePickerOpen(true)}
-                                maxDate={maxDate}
-                                filterTime={filterFutureTimes}
-                                yearDropdownItemNumber={15}
-                                scrollableYearDropdown
-                            />
-                        )}
+                <div className="table-section">
+                    <div className="calendar-icon-container">
+                        <div className="date-pickers">
+                            <span className="device-name-title">{deviceName}</span> {/* Add this line */}
+                            <IconButton onClick={handleIconClick}>
+                                <CalendarTodayIcon />
+                            </IconButton>
+                            {datePickerOpen && (
+                                <DatePicker
+                                    selected={calendarDate}
+                                    onChange={handleDateSelection}
+                                    showTimeSelect
+                                    timeIntervals={1}
+                                    timeFormat="HH:mm"
+                                    dateFormat="yyyy-MM-dd HH:mm"
+                                    className='date-picker-input new-date-picker-input'
+                                    onClickOutside={() => setDatePickerOpen(true)}
+                                    maxDate={maxDate}
+                                    filterTime={filterFutureTimes}
+                                    yearDropdownItemNumber={15}
+                                    scrollableYearDropdown
+                                />
+                            )}
+                        </div>
                     </div>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Parameter</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
 
                         <tbody>
-                        {liveData && Object.entries(liveData.parameters || {}).length > 0 ? (
-        Object.entries(liveData.parameters).map(([key, value]) => (
-            <tr key={key}>
-                <td>{key}</td>
-                <td>{value}</td>
-            </tr>
-        ))
-    ) : (
-        <tr>
-            <td colSpan="2" style={{ textAlign: 'center' }}>
-                No live data available currently.
-            </td>
-        </tr>
-    )}
+                            {liveData && Object.entries(liveData.parameters || {}).length > 0 ? (
+                                Object.entries(liveData.parameters).map(([key, value]) => (
+                                    <tr key={key}>
+                                        <td>{key}</td>
+                                        <td>{value}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="2" style={{ textAlign: 'center' }}>
+                                        No live data available currently.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -340,6 +337,7 @@ const DeviceDetailPage = () => {
                         <select
                             value={selectedOption}
                             onChange={(e) => setSelectedOption(e.target.value)}
+                            className='select-option'
                         >
                             <option value="" disabled>Select an option</option>
                             {parameterOptions.map((item, index) => (
