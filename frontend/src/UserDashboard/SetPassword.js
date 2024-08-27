@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './SetPassword.css';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { ArrowBack } from '@mui/icons-material';
 
 const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -79,6 +80,9 @@ const SetPassword = () => {
       }, 5000);
     }
   };
+  const handleBackToLogin = () => {
+    navigate('/');
+  };
 
   return (
     <div className="set-password-wrapper">
@@ -126,8 +130,10 @@ const SetPassword = () => {
         <button onClick={handlePasswordSubmit} className="submit-password-btn">
           Update Password
         </button>
-      
-      
+        <div className="back-to-login">
+            <ArrowBack className="back-icon" />
+            <span onClick={handleBackToLogin}>Back to Login Page</span>
+          </div>
       </div>
         </div>
     </div>

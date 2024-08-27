@@ -5,6 +5,8 @@
     align-items: center;
     height: 100vh;
     background-color: #f9f9f9;
+    background: url('./images/parameter-image.jpg')no-repeat center center;
+    background-size: cover;
 }
 
 .resend-btn:disabled {
