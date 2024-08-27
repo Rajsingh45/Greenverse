@@ -110,12 +110,11 @@ const LoginPage = () => {
                         localStorage.removeItem('lastUsedCredentials');
                     }
 
-                    if (userDetails.email === "admin@example.com" && userDetails.password === "adminpassword") {
-                        navigate("/admin");
-                        localStorage.setItem('adminCredentials', JSON.stringify(userDetails));
+                    const userRole = data.role; // Get role from response
+                    if (userRole === "admin") {
+                    navigate("/admin");
                     } else {
-                        navigate("/dashboard");
-                        localStorage.setItem('adminCredentials', JSON.stringify(userDetails));
+                    navigate("/dashboard");
                     }
                 }
             })

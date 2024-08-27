@@ -11,8 +11,9 @@ import partner5 from './images/partner5.png'
 import partner6 from './images/partner6.jpeg'
 
 const About = () => {
-  const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-  const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+  // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+  const token = localStorage.getItem('token');
+  const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
   const [searchQuery, setSearchQuery] = useState('');
 
   return (

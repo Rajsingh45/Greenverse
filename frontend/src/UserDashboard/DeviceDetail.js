@@ -244,8 +244,9 @@ const DeviceDetailPage = () => {
     };
 
     const [maxDate, setMaxDate] = useState(new Date());
-    const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-    const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+    const token = localStorage.getItem('token');
+    // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
+    const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
 
     return (
         <>

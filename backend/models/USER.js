@@ -21,6 +21,11 @@ const UserSchema = new mongoose.Schema({
         unique: true,
         match: [/^\d{10}$/, 'Please fill a valid contact number']
     },
+    role: {
+        type: String,
+        enum: ['user', 'admin'], // Added role field
+        default: 'user' // Default role is 'user'
+    },
     profilePicture: {
         type: String,
         default: ''

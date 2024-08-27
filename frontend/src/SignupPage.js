@@ -110,7 +110,8 @@ function RegisterForm() {
       const data = await response.json();
 
       if (response.status === 200) {
-        navigate('/verifysignupotp', { state: { userDetails } });
+        const role = userDetails.email === "admin@example.com" ? "admin" : "user"; // Set role based on email
+        navigate('/verifysignupotp', { state: { userDetails, role } });
       } else {
         setError(data.message || "Failed to send OTP");
         setTimeout(() => setError(''), 5000);

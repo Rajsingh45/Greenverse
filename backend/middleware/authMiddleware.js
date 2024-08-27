@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/USER');
+const Admin = require('../models/ADMIN');
 
 const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -17,4 +19,12 @@ const authMiddleware = (req, res, next) => {
         res.status(405).json({ message: 'Invalid or expired token' });
     }
 };
-module.exports = { authMiddleware };
+
+const adminMiddleware = async (req, res, next) => {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(409).json({ message: 'Access denied' });
+    }
+    next();
+};
+
+module.exports = { authMiddleware, adminMiddleware };
