@@ -164,7 +164,7 @@ const NewUserForm = ({ onUserAdded }) => {
               }
             }}
           />
-          {emailError && <div className="error-message">{emailError}</div>}
+          {emailError && <div className="error-message-new">{emailError}</div>}
 
           <label htmlFor="device" className='box'>No. of Devices:</label>
           <input

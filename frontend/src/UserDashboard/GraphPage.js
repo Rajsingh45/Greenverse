@@ -21,6 +21,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import './GraphPage.css';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
+import { LineChart } from '@mui/x-charts/LineChart';
 
 ChartJS.register(
     LineElement,
@@ -141,11 +142,11 @@ const GraphPage = () => {
             }
 
             const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
-        const values = data.map(entry => 
-            typeof entry.parameters === 'object' && entry.parameters !== null
-                ? entry.parameters[parameter] 
-                : entry[parameter]
-        );
+            const values = data.map(entry =>
+                typeof entry.parameters === 'object' && entry.parameters !== null
+                    ? entry.parameters[parameter]
+                    : entry[parameter]
+            );
 
             setChartData({
                 labels: labels,
@@ -192,8 +193,7 @@ const GraphPage = () => {
             return { unit: 'week', stepSize: 1 };
         }
     };
-    
-    
+
     const { unit, stepSize } = getTicks();
     const formatTick = (tick) => {
         return dayjs(tick).format(getTicks() === 'minute' ? 'DD-MM-YYYY HH:mm' : 'DD-MM-YYYY');
@@ -210,9 +210,6 @@ const GraphPage = () => {
             case 'Excel':
                 handleDownloadExcel();
                 break;
-            // case 'Word':
-            //     handleDownloadWord();
-            //     break;
             default:
                 break;
         }
@@ -248,16 +245,6 @@ const GraphPage = () => {
         saveAs(blob, 'chart.xlsx');
     };
 
-    // const handleDownloadWord = () => {
-    //     const doc = new jsPDF();
-    //     doc.text('Air Quality Index Data', 10, 10);
-    //     chartData.labels.forEach((label, index) => {
-    //         doc.text(`${dayjs(label).format('YYYY-MM-DD HH:mm:ss')}: ${chartData.datasets[0].data[index]}`, 10, 20 + index * 10);
-    //     });
-    //     doc.save('chart.doc'); // Use PDF format for better compatibility and viewing
-    // };
-    
-
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
@@ -278,7 +265,7 @@ const GraphPage = () => {
 
     return (
         <>
-            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true}/>}
+            {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true} />}
             <div className="graph-page-wrapper">
                 <div className="chart-section">
                     <div className="dropdown-container" ref={dropdownRef}>
@@ -289,55 +276,43 @@ const GraphPage = () => {
                             <button onClick={() => handleDownload('PNG')} className="dropdown-item">PNG</button>
                             <button onClick={() => handleDownload('PDF')} className="dropdown-item">PDF</button>
                             <button onClick={() => handleDownload('Excel')} className="dropdown-item">Excel</button>
-                            {/* <button onClick={() => handleDownload('Word')} className="dropdown-item">Word</button> */}
                         </div>
                     </div>
-                    <Line
-    data={chartData}
-    options={{
-        scales: {
-            x: {
-                type: 'time',
-                time: {
-                    unit: getTicks().unit,
-                    stepSize: getTicks().stepSize,
-                    tooltipFormat: 'dd-MM-yyyy HH:mm',
-                    displayFormats: {
-                        minute: 'dd-MM-yyyy HH:mm',
-                        day: 'dd-MM-yyyy',
-                        week: 'dd-MM-yyyy',
-                        month: 'dd-MM-yyyy', 
-                        quarter: 'dd-MM-yyyy',
-                        year: 'dd-MM-yyyy' 
-                    }
-                },
-                title: {
-                    display: true,
-                    text: 'Date'
-                },
-                ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 10,
-                    callback: (value) => {
-                        const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
-                        if (duration <= 10) {
-                            return dayjs(value).format('DD-MM-YYYY HH:mm');
-                        }
-                        return dayjs(value).format('DD-MM-YYYY');
-                    }
-                },
-                min: dayjs(startDate).toDate(),
-                max: dayjs(endDate).toDate(),
-
+                    <LineChart
+    xAxis={[
+        {
+            scaleType: 'time',
+            data: chartData.labels,
+            label: 'Date', // X-axis title
+            valueFormatter: (value) => {
+                const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
+                return duration <= 10
+                    ? dayjs(value).format('DD-MM-YYYY HH:mm')
+                    : dayjs(value).format('DD-MM-YYYY HH:mm');
             },
-            y: {
-                title: {
-                    display: true,
-                    text: parameter
-                }
-            }
-        }
+            min: dayjs(startDate).valueOf(),
+            max: dayjs(endDate).valueOf(),
+        },
+    ]}
+    series={[
+        {
+            data: chartData.datasets[0].data,
+            label: parameter,
+        },
+    ]}
+    yAxis={[
+        {
+            label: parameter, // Y-axis title
+        },
+    ]}
+    tooltip={{
+        valueFormatter: (value, index) => {
+            return `${value}`; // Shows only the value
+        },
+        showCursor: false,
     }}
+    showCursor={false} 
+    height={400} // Adjust the height as needed
 />
 
                 </div>

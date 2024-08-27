@@ -153,10 +153,6 @@
     width: 100%;
   }
 
-  .pagination {
-    flex-direction: column;
-  }
-
   .pagination-button {
     margin: 5px 0;
   }
