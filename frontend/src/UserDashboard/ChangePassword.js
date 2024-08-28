@@ -95,7 +95,7 @@ const ChangePasswordPageUnique = () => {
         .then(response => {
             setIsProcessing(false);
             if (response.ok) {
-                navigate('/new-otp', { state: { userDetails: { email: passwordDetails.email, password: passwordDetails.newPassword } } });
+                navigate('/new-otp', { state: { userDetails: { email: passwordDetails.email, password: passwordDetails.newPassword, oldPassword: passwordDetails.oldPassword } } });
                 setPasswordDetails({
                     email: "",
                     oldPassword: "",
@@ -150,7 +150,7 @@ const ChangePasswordPageUnique = () => {
                     </div>
                     <div className="unique-input-groups unique-password-input-group">
                         <input 
-                            type={showOldPassword ? "text" : "password"} 
+                            type={showOldPassword ? "password" : "text"} 
                             name="oldPassword" 
                             placeholder="Old Password" 
                             value={passwordDetails.oldPassword} 
@@ -165,7 +165,7 @@ const ChangePasswordPageUnique = () => {
                     </div>
                     <div className="unique-input-groups unique-password-input-group">
                         <input 
-                            type={showNewPassword ? "text" : "password"} 
+                            type={showNewPassword ? "password" : "text"} 
                             name="newPassword" 
                             placeholder="New Password" 
                             value={passwordDetails.newPassword} 

@@ -4,7 +4,6 @@ import './verifyotp.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const VerifyOtpPage = () => {
     const navigate = useNavigate();
     const location = useLocation();

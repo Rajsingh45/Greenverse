@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './verifyotp.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const VerifyOtpPage = () => {
     const navigate = useNavigate();
@@ -47,8 +49,10 @@ const VerifyOtpPage = () => {
             });
 
             if (response.status === 200) {
-                window.alert('Password changed successfully. Redirecting to login page.');
-                navigate('/');
+                toast.success('Password changed successfully. Redirecting to login page.', {
+                    onClose: () => navigate('/'),
+                    autoClose: 5000,
+                  });
             } else {
                 const data = await response.json();
                 setError(data.message || "Invalid OTP");
@@ -64,7 +68,7 @@ const VerifyOtpPage = () => {
             try {
                 const response = await fetch("http://localhost:5000/auth/requestpasswordotp", {
                     method: "POST",
-                    body: JSON.stringify({ email: userDetails.email }),
+                    body: JSON.stringify({ email: userDetails.email, oldPassword: userDetails.oldPassword  }),
                     headers: {
                         "Content-Type": "application/json"
                     }
@@ -72,7 +76,10 @@ const VerifyOtpPage = () => {
 
                 if (response.status === 200) {
                     setResendTimer(60);
-                    window.alert("OTP has been resent successfully."); 
+                    toast.success('OTP has been resent successfully.', {
+                        autoClose: 5000,
+                        closeOnClick: true,
+                      });
                 } else {
                     const data = await response.json();
                     setError(data.message || "Failed to resend OTP");
@@ -116,6 +123,7 @@ const VerifyOtpPage = () => {
 </button>
                 <button className="back-btn" onClick={handleBack}>Back</button>
             </div>
+          <ToastContainer />
         </div>
     );
 };
