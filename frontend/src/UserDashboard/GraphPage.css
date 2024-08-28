@@ -2,7 +2,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* background-color: #e0f2f1;  */
     background: url('../images/edituser-image.jpg');
     padding: 20px;
     min-height: calc(100vh - 80px);
@@ -10,15 +9,13 @@
     box-sizing: border-box;
 }
 
-.MuiLineChart-yAxisLabel {
-    padding-right: 10px; /* Adjust as needed */
+.canvasjs-chart-credit {
+    display: none;
 }
 
 .chart-section {
     width: 100%;
     max-width: 900px;
-    /* max-height: 900px; */
-    min-height: calc(100vh - 80px);
     margin: 0 auto; 
     padding: 27px;
     background-color: #ffffff; 

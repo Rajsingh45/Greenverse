@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Line } from 'react-chartjs-2';
 import dayjs from 'dayjs';
 import {
     Chart as ChartJS,
@@ -22,7 +21,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import './GraphPage.css';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
-import { LineChart } from '@mui/x-charts/LineChart';
+import CanvasJSReact from '@canvasjs/react-charts';
 
 ChartJS.register(
     LineElement,
@@ -52,13 +51,54 @@ const GraphPage = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
     const token = localStorage.getItem('token');
     const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
 
     const [users, setUsers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
+
+    const options = {
+        zoomEnabled: true,
+        animationEnabled: true,
+        title: {
+            text: parameter,
+            margin: 20
+        },
+        axisX: {
+            title: "Date and Time", 
+            titleFontWeight: "bold",
+            titleFontSize:22,
+            minimum: new Date(startDate),
+            maximum: new Date(endDate), 
+            valueFormatString: "DD MMM YYYY HH:mm",  
+            labelAngle: 0, 
+        },
+        axisY: {
+            title: "Value",  
+            titleFontWeight: "bold",
+            titleFontSize:22,
+            includeZero: false
+        },
+        toolTip: {
+            contentFormatter: function (e) {
+                const date = new Date(e.entries[0].dataPoint.x);
+                const formattedDate = `${String(date.getDate()).padStart(2, '0')} ${date.toLocaleString('en-US', { month: 'short' })} ${date.getFullYear()}`;
+                const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                return `${formattedDate} ${formattedTime} <br> ${e.entries[0].dataSeries.name}: ${e.entries[0].dataPoint.y}`;
+            }
+        },
+        data: [
+            {
+                type: "line",
+                dataPoints: chartData.labels.map((label, index) => ({
+                    x: new Date(label),
+                    y: chartData.datasets[0].data[index]
+                })),
+                name: parameter
+            }
+        ]
+    };
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -218,14 +258,14 @@ const GraphPage = () => {
     };
 
     const handleDownloadPNG = () => {
-        const chartElement = document.getElementById('chart-container'); // Updated selector to match custom ID
+        const chartElement = document.getElementById('chart-container');
         
         if (!chartElement) {
             console.error('Chart element not found');
             return;
         }
         
-        html2canvas(chartElement).then((canvas) => {
+        html2canvas(chartElement, { useCORS: true }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const link = document.createElement('a');
             link.href = imgData;
@@ -237,7 +277,7 @@ const GraphPage = () => {
     };
     
     const handleDownloadPDF = () => {
-        const chartElement = document.getElementById('chart-container'); // Updated selector to match custom ID
+        const chartElement = document.getElementById('chart-container');
         
         if (!chartElement) {
             console.error('Chart element not found');
@@ -302,47 +342,9 @@ const GraphPage = () => {
                             <button onClick={() => handleDownload('Excel')} className="dropdown-item">Excel</button>
                         </div>
                     </div>
-                    <LineChart
-    xAxis={[
-        {
-            scaleType: 'time',
-            data: chartData.labels,
-            label: 'Date', // X-axis title
-            valueFormatter: (value) => {
-                const duration = dayjs(endDate).diff(dayjs(startDate), 'day');
-                return duration <= 10
-                    ? dayjs(value).format('DD-MM-YYYY HH:mm')
-                    : dayjs(value).format('DD-MM-YYYY HH:mm');
-            },
-            min: dayjs(startDate).valueOf(),
-            max: dayjs(endDate).valueOf(),
-        },
-    ]}
-    series={[
-        {
-            data: chartData.datasets[0].data,
-            label: parameter,
-        },
-    ]}
-    yAxis={[
-        {
-            label: parameter,
-            labelFontSize: 14, // Adjusts the font size of the label
-            tickSize: 5, // Reduces the tick size to create space
-            tickPadding: 10, 
-        },
-        
-    ]}
-    tooltip={{
-        valueFormatter: (value, index) => {
-            return `${value}`; // Shows only the value
-        },
-        showCursor: false,
-    }}
-    showCursor={false} 
-    height={400} // Adjust the height as needed
-/>
-
+                    <div id="chart-container">
+    <CanvasJSReact.CanvasJSChart options={options} />
+</div>
                 </div>
             </div>
         </>
