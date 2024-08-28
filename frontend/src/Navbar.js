@@ -183,7 +183,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
         <a href="/about-us" className="navbar-link sect">About</a>
       </div>
 
-      <div className={`profile-icon-container`}>
+      <div className={`profile-icon-container ${searchInputDisabled ? 'disabled' : ''}`}>
         <div className={`search-container ${searchInputDisabled ? 'disabled' : ''}`}>
           <Search>
             <SearchIconWrapper>

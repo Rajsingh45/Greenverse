@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './NeedHelp.css';
-import axios from 'axios';
 
 const NeedHelp = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });

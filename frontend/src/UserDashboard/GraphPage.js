@@ -1,17 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import dayjs from 'dayjs';
-import {
-    Chart as ChartJS,
-    LineElement,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    TimeScale,
-    Title,
-    Tooltip,
-    Legend
-} from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -22,17 +11,6 @@ import './GraphPage.css';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
 import CanvasJSReact from '@canvasjs/react-charts';
-
-ChartJS.register(
-    LineElement,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    TimeScale,
-    Title,
-    Tooltip,
-    Legend
-);
 
 const GraphPage = () => {
     const location = useLocation();
@@ -66,18 +44,18 @@ const GraphPage = () => {
             margin: 20
         },
         axisX: {
-            title: "Date and Time", 
+            title: "Date and Time",
             titleFontWeight: "bold",
-            titleFontSize:22,
+            titleFontSize: 22,
             minimum: new Date(startDate),
-            maximum: new Date(endDate), 
-            valueFormatString: "DD MMM YYYY HH:mm",  
-            labelAngle: 0, 
+            maximum: new Date(endDate),
+            valueFormatString: "DD MMM YYYY HH:mm",
+            labelAngle: 0,
         },
         axisY: {
-            title: "Value",  
+            title: "Value",
             titleFontWeight: "bold",
-            titleFontSize:22,
+            titleFontSize: 22,
             includeZero: false
         },
         toolTip: {
@@ -237,9 +215,6 @@ const GraphPage = () => {
     };
 
     const { unit, stepSize } = getTicks();
-    const formatTick = (tick) => {
-        return dayjs(tick).format(getTicks() === 'minute' ? 'DD-MM-YYYY HH:mm' : 'DD-MM-YYYY');
-    };
 
     const handleDownload = (type) => {
         switch (type) {
@@ -259,12 +234,12 @@ const GraphPage = () => {
 
     const handleDownloadPNG = () => {
         const chartElement = document.getElementById('chart-container');
-        
+
         if (!chartElement) {
             console.error('Chart element not found');
             return;
         }
-        
+
         html2canvas(chartElement, { useCORS: true }).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const link = document.createElement('a');
@@ -275,15 +250,15 @@ const GraphPage = () => {
             console.error('Error generating PNG:', error);
         });
     };
-    
+
     const handleDownloadPDF = () => {
         const chartElement = document.getElementById('chart-container');
-        
+
         if (!chartElement) {
             console.error('Chart element not found');
             return;
         }
-        
+
         html2canvas(chartElement).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF();
@@ -293,8 +268,7 @@ const GraphPage = () => {
             console.error('Error generating PDF:', error);
         });
     };
-    
-    
+
     const handleDownloadExcel = () => {
         const worksheet = XLSX.utils.json_to_sheet(chartData.labels.map((label, index) => ({
             Date: dayjs(label).format('YYYY-MM-DD HH:mm:ss'),
@@ -307,8 +281,7 @@ const GraphPage = () => {
         const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
         saveAs(blob, 'chart.xlsx');
     };
-    
-    
+
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
     };
@@ -332,6 +305,9 @@ const GraphPage = () => {
             {isAdmin ? <Layout searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> : <UserNavbar searchDisabled={true} />}
             <div className="graph-page-wrapper">
                 <div className="chart-section">
+                    <div className="important-note">
+                        <p>Important: Ensure you have selected the correct date range before generating the report.</p>
+                    </div>
                     <div className="dropdown-container" ref={dropdownRef}>
                         <button className="dropdown-button" onClick={toggleDropdown}>
                             Download <FaChevronDown className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`} />
@@ -343,8 +319,8 @@ const GraphPage = () => {
                         </div>
                     </div>
                     <div id="chart-container">
-    <CanvasJSReact.CanvasJSChart options={options} />
-</div>
+                        <CanvasJSReact.CanvasJSChart options={options} />
+                    </div>
                 </div>
             </div>
         </>

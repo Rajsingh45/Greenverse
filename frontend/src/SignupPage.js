@@ -28,10 +28,16 @@ function RegisterForm() {
     }
   }, [userDetails.name]);
 
-  useEffect(() => {
-    setShowPassword(userDetails.password !== "");
-    setShowConfirmPassword(userDetails.confirmPassword !== "");
-  }, [userDetails.password, userDetails.confirmPassword]);
+  // useEffect(() => {
+
+    useEffect(() => {
+      // Ensure password visibility is off by default
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+    }, []); 
+  //   setShowPassword(userDetails.password !== "");
+  //   setShowConfirmPassword(userDetails.confirmPassword !== "");
+  // }, [userDetails.password, userDetails.confirmPassword]);
 
   const checkNameAvailability = async (name) => {
     try {
@@ -126,16 +132,12 @@ function RegisterForm() {
   };
 
   const toggleShowPassword = () => {
-    if (userDetails.password) {
-      setShowPassword(!showPassword);
-    }
-  };
+    setShowPassword(prevShowPassword => !prevShowPassword);
+};
 
-  const toggleShowConfirmPassword = () => {
-    if (userDetails.confirmPassword) {
-      setShowConfirmPassword(!showConfirmPassword);
-    }
-  };
+const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(prevShowConfirmPassword => !prevShowConfirmPassword);
+};
 
   const handleNeedHelp = () => {
     navigate("/need-help");
@@ -182,7 +184,7 @@ function RegisterForm() {
               />
               <div className="password-containerq">
                 <input
-                  type={showPassword ? "password" : "text"}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   name="password"
                   value={userDetails.password}
@@ -192,13 +194,13 @@ function RegisterForm() {
                 />
                 {userDetails.password && (
                   <span className="password-toggleq" onClick={toggleShowPassword}>
-                    <FontAwesomeIcon icon={showPassword ? faEye :  faEyeSlash} />
+                    <FontAwesomeIcon icon={showPassword ? faEyeSlash :  faEye} />
                   </span>
                 )}
               </div>
               <div className="password-containerq">
                 <input
-                  type={showConfirmPassword ? "password" : "text"}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   name="confirmPassword"
                   value={userDetails.confirmPassword}
@@ -208,7 +210,7 @@ function RegisterForm() {
                 />
                 {userDetails.confirmPassword && (
                   <span className="password-toggleq" onClick={toggleShowConfirmPassword}>
-                    <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} />
+                    <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
                   </span>
                 )}
               </div>

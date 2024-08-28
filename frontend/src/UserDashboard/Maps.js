@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import GoogleMapReact from 'google-map-react';
 import './Maps.css'; 
 import UserNavbar from '../UserNavbar.js';
 
@@ -8,16 +7,6 @@ const MapsPage = () => {
   const [mapCenter, setMapCenter] = useState({ lat: 51.505, lng: -0.09 });
   const [markers, setMarkers] = useState([]);
   const [mapLoaded, setMapLoaded] = useState(false);
-
-  const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
-  const defaultProps = {
-    center: {
-      lat: 10.99835602,
-      lng: 77.01502627
-    },
-    zoom: 11
-  };
 
   const handleLoadMap = () => {
     if (!apiKey) {
@@ -66,12 +55,12 @@ const MapsPage = () => {
     };
   };
 
-  const addMarkers = () => {
-    setMarkers([
-      { position: { lat: 19.076, lng: 72.8777 }, message: 'Mumbai' },
-      { position: { lat: 28.6139, lng: 77.2090 }, message: 'Delhi' }
-    ]);
-  };
+  // const addMarkers = () => {
+  //   setMarkers([
+  //     { position: { lat: 19.076, lng: 72.8777 }, message: 'Mumbai' },
+  //     { position: { lat: 28.6139, lng: 77.2090 }, message: 'Delhi' }
+  //   ]);
+  // };
 
   return (
     <>
