@@ -4,6 +4,8 @@ import { TextField, Button, Typography, Avatar } from '@mui/material';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
 import { MoreVert } from '@mui/icons-material';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -43,7 +45,10 @@ const UserProfile = () => {
 
   const handleDeleteProfilePic = async () => {
     if (!profilePic) {
-      alert('No profile picture to delete.');
+      toast.success('No profile picture to delete.', {
+        autoClose: 5000,
+        closeOnClick: true,
+      });
       return;
     }
     const token = localStorage.getItem('token');
@@ -58,16 +63,19 @@ const UserProfile = () => {
 
       const data = await response.json();
       if (data.message === 'Profile picture deleted successfully') {
-        alert('Profile picture deleted successfully.');
+        toast.success('Profile picture deleted successfully.', {
+          autoClose: 5000,
+          closeOnClick: true,
+          onClose: () => {
+            window.location.reload();
+          },
+        });
         setProfilePic(null);
         setProfilePicFile(null);
-        window.location.reload();
       } else {
-        console.error('Error deleting profile picture:', data);
         alert('Failed to delete profile picture.');
       }
     } catch (error) {
-      console.error('Error deleting profile picture:', error);
       alert('An error occurred while deleting the profile picture.');
     }
   };
@@ -130,16 +138,19 @@ const UserProfile = () => {
 
         const data = await response.json();
         if (data.message === 'Profile picture uploaded successfully') {
-          alert('Profile picture uploaded successfully.');
-          setProfilePic(previewURL); // Update the displayed profile picture
-          setProfilePicFile(null); // Clear the file input
-          window.location.reload();
+          toast.success('Profile picture updated successfully.', {
+            autoClose: 5000,
+            closeOnClick: true,
+            onClose: () => {
+              window.location.reload();
+            },
+          });
+          setProfilePic(previewURL);
+          setProfilePicFile(null); 
         } else {
-          console.error('Error uploading profile picture:', data);
           alert('Failed to upload profile picture.');
         }
       } catch (error) {
-        console.error('Error uploading profile picture:', error);
         alert('An error occurred while uploading the profile picture.');
       }
     } else {
@@ -166,11 +177,15 @@ const UserProfile = () => {
 
       const data = await response.json();
       if (data.message === 'Name updated successfully in both collections') {
-        alert('Name updated successfully.');
+        toast.success('Name updated successfully.', {
+          autoClose: 5000,
+          closeOnClick: true,
+          onClose: () => {
+            window.location.reload();
+          },
+        });
         setIsEditingName(false);
-        window.location.reload();
       } else {
-        console.error('Error updating name:', data);
         alert('Failed to update name.');
         window.location.reload();
       }
@@ -290,6 +305,7 @@ const UserProfile = () => {
             </div>
           )}
         </div>
+      <ToastContainer />
       </div>
     </>
   );
