@@ -6,6 +6,7 @@
     box-sizing: border-box;
     background: url('../images/parameter-image.jpg') no-repeat center center;
     background-size: cover;
+    animation: fadeIn 1s ease-in;
 }
 .device-name-title {
     display: block;
@@ -15,7 +16,12 @@
     font-weight: bold;
     margin-top: 10px;
     position: absolute;
-    /* background-color: blue; */
+    color: #2c3e50;
+    transition: color 0.3s ease;
+}
+
+.device-name-title:hover {
+    color: #3498db;
 }
 
 .table-section {
@@ -36,7 +42,22 @@
 }
 
 .table-section th {
-    background-color: #f2f2f2;
+    background-color: #3498db;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.table-section th:hover {
+    background-color: #2980b9;
+}
+
+.table-section td {
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.table-section td:hover {
+    background-color: #ecf0f1;
 }
 
 .filter-section {
@@ -52,7 +73,6 @@
 .date-picker {
     margin-bottom: 10px;
     width: 100%;
-    
 }
 
 .date-picker label {
@@ -96,10 +116,19 @@
     width: 100%;
 }
 
+.graph-button, .download-button {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.graph-button:hover, .download-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
 .download-button{
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: #28a745;
     color: white;
     border: none;
     border-radius: 5px;
@@ -107,6 +136,30 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     width: 100%;
+}
+
+.download-button:hover {
+    background-color: #218838;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .graph-button:hover {

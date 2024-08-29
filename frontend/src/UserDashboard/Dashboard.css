@@ -6,6 +6,7 @@
   width: 100%;
   min-height: calc(100vh - 80px);
   position: relative;
+  animation: fadeIn 1s ease-in;
 }
 
 .title {
@@ -23,11 +24,24 @@
   width: 30%;
   margin: 10px;
   text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.05);
+}
+
+.gallery-item img {
+  transition: opacity 0.3s ease;
 }
 
 .image-container {
   position: relative;
   width: 100%;
+  border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.5s ease-out;
 }
 
 .gallery-item img {
@@ -40,11 +54,11 @@
   color: #333;
   padding: 1px;
   cursor: pointer;
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .device-name-card:hover {
-  background-color: rgb(28, 181, 28);
+  transform: scale(1.05);
 }
 
 .device-text {
@@ -56,6 +70,7 @@
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+  animation: fadeIn 1s ease-in;
 }
 
 .pagination-button {
@@ -65,10 +80,16 @@
   padding: 10px;
   margin: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.pagination-button:hover {
+  transform: scale(1.05);
 }
 
 .pagination-button:disabled {
   background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .page-number {

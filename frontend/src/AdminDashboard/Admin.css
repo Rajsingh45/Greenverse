@@ -4,6 +4,7 @@
   background: white;
   background: url('../images/admin-image.jpg') no-repeat center center;
   background-size: cover;
+  animation: fadeIn 1s ease-in;
 }
 
 .left {
@@ -26,6 +27,7 @@
   margin-bottom: 1rem;
   margin-top:0rem;
   background-color: rgb(255, 253, 253);
+  animation: slideIn 0.5s ease-out;
 }
 
 .user-table th, .user-table td {
@@ -52,7 +54,7 @@
 
 .add-user-btn:hover {
   background-color: #0056b3;
-  transform: scale(1.05);
+  transform: scale(1.05) translateY(-2px);
 }
 
 .add-user-btn:focus {
