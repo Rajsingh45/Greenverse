@@ -15,6 +15,8 @@ import CanvasJSReact from '@canvasjs/react-charts';
 const GraphPage = () => {
     const location = useLocation();
     const { startDate, endDate, parameter, deviceName } = location.state;
+    const [noData, setNoData] = useState(false);
+
     const [chartData, setChartData] = useState({
         labels: [],
         datasets: [
@@ -127,10 +129,9 @@ const GraphPage = () => {
             }
 
             const data = await response.json();
-            console.log('Fetched data:', data);
 
-            if (!Array.isArray(data)) {
-                console.warn('Data is not in expected format');
+            if (!Array.isArray(data) || data.length === 0) {
+                setNoData(true);
                 setChartData({
                     labels: [],
                     datasets: [
@@ -143,23 +144,7 @@ const GraphPage = () => {
                     ]
                 });
                 return;
-            }
-
-            if (data.length === 0) {
-                console.warn('No data available for the selected date range.');
-                setChartData({
-                    labels: [],
-                    datasets: [
-                        {
-                            label: parameter,
-                            data: [],
-                            borderColor: 'rgba(75,192,192,1)',
-                            fill: false
-                        }
-                    ]
-                });
-                return;
-            }
+            }    
 
             const labels = data.map(entry => dayjs(entry.dateTime, 'YYYY-MM-DD HH:mm:ss').valueOf());
             const values = data.map(entry =>
@@ -168,6 +153,7 @@ const GraphPage = () => {
                     : entry[parameter]
             );
 
+            setNoData(false);
             setChartData({
                 labels: labels,
                 datasets: [
@@ -180,7 +166,7 @@ const GraphPage = () => {
                 ]
             });
         } catch (error) {
-            console.error('Error fetching data:', error);
+            setNoData(true);
             setChartData({
                 labels: [],
                 datasets: [
@@ -319,7 +305,13 @@ const GraphPage = () => {
                         </div>
                     </div>
                     <div id="chart-container">
+                        {noData ? (
+                        <div className="no-data-message">
+                            <p>No data available for the selected date range.</p>
+                        </div>
+                    ) : (
                         <CanvasJSReact.CanvasJSChart options={options} />
+                    )}
                     </div>
                 </div>
             </div>
