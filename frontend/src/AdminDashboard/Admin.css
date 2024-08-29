@@ -206,3 +206,45 @@
     margin-left: 10px;
   }
 }
+
+/* Confirmation Dialog Styling */
+.MuiDialog-paper {
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(22, 14, 14, 0.2);
+}
+
+.MuiDialogTitle-root {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+.MuiDialogContent-root {
+  font-size: 16px;
+  color: #555;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.MuiDialogActions-root {
+  justify-content: center;
+}
+
+.MuiButton-root {
+  min-width: 80px;
+  margin: 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.MuiButton-primary {
+  color: #1976d2;
+  border: 1px solid #1976d2;
+}
+
+.MuiButton-secondary {
+  background-color: #d32f2f;
+  color: white;
+}

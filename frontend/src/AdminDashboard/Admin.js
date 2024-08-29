@@ -6,6 +6,8 @@ import EditUserForm from './EditUser.js';
 import { Menu, MenuItem, IconButton, TextField, Button, Pagination } from '@mui/material';
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+
 
 const Admin = ({ users = [], setUsers }) => {
   const [showNewUserForm, setShowNewUserForm] = useState(false);
@@ -23,8 +25,8 @@ const Admin = ({ users = [], setUsers }) => {
   const [fullUserList, setFullUserList] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [noUserFound, setNoUserFound] = useState(false);
-
-
+  const [showConfirmation, setShowConfirmation] = useState(false);
+const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -133,34 +135,68 @@ const Admin = ({ users = [], setUsers }) => {
     setShowEditUserForm(false);
   };
 
-  const handleDeleteUser = async (userEmail) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this user? This action will also delete all associated devices.');
-    if (confirmDelete) {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/admin/deleteuser', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ email: userEmail })
-            });
+//   const handleDeleteUser = async (userEmail) => {
+//     const confirmDelete = window.confirm('Are you sure you want to delete this user? This action will also delete all associated devices.');
+//     if (confirmDelete) {
+//         try {
+//             const token = localStorage.getItem('token');
+//             const response = await fetch('http://localhost:5000/admin/deleteuser', {
+//                 method: 'DELETE',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Authorization': `Bearer ${token}`
+//                 },
+//                 body: JSON.stringify({ email: userEmail })
+//             });
 
-            if (!response.ok) {
-                throw new Error('Failed to delete user');
-            }
+//             if (!response.ok) {
+//                 throw new Error('Failed to delete user');
+//             }
 
-            const data = await response.json();
-            console.log('User deleted successfully:', data);
-            window.location.reload();
-            setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
-            setAnchorEl(null);
-        } catch (error) {
-            alert('Error deleting user');
-        }
-    }
+//             const data = await response.json();
+//             console.log('User deleted successfully:', data);
+//             window.location.reload();
+//             setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userEmail) : []);
+//             setAnchorEl(null);
+//         } catch (error) {
+//             alert('Error deleting user');
+//         }
+//     }
+// };
+const handleDeleteUser = (userEmail) => {
+  setUserToDelete(userEmail);
+  setShowConfirmation(true);
 };
+
+const confirmDeleteUser = async () => {
+  if (userToDelete) {
+      try {
+          const token = localStorage.getItem('token');
+          const response = await fetch('http://localhost:5000/admin/deleteuser', {
+              method: 'DELETE',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ email: userToDelete })
+          });
+
+          if (!response.ok) {
+              throw new Error('Failed to delete user');
+          }
+
+          const data = await response.json();
+          console.log('User deleted successfully:', data);
+          window.location.reload();
+          setUsers(prevUsers => Array.isArray(prevUsers) ? prevUsers.filter(user => user.email !== userToDelete) : []);
+      } catch (error) {
+          alert('Error deleting user');
+      }
+  }
+  setShowConfirmation(false);
+  setUserToDelete(null);
+};
+
 
   const handleMenuOpen = (event, user) => {
     setAnchorEl(event.currentTarget);
@@ -208,99 +244,121 @@ const Admin = ({ users = [], setUsers }) => {
       setNoUserFound(filteredUsers.length === 0 && searchQuery !== '');
     }, [filteredUsers, searchQuery]);
     
-
-  return (
-    <>
-      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} currentUserEmail={currentUserEmail} onUserNameClick={handleNameClick}/>
-      <div className="containers container">
-        {showNewUserForm ? (
-          <NewUserForm onUserAdded={handleUserAdded} />
-        ) : showEditUserForm ? (
-          <EditUserForm onUserUpdated={handleUserUpdated} />
-        ) : (
-          <>
-            <div className="left">
-            {noUserFound && <p className="no-user-message">No such User found!</p>}
-              <table className="user-table">
-                <thead className='heads-form'>
-                  <tr>
-                    <th>Users</th>
-                    <th>Email</th>
-                    <th>Date</th>
-                    <th>Devices</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage).map(user => (
-                    <tr key={user.email}>
-                      <td
-                        style={{ color: 'blue', cursor: 'pointer' }}
-                        onClick={event => handleNameClick(user, event)}
-                      >
-                        {renamingUserEmail === user.email ? (
-                          <>
-                            <TextField
-                              value={newName}
-                              onChange={handleRenameChange}
-                              autoFocus
-                            />
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              onClick={handleRenameSubmit}
-                              className='save-button'
-                            >
-                              Save
-                            </Button>
-                          </>
-                        ) : (
-                          user.name
-                        )}
-                      </td>
-                      <td>{user.email}</td>
-                      <td>{formatDate(user.dateAdded)}</td>
-                      <td>{user.noofdevices}</td>
-                      <td>
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={event => handleMenuOpen(event, user)}
-                        >
-                          <MoreVert />
-                        </IconButton>
-                        <Menu
-                          id="simple-menu"
-                          anchorEl={anchorEl}
-                          keepMounted
-                          open={Boolean(anchorEl) && menuUser?.email === user.email}
-                          onClose={handleMenuClose}
-                        >
-                          <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
-                          <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
-                          <MenuItem onClick={() => handleDeleteUser(user.email)}>Delete</MenuItem>
-                        </Menu>
-                      </td>
+    return (
+      <>
+        <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} currentUserEmail={currentUserEmail} onUserNameClick={handleNameClick}/>
+        <div className="containers container">
+          {showNewUserForm ? (
+            <NewUserForm onUserAdded={handleUserAdded} />
+          ) : showEditUserForm ? (
+            <EditUserForm onUserUpdated={handleUserUpdated} />
+          ) : (
+            <>
+              <div className="left">
+              {noUserFound && <p className="no-user-message">No such User found!</p>}
+                <table className="user-table">
+                  <thead className='heads-form'>
+                    <tr>
+                      <th>Users</th>
+                      <th>Email</th>
+                      <th>Date</th>
+                      <th>Devices</th>
+                      <th>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              <button className="add-user-btn" onClick={handleNewUser}>Add New User</button>
-              <div className="pagination-controls">
-                <Pagination
-                  count={totalPages}
-                  page={currentPage}
-                  onChange={handlePageChange}
-                  variant="outlined"
-                  color="primary"
-                />
+                  </thead>
+                  <tbody>
+                    {filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage).map(user => (
+                      <tr key={user.email}>
+                        <td
+                          style={{ color: 'blue', cursor: 'pointer' }}
+                          onClick={event => handleNameClick(user, event)}
+                        >
+                          {renamingUserEmail === user.email ? (
+                            <>
+                              <TextField
+                                value={newName}
+                                onChange={handleRenameChange}
+                                autoFocus
+                              />
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={handleRenameSubmit}
+                                className='save-button'
+                              >
+                                Save
+                              </Button>
+                            </>
+                          ) : (
+                            user.name
+                          )}
+                        </td>
+                        <td>{user.email}</td>
+                        <td>{formatDate(user.dateAdded)}</td>
+                        <td>{user.noofdevices}</td>
+                        <td>
+                          <IconButton
+                            aria-controls="simple-menu"
+                            aria-haspopup="true"
+                            onClick={event => handleMenuOpen(event, user)}
+                          >
+                            <MoreVert />
+                          </IconButton>
+                          <Menu
+                            id="simple-menu"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl) && menuUser?.email === user.email}
+                            onClose={handleMenuClose}
+                          >
+                            <MenuItem onClick={() => handleRenameUser(user)}>Rename</MenuItem>
+                            <MenuItem onClick={() => handleEditUser(user)}>Edit</MenuItem>
+                            <MenuItem onClick={() => handleDeleteUser(user.email)}>Delete</MenuItem>
+                          </Menu>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <button className="add-user-btn" onClick={handleNewUser}>Add New User</button>
+                <div className="pagination-controls">
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    color="primary"
+                  />
+                </div>
               </div>
-            </div>
-          </>
-        )}
-      </div>
-    </>
-  );
-};
+            </>
+          )}
+        </div>
+  
+        {/* Confirmation Dialog */}
+        <Dialog
+          open={showConfirmation}
+          onClose={() => setShowConfirmation(false)}
+        >
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          {/* <DialogContent> */}
+            {/* Are you sure you want to delete this user? This action will also delete all associated devices. */}
+<DialogContent>
+  {userToDelete 
+    ? `Are you sure you want to delete the user "${fetchedUsers.find(user => user.email === userToDelete)?.name}"? This action will also delete all associated devices and cannot be undone.`
+    : 'Are you sure you want to delete this user? This action will also delete all associated devices and cannot be undone.'}
+</DialogContent>
+
+
+
+          {/* </DialogContent> */}
+          <DialogActions>
+            <Button onClick={() => setShowConfirmation(false)} color="primary">Cancel</Button>
+            <Button onClick={confirmDeleteUser} color="secondary">OK</Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  };
 
 export default Admin;

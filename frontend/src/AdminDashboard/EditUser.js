@@ -4,6 +4,8 @@ import { Menu, MenuItem, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import './EditUser.css';
 import Navbar from '../Navbar.js';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+
 
 const EditUserForm = ({ onUserUpdated }) => {
   const location = useLocation();
@@ -18,6 +20,9 @@ const EditUserForm = ({ onUserUpdated }) => {
   const [newTopic, setNewTopic] = useState('');
   const [isAddingTopic, setIsAddingTopic] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+const [topicToDelete, setTopicToDelete] = useState(null);
+
 
 
   useEffect(() => {
@@ -49,49 +54,103 @@ const EditUserForm = ({ onUserUpdated }) => {
     setSelectedTopicIndex(null);
   };
 
-  const handleDeleteTopic = async () => {
-    if (selectedTopicIndex !== null) {
-      const topicToDelete = espTopics[selectedTopicIndex];
-      const isConfirmed = window.confirm(`Are you sure you want to delete "${topicToDelete}" Device?`);
-  
-      if (isConfirmed) {
-        // Remove the topic from the espTopics array immediately
-        const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
-        setEspTopics(newEspTopics);
-        setDevices(newEspTopics.length);
-  
-        // Close the menu
-        handleMenuClose();
-        
-        try {
-          const token = localStorage.getItem('token');
-          if (!token) {
-            throw new Error('No token found in localStorage');
-          }
-  
-          const response = await fetch('http://localhost:5000/admin/deletetopic', {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ name, topic: topicToDelete })
-          });
-  
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-  
-          const data = await response.json();
-          console.log('Device deleted successfully:', data);
-  
-          setHasUnsavedChanges(true);
-        } catch (error) {
-          console.error('Error:', error);
-        }
+// Function to set the topic to delete and show confirmation
+const handleDeleteTopic = (topic) => {
+  setTopicToDelete(topic);
+  setShowConfirmation(true);
+};
+
+// Function to confirm deletion
+const confirmDeleteTopic = async () => {
+  if (selectedTopicIndex !== null) {
+    const topicToDelete = espTopics[selectedTopicIndex];
+
+    // Remove the topic from the espTopics array immediately
+    const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+    setEspTopics(newEspTopics);
+    setDevices(newEspTopics.length);
+
+    // Close the menu
+    handleMenuClose();
+    
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found in localStorage');
       }
+
+      const response = await fetch('http://localhost:5000/admin/deletetopic', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ name, topic: topicToDelete })
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Device deleted successfully:', data);
+
+      setHasUnsavedChanges(true);
+    } catch (error) {
+      console.error('Error:', error);
     }
-  };
+  }
+
+  // Close the confirmation dialog
+  setShowConfirmation(false);
+  setTopicToDelete(null);
+};
+
+
+
+  // const handleDeleteTopic = async () => {
+  //   if (selectedTopicIndex !== null) {
+  //     const topicToDelete = espTopics[selectedTopicIndex];
+  //     const isConfirmed = window.confirm(`Are you sure you want to delete "${topicToDelete}" Device?`);
+  
+  //     if (isConfirmed) {
+  //       // Remove the topic from the espTopics array immediately
+  //       const newEspTopics = espTopics.filter((_, index) => index !== selectedTopicIndex);
+  //       setEspTopics(newEspTopics);
+  //       setDevices(newEspTopics.length);
+  
+  //       // Close the menu
+  //       handleMenuClose();
+        
+  //       try {
+  //         const token = localStorage.getItem('token');
+  //         if (!token) {
+  //           throw new Error('No token found in localStorage');
+  //         }
+  
+  //         const response = await fetch('http://localhost:5000/admin/deletetopic', {
+  //           method: 'DELETE',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //             'Authorization': `Bearer ${token}`
+  //           },
+  //           body: JSON.stringify({ name, topic: topicToDelete })
+  //         });
+  
+  //         if (!response.ok) {
+  //           throw new Error('Network response was not ok');
+  //         }
+  
+  //         const data = await response.json();
+  //         console.log('Device deleted successfully:', data);
+  
+  //         setHasUnsavedChanges(true);
+  //       } catch (error) {
+  //         console.error('Error:', error);
+  //       }
+  //     }
+  //   }
+  // };
   
   
   const handleAddTopicClick = () => {
@@ -171,10 +230,10 @@ const EditUserForm = ({ onUserUpdated }) => {
   return (
     <>
       <Navbar />
-      <div className='full-height-container'>
+      <div className="full-height-container">
         <div className="container-main">
           <div className="header-main">
-            <h1 className='new-user-edit'>EDIT DEVICE DETAILS</h1>
+            <h1 className="new-user-edit">EDIT DEVICE DETAILS</h1>
           </div>
           <div className="content">
             <div className="right-screen-exist">
@@ -207,7 +266,7 @@ const EditUserForm = ({ onUserUpdated }) => {
                           open={Boolean(anchorEl) && selectedTopicIndex === index}
                           onClose={handleMenuClose}
                         >
-                          <MenuItem onClick={handleDeleteTopic}>
+                          <MenuItem onClick={() => handleDeleteTopic(topic)}>
                             Delete
                           </MenuItem>
                         </Menu>
@@ -234,7 +293,6 @@ const EditUserForm = ({ onUserUpdated }) => {
                           setNewTopic(''); 
                         }} 
                         className="cancel-btn"
-                        // style={{ marginLeft: '10px', backgroundColor: 'red', color: 'white' }}
                       >
                         Cancel
                       </button>
@@ -247,13 +305,28 @@ const EditUserForm = ({ onUserUpdated }) => {
             </div>
           </div>
         </div>
-
+  
         <div className="submit-button-containeru">
-          <button onClick={handleTopicSubmission} className='save-btnu'>Submit Devices</button>
+          <button onClick={handleTopicSubmission} className="save-btnu">Submit Devices</button>
         </div>
       </div>
+      
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+      >
+        <DialogTitle>Confirm Deletion</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete the "{topicToDelete}" device?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowConfirmation(false)} color="primary">Cancel</Button>
+          <Button onClick={confirmDeleteTopic} color="secondary">Yes</Button>
+        </DialogActions>
+      </Dialog>
     </>
-  );
+  );  
 };
 
 EditUserForm.defaultProps = {
