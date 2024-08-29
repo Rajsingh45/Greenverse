@@ -11,7 +11,11 @@ const UserProfile = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef(null);
   const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-  const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+  // const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
+
+  const token = localStorage.getItem('token');
+  const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
+  
   const [searchQuery, setSearchQuery] = useState('');
 
   const [user, setUser] = useState({});
