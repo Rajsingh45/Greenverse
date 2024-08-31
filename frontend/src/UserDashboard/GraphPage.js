@@ -11,7 +11,7 @@ import './GraphPage.css';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
 import CanvasJSReact from '@canvasjs/react-charts';
-const backendURL= "https://greenverse.onrender.com";
+const backendURL="https://greenverse-fp31.onrender.com";
 
 const GraphPage = () => {
     const location = useLocation();

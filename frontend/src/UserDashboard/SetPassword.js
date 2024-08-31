@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ArrowBack } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const backendURL= "https://greenverse.onrender.com";
+const backendURL="https://greenverse-fp31.onrender.com";
 
 const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
