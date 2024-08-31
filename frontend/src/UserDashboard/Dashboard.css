@@ -28,7 +28,7 @@
 }
 
 .gallery-item:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .gallery-item img {
@@ -41,7 +41,7 @@
   border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.5s ease-out;
+    animation: slideIn 1s ease-out;
 }
 
 .gallery-item img {

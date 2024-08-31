@@ -7,6 +7,13 @@ import { alpha, styled } from '@mui/material/styles';
 import newlogo from './images/new-logo.png';
 import { useLocation } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -41,16 +48,23 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const drawerWidth = 240;
+const navItems = [
+  { text: 'Home', href: '/admin' },
+  { text: 'About', href: '/about-us' },
+];
+
 const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
   const [userName, setUserName] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const dropdownRef = useRef(null);
   const location = useLocation();
   const { email: currentUserEmail } = useParams();
   const [placeholderText, setPlaceholderText] = useState('Search by user name…');
-  
+
   const isUserDetailPage = location.pathname === `/user/${currentUserEmail}`;
 
   useEffect(() => {
@@ -62,7 +76,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
             'Authorization': `Bearer ${token}`
           }
         });
-  
+
         if (response.ok) {
           const userData = await response.json();
           setUserName(userData.name);
@@ -73,7 +87,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
         console.error('Error fetching user name:', error);
       }
     };
-  
+
     fetchUserName();
   }, []);
 
@@ -101,31 +115,27 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
 
     fetchProfilePic();
   }, []);
-  
-  const toggleMenu = () => {
-    setMenuVisible(prev => !prev);
-  };
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 395) {
-        setPlaceholderText(''); 
+        setPlaceholderText('Search');
       }
       else if (window.innerWidth < 490) {
-        setPlaceholderText('Search'); 
+        setPlaceholderText('Search');
       }
       else if (window.innerWidth < 560) {
-        setPlaceholderText(''); 
+        setPlaceholderText('Search by user name...');
       } else if (window.innerWidth < 685) {
         setPlaceholderText('Search');
       } else {
         setPlaceholderText(isUserDetailPage ? 'Search by device…' : 'Search by user name…');
       }
     };
-  
+
     handleResize();
     window.addEventListener('resize', handleResize);
-  
+
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -165,13 +175,30 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
 
   const handleSearchChange = async (event) => {
     if (searchInputDisabled) return;
-  
+
     const query = event.target.value;
     setSearchQuery(query);
   };
 
   const isAdminPage = location.pathname === '/admin';
   const searchInputDisabled = !(isUserDetailPage || isAdminPage);
+
+  const drawer = (
+    <Box onClick={() => setDrawerOpen(false)} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2, color: 'green' }}>
+        Greenverse
+      </Typography>
+      <List>
+        {navItems.map(({ text, href }) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} component="a" href={href}>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
   return (
     <div className="navbar sticky-top">
@@ -200,8 +227,8 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
           </Search>
         </div>
 
-        <div className="hamburger-menu" onClick={toggleMenu}>
-          {menuVisible ? <FaTimes /> : <FaBars />}
+        <div className="hamburger-menu" onClick={() => setDrawerOpen(true)}>
+          {drawerOpen ? <FaTimes /> : <FaBars />}
         </div>
 
         {profilePic ? (
@@ -227,6 +254,21 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
           </div>
         )}
       </div>
+
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        sx={{
+          display: { xs: 'block', sm: 'none' }, // Ensure drawer shows up for screen sizes below 768px
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
     </div>
   );
 };

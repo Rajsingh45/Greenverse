@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaUserCircle, FaTimes, FaKey, FaSignOutAlt } from 'react-icons/fa'; // Import additional icons
+import { FaUserCircle, FaBars, FaTimes, FaKey, FaSignOutAlt } from 'react-icons/fa';
 import './Navbar.css';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import { alpha, styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import newlogo from './images/new-logo.png';
+import Box from '@mui/material/Box';
+import Drawer from '@mui/material/Drawer';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -42,12 +49,41 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const Navbar = ({ setSearchQuery, searchDisabled }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [profilePic, setProfilePic] = useState(null);
   const [userName, setUserName] = useState('');
   const [searchQuery, setSearchQueryLocal] = useState('');
   const [menuVisible, setMenuVisible] = useState(false);
   const dropdownRef = useRef(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
+
+  const drawerWidth = 240;
+const navItems = [
+  { text: 'Home', href: '/dashboard' },
+  { text: 'About', href: '/about-us' },
+  {text:'Contact Us',href:'/contact-us'},
+  {text:'Maps',href:'/api-generation'}
+];
+
+useEffect(() => {
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
+
+const placeholderText = windowWidth<455
+? "Search"
+:windowWidth < 561
+? "Search by device..."
+: windowWidth < 701
+? "Search"
+: "Search by device…";
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -125,9 +161,22 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
     setSearchQuery(query);
   };
 
-  const toggleMenu = () => {
-    setMenuVisible(!menuVisible);
-  };
+  const drawer = (
+    <Box onClick={() => setDrawerOpen(false)} sx={{ textAlign: 'center' }}>
+      <Typography variant="h6" sx={{ my: 2,color:'green' }}>
+        Greenverse
+      </Typography>
+      <List>
+      {navItems.map(({ text, href }) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} component="a" href={href}>
+              <ListItemText primary={text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
+  );
 
   return (
     <div className="navbar sticky-top">
@@ -148,13 +197,17 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
-              placeholder="Search by device…"
+              placeholder={placeholderText}
               inputProps={{ 'aria-label': 'search' }}
               value={searchQuery}
               onChange={handleSearchChange}
               className='device-name'
             />
           </Search>
+        </div>
+
+        <div className="hamburger-menu" onClick={() => setDrawerOpen(true)}>
+          {drawerOpen ? <FaTimes /> : <FaBars />}
         </div>
 
         {profilePic ? (
@@ -172,12 +225,21 @@ const Navbar = ({ setSearchQuery, searchDisabled }) => {
           </div>
         )}
 
-        <div
-          className={`hamburger-menu ${!menuVisible ? 'visible' : ''}`}
-          onClick={toggleMenu}
-        >
-          ☰
-        </div>
+        <Drawer
+  anchor="left"
+  open={drawerOpen}
+  onClose={() => setDrawerOpen(false)}
+  sx={{
+    display: { xs: 'block', sm: 'none' }, // Ensure drawer shows up for screen sizes below 768px
+    '& .MuiDrawer-paper': { 
+      boxSizing: 'border-box', 
+      width: drawerWidth,
+    },
+  }}
+>
+  {drawer}
+</Drawer>
+
       </div>
     </div>
   );
