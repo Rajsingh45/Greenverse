@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import './ChangePassword.css';
 import { ArrowBack } from '@mui/icons-material';
+const backendURL= "https://greenverse.onrender.com"
 
 const ChangePasswordPageUnique = () => {
     const token = localStorage.getItem('token');
@@ -14,7 +15,7 @@ const ChangePasswordPageUnique = () => {
         const fetchUserEmail = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch("http://localhost:5000/auth/users", {
+                const response = await fetch(`${backendURL}/auth/users`, {
                     method: "GET",
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -79,7 +80,7 @@ const ChangePasswordPageUnique = () => {
         if (isProcessing) return;
         setIsProcessing(true);
 
-        fetch("http://localhost:5000/auth/requestpasswordotp", {
+        fetch(`${backendURL}/auth/requestpasswordotp`, {
             method: "POST",
             body: JSON.stringify({ email: passwordDetails.email, oldPassword: passwordDetails.oldPassword }),
             headers: {

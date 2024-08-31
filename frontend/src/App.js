@@ -20,6 +20,7 @@ import VerifyOtpPage from './VerifyOtpPage'
 import About from './About.js'
 import NeedHelp from './NeedHelp.js'
 import ChangePasswordOTP from './ChangePasswordOTP.js'
+const backendURL= "https://greenverse.onrender.com";
 
 function App() {
   return (

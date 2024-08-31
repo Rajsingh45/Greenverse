@@ -11,6 +11,7 @@ import device6 from '../images/device6.jpg';
 
 import UserNavbar from '../UserNavbar';
 import { useParams } from 'react-router-dom';
+const backendURL= "https://greenverse.onrender.com"
 
 const Dashboard = ({ isReadOnly = false }) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -49,7 +50,7 @@ const Dashboard = ({ isReadOnly = false }) => {
       try {
         const token = localStorage.getItem('token');
 
-        const countResponse = await axios.get('http://localhost:5000/admin/devices', {
+        const countResponse = await axios.get(`${backendURL}/admin/devices`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -57,7 +58,7 @@ const Dashboard = ({ isReadOnly = false }) => {
         const { noofdevices } = countResponse.data;
         setDeviceCount(noofdevices);
 
-        const namesResponse = await axios.get(`http://localhost:5000/admin/device-names`, {
+        const namesResponse = await axios.get(`${backendURL}/admin/device-names`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

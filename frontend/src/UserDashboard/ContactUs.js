@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
 import UserNavbar from '../UserNavbar';
 import axios from 'axios';
+const backendURL= "https://greenverse.onrender.com"
 
 const ContactUsu = () => {
   
@@ -14,7 +15,7 @@ const ContactUsu = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/auth/users', {
+        const response = await axios.get(`${backendURL}/auth/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -67,7 +68,7 @@ const ContactUsu = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/contact', {
+      const response = await fetch(`${backendURL}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

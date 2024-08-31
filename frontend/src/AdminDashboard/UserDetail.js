@@ -9,6 +9,7 @@ import device4 from '../images/device4.jpg';
 import device5 from '../images/device5.png';
 import device6 from '../images/device6.jpg';
 import Layout from '../Layout';
+const backendURL= "https://greenverse.onrender.com"
 
 const UserDetail = () => {
   const { email } = useParams();
@@ -27,9 +28,9 @@ const UserDetail = () => {
       try {
         const token = localStorage.getItem('token');
         const endpoint = searchQuery 
-        ? 'http://localhost:5000/admin/device-names' 
+        ? `${backendURL}/admin/device-names` 
         :
-           'http://localhost:5000/admin/user/devices';
+           `${backendURL}/admin/user/devices`;
           
         const response = await axios.get(endpoint, {
           params: searchQuery ? { name: searchQuery } : { email },
@@ -106,7 +107,7 @@ const UserDetail = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
+        const response = await fetch(`${backendURL}/admin/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

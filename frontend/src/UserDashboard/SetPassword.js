@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { ArrowBack } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+const backendURL= "https://greenverse.onrender.com";
 
 const SetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -56,7 +56,7 @@ const SetPassword = () => {
     }
   
     try {
-      const response = await fetch('http://localhost:5000/auth/resetpassword', {
+      const response = await fetch(`${backendURL}/auth/resetpassword`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

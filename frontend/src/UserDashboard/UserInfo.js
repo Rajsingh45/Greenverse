@@ -6,6 +6,7 @@ import Layout from '../Layout';
 import { MoreVert } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const backendURL= "https://greenverse.onrender.com";
 
 const UserProfile = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -58,7 +59,7 @@ const UserProfile = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:5000/auth/delete-profile-picture', {
+      const response = await fetch(`${backendURL}/auth/delete-profile-picture`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -88,7 +89,7 @@ const UserProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/auth/users', {
+        const response = await fetch(`${backendURL}/auth/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -98,7 +99,7 @@ const UserProfile = () => {
         if (data && data.email && data.name && data.contactNumber) {
           setUser(data);
 
-          const profilePicResponse = await fetch('http://localhost:5000/auth/profile-picture', {
+          const profilePicResponse = await fetch(`${backendURL}/auth/profile-picture`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -132,7 +133,7 @@ const UserProfile = () => {
       formData.append('profilePicture', file);
 
       try {
-        const response = await fetch('http://localhost:5000/auth/upload', {
+        const response = await fetch(`${backendURL}/auth/upload`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -170,7 +171,7 @@ const UserProfile = () => {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:5000/auth/rename', {
+      const response = await fetch(`${backendURL}/auth/rename`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

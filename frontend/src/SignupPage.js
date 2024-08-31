@@ -4,6 +4,7 @@ import './signup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logo from './images/logo.png';
+const backendURL= "https://greenverse.onrender.com";
 
 function RegisterForm() {
 
@@ -41,7 +42,7 @@ function RegisterForm() {
 
   const checkNameAvailability = async (name) => {
     try {
-      const response = await fetch(`http://localhost:5000/auth/check-name?name=${name}`);
+      const response = await fetch(`${backendURL}/auth/check-name?name=${name}`);
       if (response.status === 400) {
         const data = await response.json();
         setError(data.message);
@@ -102,7 +103,7 @@ function RegisterForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/auth/requestsignupotp", {
+      const response = await fetch(`${backendURL}/auth/requestsignupotp`, {
         method: "POST",
         body: JSON.stringify({ 
           email: userDetails.email,

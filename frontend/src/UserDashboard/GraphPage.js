@@ -11,6 +11,7 @@ import './GraphPage.css';
 import UserNavbar from '../UserNavbar';
 import Layout from '../Layout';
 import CanvasJSReact from '@canvasjs/react-charts';
+const backendURL= "https://greenverse.onrender.com";
 
 const GraphPage = () => {
     const location = useLocation();
@@ -84,7 +85,7 @@ const GraphPage = () => {
         const fetchUsers = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/admin/users', {
+                const response = await fetch(`${backendURL}/admin/users`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -117,7 +118,7 @@ const GraphPage = () => {
             const formattedStartDate = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
             const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
 
-            const response = await fetch(`http://localhost:5000/api/device-data-by-daterange/${deviceName}?startDate=${formattedStartDate}&endDate=${formattedEndDate}&parameter=${parameter}`, {
+            const response = await fetch(`${backendURL}/api/device-data-by-daterange/${deviceName}?startDate=${formattedStartDate}&endDate=${formattedEndDate}&parameter=${parameter}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

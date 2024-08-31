@@ -4,6 +4,7 @@ import './login.css';
 import { UserContext } from "./UserContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import logo from './images/logo.png';
+const backendURL= "https://greenverse.onrender.com";
 
 const LoginPage = () => {
     const [userDetails, setUserDetails] = useState({
@@ -73,7 +74,7 @@ const LoginPage = () => {
             return;
         }
 
-        fetch("http://localhost:5000/auth/login", {
+        fetch(`${backendURL}/auth/login`, {
             method: "POST",
             body: JSON.stringify({ ...userDetails, rememberMe }),
             headers: {
