@@ -5,7 +5,7 @@
 }
 
 .full-height-container{
-  background: url('../images/edituser-image.jpg') no-repeat center center;
+  background: url('../images/newuser-image.jpg') no-repeat center center;
   background-size: cover;
   min-height: calc(100vh - 80px);
   padding-bottom: 10px;
