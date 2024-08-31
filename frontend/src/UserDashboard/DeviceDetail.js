@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-const backendURL= "https://greenverse.onrender.com";
+const backendURL= "https://greenverse.onrender.com"
 
 const DeviceDetailPage = () => {
     const [downloadStartDate, setDownloadStartDate] = useState(new Date());
