@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './VerifyOTP.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const backendURL= "https://greenverse.onrender.com";
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -42,7 +43,7 @@ const VerifyOTP = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/auth/verifyforgotpasswordotp', {
+      const response = await fetch(`${backendURL}/auth/verifyforgotpasswordotp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ const VerifyOTP = () => {
     if (resendTimer === 0 && !isResending) {
       setIsResending(true);
       try {
-        const response = await fetch("http://localhost:5000/auth/requestforgotpasswordotp", {
+        const response = await fetch(`${backendURL}/auth/requestforgotpasswordotp`, {
           method: "POST",
           body: JSON.stringify({ email }),
           headers: {

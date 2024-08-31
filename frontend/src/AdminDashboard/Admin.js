@@ -7,7 +7,7 @@ import { Menu, MenuItem, IconButton, TextField, Button, Pagination } from '@mui/
 import MoreVert from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-
+const backendURL= "https://greenverse.onrender.com"
 
 const Admin = ({ users = [], setUsers }) => {
   const [showNewUserForm, setShowNewUserForm] = useState(false);
@@ -28,11 +28,14 @@ const Admin = ({ users = [], setUsers }) => {
   const [showConfirmation, setShowConfirmation] = useState(false);
 const [userToDelete, setUserToDelete] = useState(null);
 
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/admin/users?page=${currentPage}&limit=${usersPerPage}&name=${searchQuery}`, {
+        // const response = await fetch(`${backendURL}/admin/users?page=${currentPage}&limit=${usersPerPage}&name=${searchQuery}`, {
+        const response = await fetch(`${backendURL}/admin/users?page=${currentPage}&limit=${usersPerPage}&name=${searchQuery}`, {
+        
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -95,7 +98,7 @@ const [userToDelete, setUserToDelete] = useState(null);
     if (renamingUserEmail) {
       const token = localStorage.getItem('token');
       try {
-        const response = await fetch('http://localhost:5000/admin/rename', {
+        const response = await fetch(`${backendURL}/admin/rename`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -140,7 +143,7 @@ const [userToDelete, setUserToDelete] = useState(null);
 //     if (confirmDelete) {
 //         try {
 //             const token = localStorage.getItem('token');
-//             const response = await fetch('http://localhost:5000/admin/deleteuser', {
+//             const response = await fetch(`${backendURL}/admin/deleteuser`, {
 //                 method: 'DELETE',
 //                 headers: {
 //                     'Content-Type': 'application/json',
@@ -172,7 +175,7 @@ const confirmDeleteUser = async () => {
   if (userToDelete) {
       try {
           const token = localStorage.getItem('token');
-          const response = await fetch('http://localhost:5000/admin/deleteuser', {
+          const response = await fetch(`${backendURL}/admin/deleteuser`, {
               method: 'DELETE',
               headers: {
                   'Content-Type': 'application/json',

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NeedHelp.css';
+const backendURL= "https://greenverse.onrender.com";
 
 const NeedHelp = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
@@ -40,7 +41,7 @@ const NeedHelp = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/contact', {
+      const response = await fetch(`${backendURL}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './NewUser.css';
 import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+const backendURL= "https://greenverse.onrender.com"
 
 const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');
@@ -42,7 +43,7 @@ const NewUserForm = ({ onUserAdded }) => {
 
   const checkEmailExists = async (email) => {
     try {
-      const response = await fetch('http://localhost:5000/admin/checkemail', {
+      const response = await fetch(`${backendURL}/admin/checkemail`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ const NewUserForm = ({ onUserAdded }) => {
         throw new Error('No token found in localStorage');
       }
 
-      const response = await fetch('http://localhost:5000/admin/adduser', {
+      const response = await fetch(`${backendURL}/admin/adduser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

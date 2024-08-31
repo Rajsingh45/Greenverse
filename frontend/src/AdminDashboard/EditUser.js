@@ -5,6 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import './EditUser.css';
 import Navbar from '../Navbar.js';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+const backendURL= "https://greenverse.onrender.com"
 
 
 const EditUserForm = ({ onUserUpdated }) => {
@@ -79,7 +80,7 @@ const confirmDeleteTopic = async () => {
         throw new Error('No token found in localStorage');
       }
 
-      const response = await fetch('http://localhost:5000/admin/deletetopic', {
+      const response = await fetch(`${backendURL}/admin/deletetopic`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +129,7 @@ const confirmDeleteTopic = async () => {
   //           throw new Error('No token found in localStorage');
   //         }
   
-  //         const response = await fetch('http://localhost:5000/admin/deletetopic', {
+  //         const response = await fetch(`${backendURL}/admin/deletetopic`, {
   //           method: 'DELETE',
   //           headers: {
   //             'Content-Type': 'application/json',
@@ -192,7 +193,7 @@ const confirmDeleteTopic = async () => {
         throw new Error('No token found in localStorage');
       }
 
-      const response = await fetch(`http://localhost:5000/admin/updatedevices`, {
+      const response = await fetch(`${backendURL}/admin/updatedevices`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

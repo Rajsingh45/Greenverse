@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './ForgotPassword.css';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
+const backendURL= "https://greenverse.onrender.com";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -33,7 +34,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/auth/requestforgotpasswordotp', {
+      const response = await fetch(`${backendURL}/auth/requestforgotpasswordotp`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

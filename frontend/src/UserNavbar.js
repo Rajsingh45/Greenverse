@@ -13,6 +13,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+const backendURL= "https://greenverse.onrender.com";
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -89,7 +90,7 @@ const placeholderText = windowWidth<455
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const userResponse = await fetch('http://localhost:5000/auth/users', {
+        const userResponse = await fetch(`${backendURL}/auth/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -102,7 +103,7 @@ const placeholderText = windowWidth<455
           console.error('Failed to fetch user data');
         }
 
-        const profileResponse = await fetch('http://localhost:5000/auth/profile-picture', {
+        const profileResponse = await fetch(`${backendURL}/auth/profile-picture`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

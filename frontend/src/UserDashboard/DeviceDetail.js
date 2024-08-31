@@ -11,6 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+const backendURL= "https://greenverse.onrender.com";
 
 const DeviceDetailPage = () => {
     const [downloadStartDate, setDownloadStartDate] = useState(new Date());
@@ -33,7 +34,7 @@ const DeviceDetailPage = () => {
     useEffect(() => {
         const fetchParameterOptions = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/device-parameters/${deviceName}`);
+                const response = await fetch(`${backendURL}/api/device-parameters/${deviceName}`);
                 const result = await response.json();
 
                 if (Array.isArray(result)) {
@@ -59,7 +60,7 @@ const DeviceDetailPage = () => {
                     fetchDateTime = dayjs(calendarDate).format('YYYY-MM-DD HH:mm:ss');
                 }
 
-                const response = await fetch(`http://localhost:5000/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
+                const response = await fetch(`${backendURL}/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
                 const result = await response.json();
 
                 if (result.length > 0) {
@@ -124,7 +125,7 @@ const DeviceDetailPage = () => {
         setFetching(true);
         try {
             const fetchDateTime = dayjs(date).format('YYYY-MM-DD HH:mm:ss');
-            const response = await fetch(`http://localhost:5000/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
+            const response = await fetch(`${backendURL}/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
             const result = await response.json();
 
             if (result.length > 0) {
@@ -204,7 +205,7 @@ const DeviceDetailPage = () => {
         setError('');
 
         try {
-            const response = await fetch(`http://localhost:5000/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
+            const response = await fetch(`${backendURL}/api/download-device-data/${deviceName}?startDate=${dayjs(downloadStartDate).format('YYYY-MM-DD HH:mm:ss')}&endDate=${dayjs(downloadEndDate).format('YYYY-MM-DD HH:mm:ss')}`);
             const data = await response.json();
 
             const aggregatedData = data.filter(item => item.dataType === 'aggregated');

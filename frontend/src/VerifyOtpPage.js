@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './verifyotp.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const backendURL= "https://greenverse.onrender.com";
 
 const VerifyOtpPage = () => {
     const navigate = useNavigate();
@@ -35,7 +36,7 @@ const VerifyOtpPage = () => {
         const enteredOtp = otp.join('');
 
         try {
-            const response = await fetch("http://localhost:5000/auth/verifysignupotp", {
+            const response = await fetch(`${backendURL}/auth/verifysignupotp`, {
                 method: "POST",
                 body: JSON.stringify({
                     email: userDetails.email,
@@ -68,7 +69,7 @@ const VerifyOtpPage = () => {
         if (resendTimer === 0  && !isResending) {
             setIsResending(true);
             try {
-                const response = await fetch("http://localhost:5000/auth/requestsignupotp", {
+                const response = await fetch(`${backendURL}/auth/requestsignupotp`, {
                     method: "POST",
                     body: JSON.stringify({ email: userDetails.email }),
                     headers: {

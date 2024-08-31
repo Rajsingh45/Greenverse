@@ -14,6 +14,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+const backendURL= "https://greenverse.onrender.com";
 
 const Search = styled('div')(({ theme, showInput }) => ({
   position: 'relative',
@@ -71,7 +72,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
     const fetchUserName = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/auth/users', {
+        const response = await fetch(`${backendURL}/auth/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -95,7 +96,7 @@ const Navbar = ({ searchQuery, setSearchQuery, searchDisabled, user }) => {
     const fetchProfilePic = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/auth/profile-picture', {
+        const response = await fetch(`${backendURL}/auth/profile-picture`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

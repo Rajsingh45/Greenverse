@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Admin from './AdminDashboard/Admin';
+const backendURL= "https://greenverse.onrender.com";
 
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);
@@ -10,7 +11,7 @@ const DashboardPage = () => {
     const fetchUsers = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/admin/users', {
+        const response = await fetch(`${backendURL}/admin/users`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
