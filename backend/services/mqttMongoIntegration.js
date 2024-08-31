@@ -9,7 +9,7 @@ const router = express.Router();
 
 const mongoURL = process.env.MONGODB_URL;
 const mqttUrl = 'mqtts://a1qe87k6xy75k4-ats.iot.eu-north-1.amazonaws.com';
-const dbName = 'Airbuddi';
+const dbName = 'test';
 const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 let mqttClient;
