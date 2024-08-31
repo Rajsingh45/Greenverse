@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 const mongoURL = process.env.MONGODB_URL;
-const dbName = 'Airbuddi';
+const dbName = 'test';
 const mongoClient = new MongoClient(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const getDeviceDataByDatetime = async (req, res) => {
