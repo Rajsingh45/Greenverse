@@ -5,13 +5,22 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  background-color: #e9e6e6;
+  background-color: #fefefe;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   align-items: center;
   box-sizing: border-box;
   margin-top: 10px;
   width: 100%;
+}
+
+
+.profile-avatar {
+  width: 180px !important;
+  height: 180px !important;
+  cursor: pointer;
+  margin: 0 auto; 
+  background-color: #c8cbce !important; 
 }
 
 .outermost-container{
@@ -85,13 +94,6 @@
   background-color: #f0f0f0;
 }
 
-.profile-avatar {
-  width: 180px !important;
-  height: 180px !important;
-  cursor: pointer;
-  margin: 0 auto; 
-  background-color: #a4a7aa !important; 
-}
 
 .title-profile {
   text-align: center;
