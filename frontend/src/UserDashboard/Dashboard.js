@@ -11,7 +11,7 @@ import device6 from '../images/device6.jpg';
 
 import UserNavbar from '../UserNavbar';
 import { useParams } from 'react-router-dom';
-const backendURL="https://greenverse-fp31.onrender.com"
+const backendURL="https://greenverse-d0ch.onrender.com"
 
 const Dashboard = ({ isReadOnly = false }) => {
   const [currentPage, setCurrentPage] = useState(1);

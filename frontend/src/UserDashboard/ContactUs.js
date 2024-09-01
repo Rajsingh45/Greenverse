@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ContactUs.css';
 import UserNavbar from '../UserNavbar';
 import axios from 'axios';
-const backendURL="https://greenverse-fp31.onrender.com"
+const backendURL="https://greenverse-d0ch.onrender.com"
 
 const ContactUsu = () => {
   

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Maps.css'; 
 import UserNavbar from '../UserNavbar.js';
-const backendURL="https://greenverse-fp31.onrender.com";
+const backendURL="https://greenverse-d0ch.onrender.com";
 
 const MapsPage = () => {
   const [apiKey, setApiKey] = useState('');

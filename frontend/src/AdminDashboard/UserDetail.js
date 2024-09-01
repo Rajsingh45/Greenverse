@@ -9,7 +9,7 @@ import device4 from '../images/device4.jpg';
 import device5 from '../images/device5.png';
 import device6 from '../images/device6.jpg';
 import Layout from '../Layout';
-const backendURL="https://greenverse-fp31.onrender.com"
+const backendURL="https://greenverse-d0ch.onrender.com"
 
 const UserDetail = () => {
   const { email } = useParams();
