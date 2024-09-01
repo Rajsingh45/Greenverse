@@ -29,36 +29,25 @@ const getDeviceDataByDateRange = async (req, res) => {
       await mongoClient.connect();
       const db = mongoClient.db(dbName);
       const deviceCollection = db.collection(espTopic);
-
-      const start = dayjs(startDate);
-      const end = dayjs(endDate);
-      const result = [];
-
-      let current = start;
-
-      while (current <= end) {
-          // Create the minute's start and end times
-          const minuteStart = current.format('YYYY-MM-DD HH:mm:00');
-          const minuteEnd = current.format('YYYY-MM-DD HH:mm:59');
-
-          // Find the first document within this minute
-          const entry = await deviceCollection.findOne({
-              dateTime: { $gte: minuteStart, $lte: minuteEnd }
-          });
-
-          if (entry && entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
-              result.push({
-                  dateTime: entry.dateTime,
-                  [parameter]: entry.parameters[parameter]
-              });
+      const data = await deviceCollection.find({
+          dateTime: {
+              $gte: startDate,
+              $lte: endDate
           }
-
-          // Move to the next minute
-          current = current.add(1, 'minute');
-      }
-
-      if (result.length > 0) {
-          res.json(result);
+      }).toArray();
+      if (data.length > 0) {
+          const filteredData = data.map(entry => {
+              if (entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
+                  return {
+                      dateTime: entry.dateTime,
+                      [parameter]: entry.parameters[parameter]
+                  };
+              } else {
+                  console.warn(`Parameter "${parameter}" not found in document.`);
+                  return null;
+              }
+          }).filter(entry => entry !== null);
+          res.json(filteredData);
       } else {
           res.status(404).json({ error: 'No data found for the specified date range' });
       }
