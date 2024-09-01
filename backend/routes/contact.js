@@ -24,7 +24,7 @@ router.post('/contact', async (req, res) => {
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #dddddd; border-radius: 10px; overflow: hidden;">
         <div style="background-color: #113011; padding: 5px; text-align: center;">
-          <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 65px; height: 60px;" />
+          <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 75px; height: autopx;" />
           <h2 style="color: #ffffff; margin: 5px 0;">Greenverse Private Limited</h2>
         </div>
         <div style="padding: 12px; background-color: #f4f4f4;">

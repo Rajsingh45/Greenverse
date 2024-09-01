@@ -169,7 +169,7 @@ const requestSignupOTP = async (req, res) => {
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                 <div style="background-color: #113011; padding: 5px; border-radius: 10px 10px 0 0; text-align: center;">
-                    <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 80px; height: auto;" />
+                    <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 75px; height: auto;" />
                     <h2 style="color: white; margin: 5px 0;">Greenverse Private Limited</h2>
                 </div>
                 <div style="padding: 12px;">
@@ -329,7 +329,7 @@ const requestForgotPasswordOTP = async (req, res) => {
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
                     <div style="background-color: #113011; padding: 5px; border-radius: 10px 10px 0 0; text-align: center;">
-                        <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 60px; height: auto;" />
+                        <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 75px; height: auto;" />
                         <h2 style="color: white; margin: 5px 0;">Greenverse Private Limited</h2>
                     </div>
                     <div style="padding: 12px;">
