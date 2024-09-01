@@ -168,11 +168,11 @@ const requestSignupOTP = async (req, res) => {
             subject: 'Email Verification OTP',
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                    <img src="https://drive.google.com/uc?export=view&id=1dLeVpb0FHcfZwY3_K2Hh22MEEBHAzq5R" alt="Company Logo" style="width: 100px; height: auto;" />
-                    <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
+                <div style="background-color: #113011; padding: 5px; border-radius: 10px 10px 0 0; text-align: center;">
+                    <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 80px; height: auto;" />
+                    <h2 style="color: white; margin: 5px 0;">Greenverse Private Limited</h2>
                 </div>
-                <div style="padding: 20px;">
+                <div style="padding: 12px;">
                     <p>Hi,</p>
                     <p>Enter this code in the next 10 minutes to sign up:</p>
                     <div style="text-align: center; margin: 20px 0;">
@@ -223,13 +223,13 @@ const requestPasswordOTP = async (req, res) => {
             subject: 'Email Verification OTP',
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                <img src="https://drive.google.com/uc?export=view&id=1dLeVpb0FHcfZwY3_K2Hh22MEEBHAzq5R" alt="Company Logo" style="width: 100px; height: auto;" />
-                    <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
+                <div style="background-color: #113011; padding: 5px; border-radius: 10px 10px 0 0; text-align: center;">
+                <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 75px; height: auto;" />
+                    <h2 style="color: white; margin: 5px 0;">Greenverse Private Limited</h2>
                 </div>
-                <div style="padding: 20px;">
+                <div style="padding: 12px;">
                     <p>Hi,</p>
-                    <p>Enter this code in the next 10 minutes to sign up:</p>
+                    <p>Enter this code in the next 10 minutes to change your password:</p>
                     <div style="text-align: center; margin: 20px 0;">
                         <div style="font-size: 36px; font-weight: bold; border: 2px solid #ddd; display: inline-block; padding: 10px 20px; border-radius: 5px;">
                             ${otp}
@@ -328,11 +328,11 @@ const requestForgotPasswordOTP = async (req, res) => {
             subject: 'Password Reset OTP',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                    <div style="background-color: green; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;">
-                        <img src="https://drive.google.com/uc?export=view&id=1dLeVpb0FHcfZwY3_K2Hh22MEEBHAzq5R" alt="Company Logo" style="width: 100px; height: auto;" />
-                        <h2 style="color: white; margin: 10px 0;">Greenverse Private Limited</h2>
+                    <div style="background-color: #113011; padding: 5px; border-radius: 10px 10px 0 0; text-align: center;">
+                        <img src="https://drive.google.com/uc?export=view&id=1J8yHdwZ48N2xIm3Luli6YM-cEn7PJqEn" alt="Company Logo" style="width: 60px; height: auto;" />
+                        <h2 style="color: white; margin: 5px 0;">Greenverse Private Limited</h2>
                     </div>
-                    <div style="padding: 20px;">
+                    <div style="padding: 12px;">
                         <p>Hi,</p>
                         <p>You requested to reset your password. Enter this code within the next 10 minutes to reset your password:</p>
                         <div style="text-align: center; margin: 20px 0;">
