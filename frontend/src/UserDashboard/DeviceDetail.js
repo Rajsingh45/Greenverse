@@ -108,6 +108,23 @@ const DeviceDetailPage = () => {
     }, []);
 
     useEffect(() => {
+        const now = new Date();
+        const delay = (60 - now.getSeconds()) * 1000; 
+        const timeoutId = setTimeout(() => {
+            setCalendarDate(new Date());
+
+            const minuteInterval = setInterval(() => {
+                setCalendarDate(new Date());
+            }, 60000); 
+
+            return () => clearInterval(minuteInterval);
+        }, delay);
+
+        return () => clearTimeout(timeoutId);
+    }, []);
+
+
+    useEffect(() => {
         const savedStartDate = localStorage.getItem('startDate');
         const savedEndDate = localStorage.getItem('endDate');
 
@@ -123,28 +140,36 @@ const DeviceDetailPage = () => {
         setCalendarDate(date);
         setIsFiltered(true);
         setFetching(true);
+    
         try {
-            const fetchDateTime = dayjs(date).format('YYYY-MM-DD HH:mm:ss');
-            const response = await fetch(`${backendURL}/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
-            const result = await response.json();
-
-            if (result.length > 0) {
-                const data = result[0];
-
-                if (data.parameters && typeof data.parameters === 'object') {
-                    setParameterOptions(Object.keys(data.parameters));
-                    setLiveData(data);
-                } else {
-                    setParameterOptions([]);
-                    setLiveData(null);
+            for (let i = 0; i <= 10; i++) {
+                const fetchDateTime = dayjs(date).second(i).format('YYYY-MM-DD HH:mm:ss');
+                const response = await fetch(`${backendURL}/api/device-data-by-datetime/${deviceName}/${fetchDateTime}`);
+                const result = await response.json();
+    
+                if (result.length > 0) {
+                    const data = result[0];
+    
+                    if (data.parameters && typeof data.parameters === 'object') {
+                        setParameterOptions(Object.keys(data.parameters));
+                        setLiveData(data);
+                    } else {
+                        setParameterOptions([]);
+                        setLiveData(null);
+                    }
+                    setFetching(false);
+                    return;
                 }
-            } else {
-                setParameterOptions([]);
-                setLiveData(null);
             }
+    
+            setParameterOptions([]);
+            setLiveData(null);
+            setFetching(false);
+    
         } catch (error) {
             console.error('Error fetching data for selected date:', error);
             setError('Error fetching data for selected date');
+            setFetching(false);
         } finally {
             setFetching(false);
         }
