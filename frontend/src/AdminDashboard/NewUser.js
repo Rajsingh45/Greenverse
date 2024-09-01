@@ -58,18 +58,30 @@ const NewUserForm = ({ onUserAdded }) => {
     }
   };
 
+  const isNameValid = (name) => {
+    const nameRegex = /^[A-Za-z]+$/; // Only allows alphabet characters, no spaces
+    return nameRegex.test(name);
+  };
+  
+  // Update the handleSubmit function with name validation
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!isNameValid(name)) {
+      alert('Name should only contain characters and no spaces');
+      return;
+    }
+    
     if (!isFormValid()) {
       return;
     }
-
+  
     const emailExists = await checkEmailExists(email);
     if (!emailExists) {
       setEmailError('Email already exists');
       return;
     }
-
+  
     setEmailError('');
     setIsFormSubmitted(true);
     setButtonText('SAVED');
@@ -81,13 +93,21 @@ const NewUserForm = ({ onUserAdded }) => {
       alert('Please ensure all topics are unique');
       return;
     }
-
+  
+    // Convert current date to IST format as a string
+    const currentISTTime = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).format(new Date());
+  
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('No token found in localStorage');
       }
-
+  
       const response = await fetch(`${backendURL}/admin/adduser`, {
         method: 'POST',
         headers: {
@@ -98,35 +118,32 @@ const NewUserForm = ({ onUserAdded }) => {
           name,
           email,
           noofdevices: Number(devices),
-          espTopics
+          espTopics,
+          dateAdded: currentISTTime // Add the IST date here
         })
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
       console.log('User added successfully:', data);
-
-      const currentDate = new Date();
-      const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
-      console.log(`User added on: ${formattedDate}`);
       navigate('/admin');
-
+  
       onUserAdded({
         id: Date.now(),
         name,
         email,
         noofdevices: Number(devices),
-        espTopics,
-        dateAdded: formattedDate
+        espTopics
       });
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
+  
+  
   return (
     <div className='container-height'>
     <div className="single-container">
@@ -143,7 +160,13 @@ const NewUserForm = ({ onUserAdded }) => {
             name="name"
             className='textbox'
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              if (isNameValid(e.target.value) || e.target.value === '') {
+                setName(e.target.value);
+              } else {
+                alert('Name should only contain characters and no spaces');
+              }
+            }}
             disabled={isFormSubmitted}
           />
 
@@ -157,14 +180,19 @@ const NewUserForm = ({ onUserAdded }) => {
             disabled={isFormSubmitted}
             onChange={(e) => setEmail(e.target.value)}
             onBlur={async () => {
-              const emailExists = await checkEmailExists(email);
-              if (!emailExists) {
-                setEmailError('Email already exists');
+              if (isEmailValid(email)) {
+                const emailExists = await checkEmailExists(email);
+                if (!emailExists) {
+                  setEmailError('Email already exists');
+                } else {
+                  setEmailError('');
+                }
               } else {
-                setEmailError('');
+                setEmailError('Invalid email format');
               }
             }}
           />
+
           {emailError && <div className="error-message-new">{emailError}</div>}
 
           <label htmlFor="device" className='box'>No. of Devices:</label>

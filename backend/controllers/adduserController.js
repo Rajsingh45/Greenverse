@@ -1,88 +1,81 @@
 const User = require('../models/USER');
 const Admin = require('../models/ADMIN');
-const moment = require('moment');
 const mongoose = require('mongoose');
 const subscribeToTopics = require('../services/mqttMongoIntegration');
+const moment = require('moment-timezone'); // Ensure moment-timezone is installed
 
-const formatDateAWS = (date) => {
-    return moment(date).format('YYYY-MM-DD HH:mm:ss');
+// Function to get IST time as a string
+const getCurrentISTTime = () => {
+  return moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
 };
 
 const createCollection = async (db, topic) => {
-    const collectionExists = await db.listCollections({ name: topic }).hasNext();
-    if (!collectionExists) {
-        await db.createCollection(topic);
-        console.log(`Collection created for topic: ${topic}`);
-    }
+  const collectionExists = await db.listCollections({ name: topic }).hasNext();
+  if (!collectionExists) {
+    await db.createCollection(topic);
+    console.log(`Collection created for topic: ${topic}`);
+  }
 };
-
-
-const formatDate = (date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
-};
-
 
 const getDevicesNumber = async (req, res) => {
-    try {
-        const admin = await Admin.findOne({ email: req.user.email });
-        if (!admin) {
-            return res.status(404).json({ error: 'Admin not found' });
-        }
-        res.json({ noofdevices: admin.noofdevices });
-    } catch (error) {
-        console.error('Error fetching admin devices:', error);
-        res.status(500).json({ error: 'Server error' });
+  try {
+    const admin = await Admin.findOne({ email: req.user.email });
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
     }
+    res.json({ noofdevices: admin.noofdevices });
+  } catch (error) {
+    console.error('Error fetching admin devices:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
 const checkAdminEmailExists = async (req, res) => {
-    const { email } = req.body;
-    try {
-        const user = await Admin.findOne({ email });
-        if (!user) {
-            res.json({ exists: true });
-        } else {
-            res.status(404).json({ exists: false, error: 'Email Not exists' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+  const { email } = req.body;
+  try {
+    const user = await Admin.findOne({ email });
+    if (user) {
+      res.json({ exists: false, error: 'Email does not exist' });
+    } else {
+      res.json({ exists: true });
     }
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
 };
 
 const addUser = async (req, res) => {
-    const { name, email, noofdevices, espTopics } = req.body;
-    try {
-        if (req.user.role !== 'admin') {
-            return res.status(403).json({ message: 'Access denied' });
-        }
-        const existingUser = await Admin.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email already exists' });
-        }
-        const newUser = new Admin({
-            name,
-            email,
-            noofdevices,
-            espTopics,
-            dateAdded: formatDateAWS(new Date())
-        });
-        await newUser.save();
-        const db = mongoose.connection.db;
-        for (const topic of espTopics) {
-            await createCollection(db, topic);
-        }
-        await subscribeToTopics();
-        const storedUser = await Admin.findOne({ email });
-        console.log('Stored user:', storedUser);
-        res.status(201).json({ message: 'User added successfully', user: newUser });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Something went wrong' });
+  const { name, email, noofdevices, espTopics } = req.body;
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied' });
     }
+    const existingUser = await Admin.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    const newUser = new Admin({
+      name,
+      email,
+      noofdevices,
+      espTopics,
+      dateAdded: getCurrentISTTime() // Use IST formatted string
+    });
+    await newUser.save();
+
+    const db = mongoose.connection.db;
+    for (const topic of espTopics) {
+      await createCollection(db, topic);
+    }
+    await subscribeToTopics();
+    res.status(201).json({ message: 'User added successfully', user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Something went wrong' });
+  }
 };
+
 
 const updateUserDevices = async (req, res) => {
     const { name, noofdevices, espTopics, email } = req.body;

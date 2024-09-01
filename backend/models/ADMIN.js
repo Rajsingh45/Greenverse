@@ -1,4 +1,11 @@
 const mongoose = require('mongoose');
+const moment = require('moment-timezone');
+
+// Function to get IST time as a string
+const getCurrentISTTime = () => {
+    return moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+};
+
 const AdminSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -25,16 +32,8 @@ const AdminSchema = new mongoose.Schema({
     },
     dateAdded: { 
         type: String, 
-        default: () => formatDate(new Date()) 
+        default: getCurrentISTTime // Store date in IST as a string
     }
 });
-
-
-const formatDate = (date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString('default', { month: 'short' });
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
-};
 
 module.exports = mongoose.model('Admin', AdminSchema);
