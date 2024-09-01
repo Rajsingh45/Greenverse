@@ -28,13 +28,12 @@ const About = () => {
           </header>
 
           <section className="about-origin">
-            {/* <h2 className="section-title">Our Origin</h2> */}
             <div className="origin-content">
               <div className="origin-text">
                 <p className='first-para section-text'>
                   Our innovative Air Quality Monitoring Portal is designed to give users real-time insights and control over multiple air quality monitors from a single, user-friendly interface. With our advanced air quality monitors, you can track and manage indoor air quality parameters, including PM2.5, humidity, temperature, and VOC levels, ensuring a healthier environment for your family or workspace. The portal's efficiency lies in its capability to provide detailed analytics, historical data, and customizable alerts, allowing proactive measures to maintain optimal air quality. Our technology empowers you to make informed decisions about the air you breathe.
                 </p>
-                <p>To know more visit us at <a href='www.airbuddi.in'>www.airbuddi.in</a></p>
+                <p className='first-para section-text'>To know more visit us at <a className='website-link' href='https://www.airbuddi.in' target="_blank" rel="noopener noreferrer">www.airbuddi.in </a></p>
               </div>
               <div className="origin-photo">
                 <img src={founder} alt="Founder" />
