@@ -23,38 +23,57 @@ const getDeviceDataByDatetime = async (req, res) => {
 };
 
 const getDeviceDataByDateRange = async (req, res) => {
-    const { espTopic } = req.params;
-    const { startDate, endDate, parameter } = req.query;
-    try {
-        await mongoClient.connect();
-        const db = mongoClient.db(dbName);
-        const deviceCollection = db.collection(espTopic);
-        const data = await deviceCollection.find({
-            dateTime: {
-                $gte: startDate,
-                $lte: endDate
-            }
-        }).toArray();
-        if (data.length > 0) {
-            const filteredData = data.map(entry => {
-                if (entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
-                    return {
-                        dateTime: entry.dateTime,
-                        [parameter]: entry.parameters[parameter]
-                    };
-                } else {
-                    console.warn(`Parameter "${parameter}" not found in document.`);
-                    return null;
-                }
-            }).filter(entry => entry !== null);
-            res.json(filteredData);
-        } else {
-            res.status(404).json({ error: 'No data found for the specified date range' });
-        }
-    } catch (err) {
-        console.error('Failed to fetch data:', err.message);
-        res.status(500).json({ error: 'Failed to fetch data.' });
-    }
+  const { espTopic } = req.params;
+  const { startDate, endDate, parameter } = req.query;
+  try {
+      await mongoClient.connect();
+      const db = mongoClient.db(dbName);
+      const deviceCollection = db.collection(espTopic);
+      const data = await deviceCollection.aggregate([
+          {
+              $match: {
+                  dateTime: {
+                      $gte: startDate,
+                      $lte: endDate
+                  }
+              }
+          },
+          {
+              $sort: { dateTime: 1 }
+          },
+          {
+              $group: {
+                  _id: {
+                      $dateToString: { format: "%Y-%m-%d %H:%M", date: { $dateFromString: { dateString: "$dateTime" } } }
+                  },
+                  firstEntry: { $first: "$$ROOT" }
+              }
+          },
+          {
+              $replaceRoot: { newRoot: "$firstEntry" }
+          }
+      ]).toArray();
+
+      if (data.length > 0) {
+          const filteredData = data.map(entry => {
+              if (entry.parameters && entry.parameters.hasOwnProperty(parameter)) {
+                  return {
+                      dateTime: entry.dateTime,
+                      [parameter]: entry.parameters[parameter]
+                  };
+              } else {
+                  console.warn(`Parameter "${parameter}" not found in document.`);
+                  return null;
+              }
+          }).filter(entry => entry !== null);
+          res.json(filteredData);
+      } else {
+          res.status(404).json({ error: 'No data found for the specified date range' });
+      }
+  } catch (err) {
+      console.error('Failed to fetch data:', err.message);
+      res.status(500).json({ error: 'Failed to fetch data.' });
+  }
 };
 
 const downloadDeviceData = async (req, res) => {
