@@ -33,7 +33,7 @@
   width: 50%;
   height: 100%;
   padding-top: 20px; 
-  padding: 2rem;
+  /* padding: 2rem; */
   box-sizing: border-box;
 }
 
@@ -152,6 +152,7 @@
   }
 
   .left-sideq {
+  padding: 2rem;
     width: 100%;
     box-shadow: none;
   }
