@@ -19,7 +19,7 @@ const register = async (req, res) => {
         const existingName = await User.findOne({ name });
         if (existingName) {
             return res.status(400).json({ message: 'Username already exists' });
-        }
+        } 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'Email already registered' });
@@ -417,28 +417,43 @@ const getAllUsers = async (req, res) => {
     }
 };
 
+// const multer = require('multer');
+// const path = require('path');
+// const fs = require('fs');
+
+// Ensure the uploads folder is created
+const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
+if (!fs.existsSync(uploadsFolderPath)) {
+  fs.mkdirSync(uploadsFolderPath, { recursive: true });
+  console.log('Uploads folder created.');
+}
+
 const uploadProfilePicture = async (req, res) => {
-    try {
-      const user = await User.findOne({email : req.user.email});
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      if (user.profilePicture) {
-        const oldFilePath = path.join(__dirname, '..', user.profilePicture);
-        fs.unlink(oldFilePath, (err) => {
-            if (err) {
-                console.error('Error deleting old profile picture:', err);
-            }
-        });
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
-      user.profilePicture = req.file.path;
-      await user.save();
-      res.json({ message: 'Profile picture uploaded successfully', user });
-    } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      res.status(500).json({ message: 'Server error' });
+
+    // Delete the old profile picture if it exists
+    if (user.profilePicture) {
+      const oldFilePath = path.join(__dirname, '..', user.profilePicture);
+      fs.unlink(oldFilePath, (err) => {
+        if (err) {
+          console.error('Error deleting old profile picture:', err);
+        }
+      });
     }
-  };
+
+    // Update the user's profile picture
+    user.profilePicture = req.file.path;
+    await user.save();
+    res.json({ message: 'Profile picture uploaded successfully', user });
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 const getProfilePicture = async (req, res) => {
   try {
@@ -456,6 +471,7 @@ const getProfilePicture = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 const renameUser = async (req, res) => {
     const { email, newName } = req.body;
