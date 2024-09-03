@@ -97,7 +97,7 @@ async function subscribeToTopics() {
 
 async function aggregateData(db, topic, range) {
     const collection = db.collection(topic);
-    const endTime = moment().tz('Asia/Kolkata').startOf('minute').format('YYYY-MM-DD HH:mm:ss'); // Current time in IST
+    const endTime = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Current time in IST
     const startTime = moment().tz('Asia/Kolkata').subtract(range, 'seconds').format('YYYY-MM-DD HH:mm:ss');
 
     // Find all raw documents within the specified range
