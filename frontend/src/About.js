@@ -37,6 +37,7 @@ const About = () => {
               </div>
               <div className="origin-photo">
                 <img src={founder} alt="Founder" />
+                <p className='ceo'>Founder and CEO - Saket Agarwal</p>
               </div>
             </div>
           </section>
