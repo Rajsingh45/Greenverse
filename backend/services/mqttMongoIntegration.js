@@ -97,8 +97,9 @@ async function subscribeToTopics() {
 
 async function aggregateData(db, topic, range) {
     const collection = db.collection(topic);
-    const startTime = moment().subtract(range, 'seconds').format('YYYY-MM-DD HH:mm:ss');
-    const endTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Current time
+    const endTime = moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss'); // Current time in IST
+    const startTime = moment().tz('Asia/Kolkata').subtract(range, 'seconds').format('YYYY-MM-DD HH:mm:ss');
+
     // Find all raw documents within the specified range
     const data = await collection.find({
         dateTime: { $gte: startTime, $lt: endTime },
@@ -108,6 +109,7 @@ async function aggregateData(db, topic, range) {
     if (data.length === 0) {
         return;
     }
+
     // Calculate averages
     const averageData = {
         dateTime: endTime, // Timestamp the aggregated document as the most recent entry
@@ -119,11 +121,15 @@ async function aggregateData(db, topic, range) {
     parameterKeys.forEach(key => {
         averageData.parameters[key] = data.reduce((sum, doc) => sum + parseFloat(doc[key]), 0) / data.length;
     });
+
+    // Insert aggregated data first to ensure no data loss
+    await collection.insertOne(averageData);
+
+    // Delete raw data after inserting the aggregated document
     await collection.deleteMany({
         dateTime: { $gte: startTime, $lt: endTime },
         dataType: 'raw' // Ensure only raw data is deleted
     });
-    await collection.insertOne(averageData);
 }
 
 // Schedule a job to run every 60 seconds for 1-minute aggregation
