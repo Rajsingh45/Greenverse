@@ -68,7 +68,7 @@ async function subscribeToTopics() {
         await connectMQTT(); // Initialize MQTT client if not already
     }
     try {
-        if (!mongoClient.isConnected()) { // Check MongoDB connection
+        if (mongoClient.isConnected()) { // Check MongoDB connection
             await mongoClient.connect();
             console.log('Connected to MongoDB');
         }

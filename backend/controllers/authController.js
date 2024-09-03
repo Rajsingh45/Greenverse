@@ -417,17 +417,6 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-// const multer = require('multer');
-// const path = require('path');
-// const fs = require('fs');
-
-// Ensure the uploads folder is created
-const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsFolderPath)) {
-  fs.mkdirSync(uploadsFolderPath, { recursive: true });
-  console.log('Uploads folder created.');
-}
-
 const uploadProfilePicture = async (req, res) => {
     try {
       const user = await User.findOne({ email: req.user.email });
@@ -435,24 +424,13 @@ const uploadProfilePicture = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      // Check if there's an existing profile picture and delete it if present
-      if (user.profilePicture) {
-        const oldFilePath = path.join(__dirname, '..', user.profilePicture); // Correctly construct the path
-        if (fs.existsSync(oldFilePath)) {
-          fs.unlink(oldFilePath, (err) => {
-            if (err) {
-              console.error('Error deleting old profile picture:', err);
-            } else {
-              console.log('Old profile picture deleted successfully.');
-            }
-          });
-        } else {
-          console.log('Old profile picture does not exist, nothing to delete.');
-        }
+      // Check if a file is uploaded
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
       }
   
-      // Update the user's profile picture with the new path
-      user.profilePicture = path.join('uploads', req.file.filename); // Store only the relative path
+      // Update the user's profile picture with the new image data
+      user.profilePicture = req.file.buffer; // Store the buffer directly in the user's document
       await user.save();
   
       res.json({ message: 'Profile picture uploaded successfully', user });
@@ -462,7 +440,6 @@ const uploadProfilePicture = async (req, res) => {
     }
   };
   
-
   const getProfilePicture = async (req, res) => {
     try {
       const user = await User.findOne({ email: req.user.email });
@@ -470,21 +447,34 @@ const uploadProfilePicture = async (req, res) => {
         return res.status(404).json({ message: 'Profile picture not found' });
       }
   
-      // Correct the path to the profile picture
-      const filePath = path.join(__dirname, '..', user.profilePicture);
-      
-      if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: 'Profile picture not found' });
-      }
-  
-      res.sendFile(filePath);
+      // Send the profile picture as a binary data stream
+      res.set('Content-Type', 'image/jpeg'); // You may need to set dynamically based on the file type
+      res.send(user.profilePicture);
     } catch (error) {
       console.error('Error fetching profile picture:', error);
       res.status(500).json({ message: 'Server error' });
     }
   };
   
-
+  const deleteProfilePicture = async (req, res) => {
+    try {
+      const user = await User.findById(req.user.id);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Remove the profile picture from the user's document
+      user.profilePicture = undefined;
+      await user.save();
+  
+      res.status(200).json({ message: 'Profile picture deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting profile picture:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
 
 const renameUser = async (req, res) => {
     const { email, newName } = req.body;
@@ -546,40 +536,6 @@ const checkNameAvailability = async (req, res) => {
         res.status(500).json({ message: 'Something went wrong' });
     }
 };
-
-const deleteProfilePicture = async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const user = await User.findById(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Construct the full path to the existing profile picture
-      if (user.profilePicture) {
-        const fullFilePath = path.join(__dirname, '..', user.profilePicture);
-        
-        // Check if the file exists before attempting to delete it
-        if (fs.existsSync(fullFilePath)) {
-          fs.unlinkSync(fullFilePath);
-          console.log('Profile picture deleted successfully.');
-        } else {
-          console.log('Profile picture not found on the server.');
-        }
-      }
-  
-      // Remove reference to profile picture in database
-      user.profilePicture = null;
-      await user.save();
-      
-      res.status(200).json({ message: 'Profile picture deleted successfully' });
-    } catch (error) {
-      console.error('Error deleting profile picture:', error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  };
-  
 
 module.exports = { register, checkNameAvailability, requestSignupOTP, verifySignupOTP, requestForgotPasswordOTP, verifyForgotPasswordOTP,
     login, rememberMe, searchDevices, changePassword, checkEmailExists,  getAllUsers,
