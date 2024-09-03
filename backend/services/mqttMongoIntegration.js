@@ -68,10 +68,8 @@ async function subscribeToTopics() {
         await connectMQTT(); // Initialize MQTT client if not already
     }
     try {
-        if (!mongoClient.isConnected()) { // Check MongoDB connection
-            await mongoClient.connect();
-            console.log('Connected to MongoDB');
-        }
+        await mongoClient.connect();
+        console.log('Connected to MongoDB');
         const db = mongoClient.db(dbName);
         // Fetch all topics from existing collections
         const collections = await db.listCollections().toArray();
@@ -101,7 +99,6 @@ async function aggregateData(db, topic, range) {
     const collection = db.collection(topic);
     const startTime = moment().subtract(range, 'seconds').format('YYYY-MM-DD HH:mm:ss');
     const endTime = moment().format('YYYY-MM-DD HH:mm:ss'); // Current time
-
     // Find all raw documents within the specified range
     const data = await collection.find({
         dateTime: { $gte: startTime, $lt: endTime },
@@ -111,7 +108,6 @@ async function aggregateData(db, topic, range) {
     if (data.length === 0) {
         return;
     }
-
     // Calculate averages
     const averageData = {
         dateTime: endTime, // Timestamp the aggregated document as the most recent entry
@@ -119,21 +115,16 @@ async function aggregateData(db, topic, range) {
         id: data[0].id, // Extract `id` from the first document and move it outside of `parameters`
         parameters: {}
     };
-
     const parameterKeys = Object.keys(data[0]).filter(key => !['dateTime', '_id', 'dataType', 'id'].includes(key));
     parameterKeys.forEach(key => {
         averageData.parameters[key] = data.reduce((sum, doc) => sum + parseFloat(doc[key]), 0) / data.length;
     });
-
-    await collection.insertOne(averageData); // Insert the aggregated data before deletion
-
-    // Delete raw data documents after insertion of aggregated data
     await collection.deleteMany({
         dateTime: { $gte: startTime, $lt: endTime },
         dataType: 'raw' // Ensure only raw data is deleted
     });
+    await collection.insertOne(averageData);
 }
-
 
 // Schedule a job to run every 60 seconds for 1-minute aggregation
 cron.schedule('* * * * *', async () => {
