@@ -156,7 +156,11 @@ const UserProfile = () => {
           alert('Failed to upload profile picture.');
         }
       } catch (error) {
-        alert('An error occurred while uploading the profile picture.');
+        toast.error('An error occurred while uploading the profile picture.', {
+          autoClose: 5000,
+          closeOnClick: true,
+        });
+        
       }
     } else {
       alert('Please select a JPG or PNG image smaller than 1MB.');
@@ -216,12 +220,12 @@ const UserProfile = () => {
       <div className='outermost-container'>
         <div className="profile-container">
           <div className="avatar-container">
-            <Avatar
-              src={profilePic}
-              alt="Profile"
-              className="profile-avatar"
-              onClick={openModal}
-            />
+          <Avatar
+            src={profilePic ? profilePic : ''}
+            alt={profilePic ? "Profile" : "Default Icon"}
+            className="profile-avatar"
+            onClick={profilePic ? openModal : null}
+          />
             <div className="header">
               <MoreVert
                 className="more-vert-icon"

@@ -419,62 +419,70 @@ const getAllUsers = async (req, res) => {
 
 const uploadProfilePicture = async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.user.email });
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Check if a file is uploaded
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-  
-      // Update the user's profile picture with the new image data
-      user.profilePicture = req.file.buffer; // Store the buffer directly in the user's document
-      await user.save();
-  
-      res.json({ message: 'Profile picture uploaded successfully', user });
+        const user = await User.findOne({ email: req.user.email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Ensure that a file has been uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Store the image data and content type in the user's document
+        user.profilePicture = {
+            data: req.file.buffer, // Store the file buffer directly
+            contentType: req.file.mimetype
+        };
+
+        await user.save();
+        res.status(200).json({ message: 'Profile picture uploaded successfully', user });
     } catch (error) {
-      console.error('Error uploading profile picture:', error);
-      res.status(500).json({ message: 'Server error' });
+        console.error('Error uploading profile picture:', error);
+        res.status(500).json({ message: 'Server error occurred while uploading the picture' });
     }
-  };
-  
-  const getProfilePicture = async (req, res) => {
+};
+
+const getProfilePicture = async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.user.email });
-      if (!user || !user.profilePicture) {
-        return res.status(404).json({ message: 'Profile picture not found' });
-      }
-  
-      // Send the profile picture as a binary data stream
-      res.set('Content-Type', 'image/jpeg'); // You may need to set dynamically based on the file type
-      res.send(user.profilePicture);
+        const user = await User.findOne({ email: req.user.email });
+
+        if (!user || !user.profilePicture.data) {
+            // If no picture is found, send a default response
+            return res.status(404).json({ message: 'Profile picture not found' });
+        }
+
+        // Set the content type and send the image data
+        res.set('Content-Type', user.profilePicture.contentType);
+        res.send(user.profilePicture.data);
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
-      res.status(500).json({ message: 'Server error' });
+        console.error('Error fetching profile picture:', error);
+        res.status(500).json({ message: 'Server error occurred while fetching the picture' });
     }
-  };
-  
-  const deleteProfilePicture = async (req, res) => {
+};
+
+const deleteProfilePicture = async (req, res) => {
     try {
-      const user = await User.findById(req.user.id);
-  
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-  
-      // Remove the profile picture from the user's document
-      user.profilePicture = undefined;
-      await user.save();
-  
-      res.status(200).json({ message: 'Profile picture deleted successfully' });
+        const user = await User.findOne({ email: req.user.email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check if the user has a profile picture and delete it
+        if (user.profilePicture.data) {
+            user.profilePicture = undefined; // Remove the profile picture data
+            await user.save();
+            res.status(200).json({ message: 'Profile picture deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'No profile picture found to delete' });
+        }
     } catch (error) {
-      console.error('Error deleting profile picture:', error);
-      res.status(500).json({ message: 'Server error' });
+        console.error('Error deleting profile picture:', error);
+        res.status(500).json({ message: 'Server error occurred while deleting the picture' });
     }
-  };
-  
+};
+
 
 const renameUser = async (req, res) => {
     const { email, newName } = req.body;
