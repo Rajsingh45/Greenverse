@@ -1,52 +1,39 @@
 const mongoose = require('mongoose');
+const moment = require('moment-timezone');
 
-const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/\S+@\S+\.\S+/, 'Please fill a valid email address']
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  contactNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [/^\d{10}$/, 'Please fill a valid contact number']
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
-  },
-  profilePicture: {
-    type: Buffer, // Store profile picture as binary data
-  },
-  rememberMeToken: {
-    type: String,
-    select: false
-  },
-  rememberMeTokenExpiry: {
-    type: Date,
-    select: false
-  }
+// Function to get IST time as a string
+const getCurrentISTTime = () => {
+    return moment().tz('Asia/Kolkata').format('YYYY-MM-DD HH:mm:ss');
+};
+
+const AdminSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        validate: {
+            validator: function (v) {
+                return /^[A-Za-z\s]+$/.test(v);
+            },
+            message: props => `${props.value} is not a valid name! Only alphabets are allowed.`
+        }
+    },
+    email: {
+        type: String, 
+        required: true, 
+        unique: true,
+        match: [/\S+@\S+\.\S+/, 'Please fill a valid email address'] 
+    },
+    noofdevices: {
+        type: Number,
+        required: true
+    },
+    espTopics: { 
+        type: [String]
+    },
+    dateAdded: { 
+        type: String, 
+        default: getCurrentISTTime // Store date in IST as a string
+    }
 });
 
-UserSchema.pre('save', function (next) {
-  if (!this.rememberMeToken) {
-    this.rememberMeToken = undefined;
-  }
-  if (!this.rememberMeTokenExpiry) {
-    this.rememberMeTokenExpiry = undefined;
-  }
-  next();
-});
-
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Admin', AdminSchema);
