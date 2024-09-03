@@ -1,22 +1,7 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
-// Ensure the uploads folder is created
-const uploadsFolderPath = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadsFolderPath)) {
-  fs.mkdirSync(uploadsFolderPath, { recursive: true });
-  console.log('Uploads folder created.');
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsFolderPath); // Use the dynamically created uploads folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
+// Use memory storage to keep the file in memory as a buffer
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {

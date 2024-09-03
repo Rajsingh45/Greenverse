@@ -23,12 +23,12 @@ const UserSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'], // Added role field
-        default: 'user' // Default role is 'user'
+        enum: ['user', 'admin'],
+        default: 'user'
     },
     profilePicture: {
-        type: String,
-        default: ''
+        data: Buffer, // Use Buffer to store the binary data of the image
+        contentType: String, // Store the MIME type (e.g., 'image/png')
     },
     rememberMeToken: {
         type: String,
