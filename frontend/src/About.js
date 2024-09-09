@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import './About.css';
 import UserNavbar from './UserNavbar';
 import Layout from './Layout';
+
+
+
+
 import founder from './images/founder.jpg';
 import partner1 from './images/partner1.png'
 import partner2 from './images/partner2.png'
