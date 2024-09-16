@@ -27,7 +27,13 @@ mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
         console.error('Database connection error:', err);
     });
 
-app.use(cors());
+
+app.use(cors({
+    origin: ["https://airbuddi.vercel.app"], // Your frontend URL
+    methods: ["POST", "GET", "PUT", "DELETE"], // Allow necessary methods
+    credentials: true // Allow cookies if needed
+}));
+    
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
