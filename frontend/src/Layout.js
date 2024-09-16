@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const Layout = ({ children, searchQuery, setSearchQuery }) => {
   return (

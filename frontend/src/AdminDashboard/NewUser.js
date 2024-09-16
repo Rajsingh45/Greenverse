@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './NewUser.css';
 import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-const backendURL="https://greenverse-d0ch.onrender.com"
+const backendURL=process.env.REACT_APP_BACKEND_URL
 
 const NewUserForm = ({ onUserAdded }) => {
   const [name, setName] = useState('');

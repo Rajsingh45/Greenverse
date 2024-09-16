@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Admin from './AdminDashboard/Admin';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const DashboardPage = () => {
   const [users, setUsers] = useState([]);

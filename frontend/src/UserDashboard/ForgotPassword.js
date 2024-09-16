@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ForgotPassword.css';
 import { useNavigate } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');

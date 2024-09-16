@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './VerifyOTP.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const VerifyOTP = () => {
   const [otp, setOtp] = useState(new Array(6).fill(""));

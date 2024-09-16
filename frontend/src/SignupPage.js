@@ -4,7 +4,7 @@ import './signup.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logo from './images/logo.png';
-const backendURL="https://greenverse-d0ch.onrender.com"
+const backendURL=process.env.REACT_APP_BACKEND_URL
 
 function RegisterForm() {
 

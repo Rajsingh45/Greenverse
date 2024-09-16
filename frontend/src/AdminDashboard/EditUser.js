@@ -5,7 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import './EditUser.css';
 import Navbar from '../Navbar.js';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-const backendURL="https://greenverse-d0ch.onrender.com"
+const backendURL=process.env.REACT_APP_BACKEND_URL
 
 
 const EditUserForm = ({ onUserUpdated }) => {

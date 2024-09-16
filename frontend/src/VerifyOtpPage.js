@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './verifyotp.css';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const VerifyOtpPage = () => {
     const navigate = useNavigate();

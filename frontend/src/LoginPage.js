@@ -4,7 +4,7 @@ import './login.css';
 import { UserContext } from "./UserContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
 import logo from './images/logo.png';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const LoginPage = () => {
     const [userDetails, setUserDetails] = useState({

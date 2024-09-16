@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 export const UserContext = createContext();
 

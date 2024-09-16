@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './NeedHelp.css';
-const backendURL="https://greenverse-d0ch.onrender.com";
+const backendURL=process.env.REACT_APP_BACKEND_URL;
 
 const NeedHelp = () => {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });

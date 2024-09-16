@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import './ChangePassword.css';
 import { ArrowBack } from '@mui/icons-material';
-const backendURL="https://greenverse-d0ch.onrender.com"
+const backendURL=process.env.REACT_APP_BACKEND_URL
 
 const ChangePasswordPageUnique = () => {
     const token = localStorage.getItem('token');

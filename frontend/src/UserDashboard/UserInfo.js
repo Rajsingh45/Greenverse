@@ -6,7 +6,7 @@ import Layout from '../Layout';
 import { MoreVert } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const backendURL="https://greenverse-d0ch.onrender.com"
+const backendURL=process.env.REACT_APP_BACKEND_URL
 
 const UserProfile = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);

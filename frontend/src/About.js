@@ -13,7 +13,7 @@ import partner3 from './images/partner3.png'
 import partner4 from './images/partner4.png'
 import partner5 from './images/partner5.png'
 import partner6 from './images/partner6.jpeg'
-const backendURL ="https://greenverse-d0ch.onrender.com";
+const backendURL =process.env.REACT_APP_BACKEND_URL;
 
 const About = () => {
   // const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
