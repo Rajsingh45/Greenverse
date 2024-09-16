@@ -27,27 +27,21 @@ mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
         console.error('Database connection error:', err);
     });
 
+    const allowedOrigins = process.env.FRONTEND_URLS.split(',').map(url => url.trim());
 
-// app.use(cors({
-//     origin: ["https://airbuddi.vercel.app"], // Your frontend URL
-//     methods: ["POST", "GET", "PUT", "DELETE"], // Allow necessary methods
-//     credentials: true // Allow cookies if needed
-// }));
-
-const allowedOrigins = process.env.FRONTEND_URLS.split(',');
-
-app.use(cors({
-    origin: function (origin, callback) {
-        // Allow requests with no origin like mobile apps or curl
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ["POST", "GET", "PUT", "DELETE"], // Allow necessary methods
-    credentials: true // Allow cookies if needed
-}));
+    app.use(cors({
+        origin: function (origin, callback) {
+            // Allow requests with no origin (like mobile apps or curl) or from allowed origins
+            if (!origin || allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        methods: ["POST", "GET", "PUT", "DELETE"],
+        credentials: true // Allow credentials (cookies)
+    }));
+    
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -58,6 +52,9 @@ app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/', contactRoutes);
 app.use('/api', dataRoutes);
+app.get("/", (req, res) => {
+    res.json("Hello");
+})
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
