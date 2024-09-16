@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const cron = require('node-cron');
 
 dotenv.config();
 
@@ -17,6 +18,18 @@ const dataRoutes = require('./routes/dataRoutes');
 const app = express();
 
 const mongoURL = process.env.MONGODB_URL;
+const axios = require('axios'); // Add this if not already installed
+
+cron.schedule('*/10 * * * *', async () => {
+    try {
+        console.log('Cron job running every 10 minutes');
+        const response = await axios.get(`https://greenverse-d0ch.onrender.com`); // Replace with your actual deployed URL
+        console.log('Ping successful:', response.status);
+    } catch (error) {
+        console.error('Ping failed:', error);
+    }
+});
+
 
 mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -42,7 +55,12 @@ mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     //     credentials: true // Allow credentials (cookies)
     // }));
 
-app.use(cors());
+// Explicit CORS Configuration
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow necessary methods
+    credentials: true // Allow credentials (if needed, such as cookies or auth headers)
+}));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
