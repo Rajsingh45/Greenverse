@@ -27,22 +27,22 @@ mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
         console.error('Database connection error:', err);
     });
 
-    const allowedOrigins = process.env.FRONTEND_URLS.split(',').map(url => url.trim());
+    // const allowedOrigins = process.env.FRONTEND_URLS.split(',').map(url => url.trim());
 
-    app.use(cors({
-        origin: function (origin, callback) {
-            // Allow requests with no origin (like mobile apps or curl) or from allowed origins
-            if (!origin || allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        methods: ["POST", "GET", "PUT", "DELETE"],
-        credentials: true // Allow credentials (cookies)
-    }));
-    
+    // app.use(cors({
+    //     origin: function (origin, callback) {
+    //         // Allow requests with no origin (like mobile apps or curl) or from allowed origins
+    //         if (!origin || allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+    //             callback(null, true);
+    //         } else {
+    //             callback(new Error('Not allowed by CORS'));
+    //         }
+    //     },
+    //     methods: ["POST", "GET", "PUT", "DELETE"],
+    //     credentials: true // Allow credentials (cookies)
+    // }));
 
+app.use(cors());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
