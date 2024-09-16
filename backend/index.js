@@ -28,12 +28,27 @@ mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
     });
 
 
+// app.use(cors({
+//     origin: ["https://airbuddi.vercel.app"], // Your frontend URL
+//     methods: ["POST", "GET", "PUT", "DELETE"], // Allow necessary methods
+//     credentials: true // Allow cookies if needed
+// }));
+
+const allowedOrigins = process.env.FRONTEND_URLS.split(',');
+
 app.use(cors({
-    origin: ["https://airbuddi.vercel.app"], // Your frontend URL
+    origin: function (origin, callback) {
+        // Allow requests with no origin like mobile apps or curl
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ["POST", "GET", "PUT", "DELETE"], // Allow necessary methods
     credentials: true // Allow cookies if needed
 }));
-    
+
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
