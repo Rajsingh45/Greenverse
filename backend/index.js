@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const cron = require('node-cron');
-
 dotenv.config();
 
 const authRoutes = require('./routes/auth');
