@@ -117,7 +117,7 @@ function RegisterForm() {
       const data = await response.json();
 
       if (response.status === 200) {
-        const adminEmail = process.env.REACT_APP_ADMIN_EMAIL;
+        const adminEmail = process.env.ADMIN_EMAIL;
         const role = userDetails.email === adminEmail ? "admin" : "user";
         navigate('/verifysignupotp', { state: { userDetails, role } });
       } else {
