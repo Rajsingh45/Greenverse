@@ -6,23 +6,23 @@ import Layout from '../Layout';
 import { MoreVert } from '@mui/icons-material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const backendURL=process.env.REACT_APP_BACKEND_URL
+
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const UserProfile = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef(null);
   const storedAdminCredentials = JSON.parse(localStorage.getItem('adminCredentials'));
-  // const isAdmin = (storedAdminCredentials && storedAdminCredentials.email === "admin@example.com" && storedAdminCredentials.password === "adminpassword");
 
   const token = localStorage.getItem('token');
   const isAdmin = token ? JSON.parse(atob(token.split('.')[1])).role === 'admin' : false;
-  
-  const [searchQuery, setSearchQuery] = useState('');
 
+  const [searchQuery, setSearchQuery] = useState('');
   const [user, setUser] = useState({});
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicFile, setProfilePicFile] = useState(null);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingContactNumber, setIsEditingContactNumber] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   const toggleDropdown = (e) => {
@@ -41,12 +41,10 @@ const UserProfile = () => {
     setDropdownVisible(false);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const handleEditContactNumber = () => {
+    setIsEditingContactNumber(true);
+    setDropdownVisible(false);
+  };
 
   const handleDeleteProfilePic = async () => {
     if (!profilePic) {
@@ -62,8 +60,8 @@ const UserProfile = () => {
       const response = await fetch(`${backendURL}/auth/delete-profile-picture`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       const data = await response.json();
@@ -86,38 +84,45 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${backendURL}/auth/users`, {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${backendURL}/auth/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (data && data.email && data.name && data.contactNumber) {
+        setUser(data);
+
+        const profilePicResponse = await fetch(`${backendURL}/auth/profile-picture`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            'Authorization': `Bearer ${token}`,
+          },
         });
 
-        const data = await response.json();
-        if (data && data.email && data.name && data.contactNumber) {
-          setUser(data);
-
-          const profilePicResponse = await fetch(`${backendURL}/auth/profile-picture`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (profilePicResponse.ok) {
-            const profilePicBlob = await profilePicResponse.blob();
-            const profilePicURL = URL.createObjectURL(profilePicBlob);
-            setProfilePic(profilePicURL);
-          }
-        } else {
-          console.error('Invalid user data:', data);
+        if (profilePicResponse.ok) {
+          const profilePicBlob = await profilePicResponse.blob();
+          const profilePicURL = URL.createObjectURL(profilePicBlob);
+          setProfilePic(profilePicURL);
         }
-      } catch (error) {
-        console.error('Error fetching user:', error);
+      } else {
+        console.error('Invalid user data:', data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchUser();
   }, []);
 
@@ -136,9 +141,9 @@ const UserProfile = () => {
         const response = await fetch(`${backendURL}/auth/upload`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
           },
-          body: formData
+          body: formData,
         });
 
         const data = await response.json();
@@ -151,7 +156,7 @@ const UserProfile = () => {
             },
           });
           setProfilePic(previewURL);
-          setProfilePicFile(null); 
+          setProfilePicFile(null);
         } else {
           alert('Failed to upload profile picture.');
         }
@@ -160,7 +165,6 @@ const UserProfile = () => {
           autoClose: 5000,
           closeOnClick: true,
         });
-        
       }
     } else {
       alert('Please select a JPG or PNG image smaller than 1MB.');
@@ -173,27 +177,41 @@ const UserProfile = () => {
 
   const handleSubmitName = async () => {
     const token = localStorage.getItem('token');
-
+  
     try {
       const response = await fetch(`${backendURL}/auth/rename`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: user.email, newName: user.name })
+        body: JSON.stringify({ email: user.email, newName: user.name }),
       });
-
+  
+      // Ensure the response is ok
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        alert(`Error: ${errorData.message || 'Something went wrong'}`);
+        return;
+      }
+  
       const data = await response.json();
+  
+      // Log the response data to verify
+      console.log('Response Data:', data);
+  
+      // Check if the message matches the expected success response
       if (data.message === 'Name updated successfully in both collections') {
         toast.success('Name updated successfully.', {
           autoClose: 5000,
           closeOnClick: true,
           onClose: () => {
-            window.location.reload();
+            // Optionally update the user state with the new name from the response
+            setUser(prevState => ({ ...prevState, name: data.user.name }));
+            setIsEditingName(false);
           },
         });
-        setIsEditingName(false);
       } else {
         alert('Failed to update name.');
         window.location.reload();
@@ -201,6 +219,42 @@ const UserProfile = () => {
     } catch (error) {
       console.error('Error updating name:', error);
       alert('An error occurred while updating the name.');
+    }
+  };
+  
+
+  const handleContactNumberChange = (event) => {
+    setUser({ ...user, contactNumber: event.target.value });
+  };
+
+  const handleSubmitContactNumber = async () => {
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${backendURL}/auth/update-contact-number`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: user.email, newContactNumber: user.contactNumber }),
+      });
+
+      const data = await response.json();
+      if (data.message === 'Contact number updated successfully') {
+        toast.success('Contact number updated successfully.', {
+          autoClose: 5000,
+          closeOnClick: true,
+          onClose: () => {
+            setIsEditingContactNumber(false); // Exit edit mode
+          },
+        });
+      } else {
+        alert('Failed to update contact number.');
+      }
+    } catch (error) {
+      console.error('Error updating contact number:', error);
+      alert('An error occurred while updating the contact number.');
     }
   };
 
@@ -220,12 +274,12 @@ const UserProfile = () => {
       <div className='outermost-container'>
         <div className="profile-container">
           <div className="avatar-container">
-          <Avatar
-            src={profilePic ? profilePic : ''}
-            alt={profilePic ? "Profile" : "Default Icon"}
-            className="profile-avatar"
-            onClick={profilePic ? openModal : null}
-          />
+            <Avatar
+              src={profilePic ? profilePic : ''}
+              alt={profilePic ? "Profile" : "Default Icon"}
+              className="profile-avatar"
+              onClick={profilePic ? openModal : null}
+            />
             <div className="header">
               <MoreVert
                 className="more-vert-icon"
@@ -238,6 +292,12 @@ const UserProfile = () => {
                     className="dropdown-itemu"
                   >
                     Edit Username
+                  </Button>
+                  <Button
+                    onClick={handleEditContactNumber}
+                    className="dropdown-itemu"
+                  >
+                    Edit Contact Number
                   </Button>
                   <Button
                     onClick={handleDeleteProfilePic}
@@ -274,7 +334,8 @@ const UserProfile = () => {
             <TextField
               label="Contact Number"
               value={user.contactNumber || ''}
-              InputProps={{ readOnly: true }}
+              onChange={handleContactNumberChange}
+              InputProps={{ readOnly: !isEditingContactNumber }}
               variant="outlined"
               fullWidth
             />
@@ -288,9 +349,18 @@ const UserProfile = () => {
               >
                 Save Username
               </Button>
-            )
-              : null
-            }
+            ) : null}
+
+            {isEditingContactNumber ? (
+              <Button
+                variant="contained"
+                onClick={handleSubmitContactNumber}
+                className="profile-button"
+              >
+                Save Contact Number
+              </Button>
+            ) : null}
+
             <Button
               variant="contained"
               component="label"
@@ -314,7 +384,7 @@ const UserProfile = () => {
             </div>
           )}
         </div>
-      <ToastContainer />
+        <ToastContainer />
       </div>
     </>
   );

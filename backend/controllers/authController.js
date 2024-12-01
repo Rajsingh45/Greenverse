@@ -484,6 +484,47 @@ const deleteProfilePicture = async (req, res) => {
 };
 
 
+// Controller to update the contact number
+const updateContactNumber = async (req, res) => {
+    const { email, newContactNumber } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        // Ensure that the contact number is in a valid format (add your validation here)
+        if (!newContactNumber.match(/^[0-9]{10}$/)) {
+            return res.status(400).json({ message: 'Invalid contact number format' });
+        }
+
+        user.contactNumber = newContactNumber;
+        await user.save();
+        res.json({ message: 'Contact number updated successfully', user });
+    } catch (error) {
+        console.error('Error updating contact number:', error);
+        res.status(500).json({ message: 'Server error occurred while updating the contact number' });
+    }
+};
+
+
+
+const getContactNumber = async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.user.email });
+
+        if (!user || !user.contactNumber) {
+            return res.status(404).json({ message: 'Contact number not found' });
+        }
+
+        res.status(200).json({ contactNumber: user.contactNumber });
+    } catch (error) {
+        console.error('Error fetching contact number:', error);
+        res.status(500).json({ message: 'Server error occurred while fetching contact number' });
+    }
+};
+
 const renameUser = async (req, res) => {
     const { email, newName } = req.body;
     const adminEmail = process.env.ADMIN_EMAIL; 
@@ -547,4 +588,4 @@ const checkNameAvailability = async (req, res) => {
 
 module.exports = { register, checkNameAvailability, requestSignupOTP, verifySignupOTP, requestForgotPasswordOTP, verifyForgotPasswordOTP,
     login, rememberMe, searchDevices, changePassword, checkEmailExists,  getAllUsers,
-    resetPassword, uploadProfilePicture, renameUser , getProfilePicture, deleteProfilePicture, requestPasswordOTP, verifyPasswordOTP };
+    resetPassword, getContactNumber, updateContactNumber, uploadProfilePicture, renameUser , getProfilePicture, deleteProfilePicture, requestPasswordOTP, verifyPasswordOTP };

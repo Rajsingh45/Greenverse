@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { register, login,checkNameAvailability, requestSignupOTP, verifySignupOTP, requestForgotPasswordOTP, verifyForgotPasswordOTP,
      rememberMe, changePassword, checkEmailExists, searchDevices, resetPassword, getAllUsers, getProfilePicture, uploadProfilePicture,
-     renameUser, deleteProfilePicture, requestPasswordOTP, verifyPasswordOTP } = require('../controllers/authController');
+     renameUser, deleteProfilePicture, requestPasswordOTP, verifyPasswordOTP,getContactNumber, updateContactNumber } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/authMiddleware'); // Import the middleware
 const upload = require('../middleware/uploadMiddleware');
 
@@ -27,6 +27,9 @@ router.get('/users', authMiddleware, getAllUsers)
 router.post('/upload', authMiddleware, upload.single('profilePicture'), uploadProfilePicture);
 router.put('/rename', authMiddleware, renameUser); 
 router.get('/profile-picture', authMiddleware, getProfilePicture);
+
+router.put('/update-contact-number', authMiddleware, updateContactNumber);
+router.get('/contact-number', authMiddleware, getContactNumber);
 
 router.get('/search',authMiddleware, searchDevices);
 router.delete('/delete-profile-picture', authMiddleware,deleteProfilePicture);

@@ -15,19 +15,19 @@ const dataRoutes = require('./routes/dataRoutes');
 // const moment = require('moment-timezone');
 
 const app = express();
-
+// app.set('trust proxy', 1);
 const mongoURL = process.env.MONGODB_URL;
 const axios = require('axios'); // Add this if not already installed
 
-cron.schedule('*/10 * * * *', async () => {
-    try {
-        console.log('Cron job running every 10 minutes');
-        const response = await axios.get(`https://greenverse-d0ch.onrender.com`); // Replace with your actual deployed URL
-        console.log('Ping successful:', response.status);
-    } catch (error) {
-        console.error('Ping failed:', error);
-    }
-});
+// cron.schedule('*/10 * * * *', async () => {
+//     try {
+//         console.log('Cron job running every 10 minutes');
+//         const response = await axios.get(`https://greenverse-d0ch.onrender.com`); // Replace with your actual deployed URL
+//         console.log('Ping successful:', response.status);
+//     } catch (error) {
+//         console.error('Ping failed:', error);
+//     }
+// });
 
 
 mongoose.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -73,5 +73,5 @@ app.get("/", (req, res) => {
     res.json("Hello");
 })
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
